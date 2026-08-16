@@ -23,15 +23,39 @@ if 나이 >= 20:
 
 위 코드는 KoPy에서 정상 실행되며 내부적으로 표준 Python으로 변환됩니다.
 
+## 다운로드
+
+GitHub 저장소의 **Code → Download ZIP**으로 전체 소스를 받을 수 있습니다.
+
+Git이 설치되어 있다면:
+
+```powershell
+git clone https://github.com/gpt0081/KoPy.git
+cd KoPy
+```
+
 ## 설치
 
-Python 3.14.x 환경을 권장합니다.
+KoPy v0.1.x는 Python 3.14.x를 대상으로 합니다.
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\activate
 python -m pip install -U pip
 pip install -e .
+```
+
+설치 후에는 다음 두 방식이 모두 됩니다.
+
+```powershell
+kopy run examples\hello.kpy
+kopy examples\hello.kpy
+```
+
+일반 Python 파일도 그대로 실행할 수 있습니다.
+
+```powershell
+kopy my_script.py
 ```
 
 ## 사용법
@@ -43,7 +67,14 @@ kopy translate examples\hello.kpy
 kopy learn examples\hello.kpy
 kopy spelling on
 kopy spelling off
+kopy spelling status
 kopy version
+```
+
+### 일시적으로 스펠링 힌트 끄기
+
+```powershell
+kopy run --no-spelling examples\hello.kpy
 ```
 
 ### 스펠링 힌트
@@ -54,13 +85,40 @@ kopy version
 pritn("Hello")
 ```
 
-KoPy는 코드를 자동 수정하지 않고 다음과 같은 힌트를 출력합니다.
+KoPy는 코드를 자동 수정하지 않고 실행 전에 다음과 같은 힌트를 출력합니다.
 
 ```text
-# KoPy 힌트: 'pritn' → 'print' 를 입력하려고 했나요?
+1:1  # KoPy 힌트: 'pritn' → 'print' 를 입력하려고 했나요?
 ```
 
-`kopy spelling off`로 끌 수 있고, 다시 `kopy spelling on`으로 켤 수 있습니다.
+`kopy spelling off`로 기본 기능을 끌 수 있고, `kopy spelling on`으로 다시 켤 수 있습니다.
+
+## Windows EXE 직접 빌드
+
+저장소 루트에서:
+
+```powershell
+build.bat
+```
+
+테스트를 통과하면 다음 파일이 생성됩니다.
+
+```text
+dist\kopy.exe
+```
+
+그 다음에는:
+
+```powershell
+dist\kopy.exe version
+dist\kopy.exe examples\hello.kpy
+```
+
+처럼 사용할 수 있습니다.
+
+## GitHub Actions에서 EXE 받기
+
+저장소의 **Actions → Windows Build**에서 성공한 실행을 열고, **Artifacts → KoPy-Windows**를 받으면 `kopy.exe`가 들어 있습니다.
 
 ## 설계 원칙
 
@@ -78,7 +136,7 @@ KoPy v0.1.x는 다음을 목표로 합니다.
 - 한글/영문 혼용
 - 선택형 스펠링 힌트
 - 번역 보기 및 학습 모드
-- Windows 실행 파일 빌드 기반
+- Windows 실행 파일 빌드
 
 ## 라이선스
 
