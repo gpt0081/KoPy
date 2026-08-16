@@ -15,6 +15,18 @@ from .translator import translate
 _COMMANDS = {"run", "check", "translate", "learn", "spelling", "version"}
 
 
+def _configure_utf8_console() -> None:
+    """Make Korean CLI output safe on Windows and frozen executables."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
+
+
 def _add_spelling_option(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--spelling",
@@ -142,6 +154,7 @@ def _cmd_version() -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    _configure_utf8_console()
     raw_argv = list(sys.argv[1:] if argv is None else argv)
     parser = _build_parser()
     args = parser.parse_args(_normalize_argv(raw_argv))
