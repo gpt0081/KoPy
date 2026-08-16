@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kopy-lang"
+version = "0.1.0"
+description = "KoPy: Korean-transliterated Python learning layer with native Python compatibility"
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+license = "MIT"
+authors = [
+  { name = "KoPy Project" }
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.14",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+dependencies = []
+
+[project.scripts]
+kopy = "kopy.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
