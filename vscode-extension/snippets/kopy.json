@@ -1,0 +1,36 @@
+{
+  "KoPy if": {
+    "prefix": "이프",
+    "body": [
+      "이프 ${1:조건}:",
+      "    ${0:패스}"
+    ],
+    "description": "KoPy if 문"
+  },
+  "KoPy for": {
+    "prefix": "포",
+    "body": [
+      "포 ${1:항목} 인 ${2:반복대상}:",
+      "    ${0:패스}"
+    ],
+    "description": "KoPy for 문"
+  },
+  "KoPy function": {
+    "prefix": "데프",
+    "body": [
+      "데프 ${1:함수이름}(${2:인자}):",
+      "    ${0:패스}"
+    ],
+    "description": "KoPy 함수 정의"
+  },
+  "KoPy print": {
+    "prefix": "프린트",
+    "body": "프린트(${1:\"내용\"})",
+    "description": "KoPy print"
+  },
+  "KoPy input int": {
+    "prefix": "인트인풋",
+    "body": "인트(인풋(${1:\"값: \"}))",
+    "description": "정수 입력 받기"
+  }
+}
