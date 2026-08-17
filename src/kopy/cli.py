@@ -9,7 +9,7 @@ from pathlib import Path
 from . import PYTHON_BASELINE, __version__
 from .config import set_spelling_enabled, spelling_enabled
 from .runtime import read_source, run_file
-from .spelling import find_spelling_hints
+from .spelling import SpellingHint, find_spelling_hints
 from .translator import translate
 
 _COMMANDS = {"run", "check", "translate", "learn", "spelling", "version"}
@@ -40,11 +40,23 @@ def _resolve_spelling(value: bool | None) -> bool:
     return spelling_enabled() if value is None else value
 
 
-def _print_hints(source: str, enabled: bool) -> None:
+def _collect_hints(source: str, enabled: bool) -> tuple[SpellingHint, ...]:
     if not enabled:
-        return
-    for hint in find_spelling_hints(source):
+        return ()
+    return find_spelling_hints(source)
+
+
+def _print_hints(hints: tuple[SpellingHint, ...]) -> None:
+    for hint in hints:
         print(hint.format(), file=sys.stderr)
+
+
+def _print_spelling_stop_message() -> None:
+    print("", file=sys.stderr)
+    print("KoPy: 영문 스펠링 오류가 의심되어 실행을 중단했습니다.", file=sys.stderr)
+    print("코드를 수정한 뒤 다시 실행하세요.", file=sys.stderr)
+    print("검사를 무시하고 실행하려면 --no-spelling 옵션을 사용하거나", file=sys.stderr)
+    print("'kopy spelling off'로 기본 스펠링 검사를 끌 수 있습니다.", file=sys.stderr)
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -86,13 +98,17 @@ def _normalize_argv(argv: list[str]) -> list[str]:
 def _cmd_run(args: argparse.Namespace) -> int:
     enabled = _resolve_spelling(args.spelling)
     source = read_source(args.file)
-    _print_hints(source, enabled)
+    hints = _collect_hints(source, enabled)
+    _print_hints(hints)
+
+    if hints:
+        _print_spelling_stop_message()
+        return 1
 
     script_args = list(args.script_args)
     if script_args and script_args[0] == "--":
         script_args = script_args[1:]
 
-    # Hints were already emitted before execution, so avoid scanning twice.
     run_file(args.file, spelling=False, script_args=script_args)
     return 0
 
@@ -100,9 +116,15 @@ def _cmd_run(args: argparse.Namespace) -> int:
 def _cmd_check(args: argparse.Namespace) -> int:
     enabled = _resolve_spelling(args.spelling)
     source = read_source(args.file)
-    _print_hints(source, enabled)
+    hints = _collect_hints(source, enabled)
+    _print_hints(hints)
     translation = translate(source)
     compile(translation.python, str(Path(args.file)), "exec")
+
+    if hints:
+        print(f"KoPy 검사: 스펠링 오류 의심 {len(hints)}개", file=sys.stderr)
+        return 1
+
     print(f"KoPy 검사 완료: {args.file}")
     return 0
 
@@ -183,6 +205,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"KoPy 문법 오류 [{location}] {exc.msg}", file=sys.stderr)
         if exc.text:
             print(exc.text.rstrip(), file=sys.stderr)
+        return 1
+    except Exception as exc:
+        # User-code runtime failures should stay readable, especially in a
+        # PyInstaller executable. The full Python traceback is intentionally
+        # hidden in normal KoPy mode.
+        print(f"KoPy 실행 오류 [{type(exc).__name__}]: {exc}", file=sys.stderr)
         return 1
 
     parser.error("알 수 없는 명령입니다.")
