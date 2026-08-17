@@ -3,16 +3,28 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 from . import PYTHON_BASELINE, __version__
 from .config import set_spelling_enabled, spelling_enabled
+from .editor import diagnose_source, info_payload, words_payload
 from .runtime import read_source, run_file
 from .spelling import SpellingHint, find_spelling_hints
 from .translator import translate
 
-_COMMANDS = {"run", "check", "translate", "learn", "spelling", "version"}
+_COMMANDS = {
+    "run",
+    "check",
+    "translate",
+    "learn",
+    "spelling",
+    "version",
+    "words",
+    "diagnose",
+    "info",
+}
 
 
 def _configure_utf8_console() -> None:
@@ -59,6 +71,10 @@ def _print_spelling_stop_message() -> None:
     print("'kopy spelling off'로 기본 스펠링 검사를 끌 수 있습니다.", file=sys.stderr)
 
 
+def _print_json(payload: object) -> None:
+    print(json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="kopy",
@@ -83,6 +99,17 @@ def _build_parser() -> argparse.ArgumentParser:
 
     spelling_parser = sub.add_parser("spelling", help="기본 스펠링 힌트 설정을 변경합니다.")
     spelling_parser.add_argument("state", choices=("on", "off", "status"))
+
+    words_parser = sub.add_parser("words", help="KoPy의 공식 단어 등록부를 표시합니다.")
+    words_parser.add_argument("--json", action="store_true", help="편집기용 JSON으로 출력합니다.")
+
+    diagnose_parser = sub.add_parser("diagnose", help="KoPy 본체 규칙으로 편집기용 진단을 생성합니다.")
+    diagnose_parser.add_argument("file", nargs="?", help="검사할 .kpy/.py 파일")
+    diagnose_parser.add_argument("--stdin", action="store_true", help="파일 대신 표준 입력의 소스를 검사합니다.")
+    diagnose_parser.add_argument("--json", action="store_true", help="편집기용 JSON으로 출력합니다.")
+
+    info_parser = sub.add_parser("info", help="KoPy 런타임 정보를 표시합니다.")
+    info_parser.add_argument("--json", action="store_true", help="편집기용 JSON으로 출력합니다.")
 
     sub.add_parser("version", help="KoPy와 기준 Python 버전을 표시합니다.")
     return parser
@@ -167,6 +194,52 @@ def _cmd_spelling(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_words(args: argparse.Namespace) -> int:
+    payload = words_payload()
+    if args.json:
+        _print_json(payload)
+        return 0
+
+    for entry in payload["words"]:
+        print(f"{entry['kopy']:<12} → {entry['python']:<16} [{entry['category']}]")
+    return 0
+
+
+def _cmd_diagnose(args: argparse.Namespace) -> int:
+    if args.stdin:
+        source = sys.stdin.read()
+        filename = args.file or "<stdin>"
+    else:
+        if not args.file:
+            raise ValueError("diagnose에는 파일 경로 또는 --stdin이 필요합니다.")
+        source = read_source(args.file)
+        filename = str(Path(args.file))
+
+    payload = diagnose_source(source, filename)
+    if args.json:
+        _print_json(payload)
+    else:
+        for item in payload["diagnostics"]:
+            print(
+                f"{item['line']}:{item['column']} [{item['severity']}] "
+                f"{item['message']}"
+            )
+        if payload["ok"]:
+            print("KoPy 진단 완료: 문제 없음")
+    return 0 if payload["ok"] else 1
+
+
+def _cmd_info(args: argparse.Namespace) -> int:
+    payload = info_payload()
+    if args.json:
+        _print_json(payload)
+        return 0
+    print(f"KoPy {payload['kopy_version']}")
+    print(f"기준 Python: {payload['python_baseline']}")
+    print(f"현재 실행 Python: {payload['runtime_python']}")
+    return 0
+
+
 def _cmd_version() -> int:
     runtime = ".".join(str(part) for part in sys.version_info[:3])
     print(f"KoPy {__version__}")
@@ -192,6 +265,12 @@ def main(argv: list[str] | None = None) -> int:
             return _cmd_learn(args)
         if args.command == "spelling":
             return _cmd_spelling(args)
+        if args.command == "words":
+            return _cmd_words(args)
+        if args.command == "diagnose":
+            return _cmd_diagnose(args)
+        if args.command == "info":
+            return _cmd_info(args)
         if args.command == "version":
             return _cmd_version()
     except FileNotFoundError as exc:
@@ -206,6 +285,9 @@ def main(argv: list[str] | None = None) -> int:
         if exc.text:
             print(exc.text.rstrip(), file=sys.stderr)
         return 1
+    except ValueError as exc:
+        print(f"KoPy 오류: {exc}", file=sys.stderr)
+        return 2
     except Exception as exc:
         # User-code runtime failures should stay readable, especially in a
         # PyInstaller executable. The full Python traceback is intentionally
