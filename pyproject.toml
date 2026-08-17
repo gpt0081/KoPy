@@ -7,14 +7,14 @@ name = "kopy-lang"
 version = "0.1.0"
 description = "KoPy: Korean-transliterated Python learning layer with native Python compatibility"
 readme = "README.md"
-requires-python = ">=3.14,<3.15"
+requires-python = ">=3.12,<3.13"
 license = "MIT"
 authors = [
   { name = "KoPy Project" }
 ]
 classifiers = [
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.12",
   "Operating System :: OS Independent"
 ]
 dependencies = []
