@@ -2,30 +2,6 @@
   "scopeName": "source.kopy",
   "name": "KoPy",
   "patterns": [
-    { "include": "#kopy-keywords" },
-    { "include": "#kopy-builtins" },
     { "include": "source.python" }
-  ],
-  "repository": {
-    "kopy-keywords": {
-      "patterns": [
-        {
-          "name": "keyword.control.kopy",
-          "match": "\\b(앤드|애즈|어설트|어싱크|어웨이트|브레이크|클래스|컨티뉴|데프|델|엘리프|엘스|익셉트|파이널리|포|프롬|글로벌|이프|임포트|인|이즈|람다|논로컬|낫|오어|패스|레이즈|리턴|트라이|와일|위드|일드)\\b"
-        },
-        {
-          "name": "constant.language.kopy",
-          "match": "\\b(트루|펄스|논)\\b"
-        }
-      ]
-    },
-    "kopy-builtins": {
-      "patterns": [
-        {
-          "name": "support.function.builtin.kopy",
-          "match": "\\b(프린트|인풋|인트|플로트|스트링|불|바이트|리스트|딕트|튜플|셋|렌|레인지|오픈|타입|썸|민|맥스|앱스|라운드|소티드|이뉴머레이트|집|맵|필터|올|애니|아이디|헬프|디르|리버스드|슬라이스|슈퍼|오브젝트|아이시인스턴스|아이서브클래스|콜러블|크르|오드|빈|옥트|헥스|파우)\\b"
-        }
-      ]
-    }
-  }
+  ]
 }
