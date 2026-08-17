@@ -1,0 +1,28 @@
+{
+  "comments": {
+    "lineComment": "#"
+  },
+  "brackets": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    { "open": "{", "close": "}" },
+    { "open": "[", "close": "]" },
+    { "open": "(", "close": ")" },
+    { "open": "\"", "close": "\"", "notIn": ["string"] },
+    { "open": "'", "close": "'", "notIn": ["string", "comment"] }
+  ],
+  "surroundingPairs": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
+    ["\"", "\""],
+    ["'", "'"]
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*(?:이프|엘리프|엘스|포|와일|데프|클래스|트라이|익셉트|파이널리|위드|if|elif|else|for|while|def|class|try|except|finally|with).*:\\s*(?:#.*)?$",
+    "decreaseIndentPattern": "^\\s*(?:엘리프|엘스|익셉트|파이널리|elif|else|except|finally)\\b"
+  }
+}
