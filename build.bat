@@ -1,9 +1,9 @@
 @echo off
 setlocal
 
-python -c "import sys; raise SystemExit(0 if sys.version_info[:2] == (3, 14) else 1)"
+python -c "import sys; raise SystemExit(0 if sys.version_info[:2] == (3, 12) else 1)"
 if errorlevel 1 (
-  echo [KoPy] Python 3.14.x가 필요합니다.
+  echo [KoPy] Python 3.12.x가 필요합니다. 개발 기준은 Python 3.12.10입니다.
   python --version
   exit /b 1
 )
