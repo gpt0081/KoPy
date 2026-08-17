@@ -1,0 +1,89 @@
+{
+  "name": "kopy-language",
+  "displayName": "KoPy Language Support",
+  "description": "KoPy(코파이)를 VS Code에서 Python처럼 작성하고 실행하기 위한 언어 지원 확장입니다.",
+  "version": "0.2.0",
+  "publisher": "kopy-project",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": ["Programming Languages", "Linters"],
+  "keywords": ["KoPy", "Python", "Korean", "한국어", "코파이"],
+  "main": "./extension.js",
+  "activationEvents": ["onLanguage:kopy", "onCommand:kopy.runFile"],
+  "contributes": {
+    "languages": [
+      {
+        "id": "kopy",
+        "aliases": ["KoPy", "kopy"],
+        "extensions": [".kpy"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "kopy",
+        "scopeName": "source.kopy",
+        "path": "./syntaxes/kopy.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "kopy",
+        "path": "./snippets/kopy.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "kopy.runFile",
+        "title": "KoPy: 현재 파일 실행",
+        "icon": "$(play)"
+      },
+      {
+        "command": "kopy.toggleSpelling",
+        "title": "KoPy: 스펠링 힌트 켜기/끄기"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "kopy.runFile",
+          "when": "editorLangId == kopy",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "kopy.runFile",
+        "key": "ctrl+f5",
+        "mac": "cmd+f5",
+        "when": "editorLangId == kopy"
+      }
+    ],
+    "configuration": {
+      "title": "KoPy",
+      "properties": {
+        "kopy.executablePath": {
+          "type": "string",
+          "default": "",
+          "description": "kopy.exe 또는 kopy 실행 파일의 경로입니다. 비워두면 워크스페이스의 dist/kopy.exe를 먼저 찾고, 없으면 PATH의 kopy를 사용합니다."
+        },
+        "kopy.spelling.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "영문 Python 예약어/내장함수의 고확률 오타에 밑줄과 인라인 정답 힌트를 표시합니다."
+        },
+        "kopy.inlinePythonHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "한글 KoPy 토큰에 마우스를 올렸을 때 실제 Python 표현을 보여줍니다."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "package": "npx @vscode/vsce package --no-dependencies"
+  }
+}
