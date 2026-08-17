@@ -2,7 +2,8 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 내장 함수를 한글 음역으로도 사용할 수 있게 하는 학습용 호환 레이어입니다.
 
-- 기준 Python: **3.14.7**
+- 개발 기준 Python: **3.12.10**
+- 호환 대상: **Python 3.12.x**
 - KoPy와 Python 코드를 한 파일에서 자유롭게 혼용
 - 올바른 영문 Python 코드는 그대로 실행
 - `이프`, `포`, `프린트`, `인트` 같은 한글 음역 표현 지원
@@ -36,7 +37,7 @@ cd KoPy
 
 ## 설치
 
-KoPy v0.1.x는 Python 3.14.x를 대상으로 합니다.
+KoPy v0.1.x는 Python 3.12.x를 대상으로 하며, 개발 및 CI 기준 버전은 Python 3.12.10입니다.
 
 ```powershell
 python -m venv .venv
@@ -120,11 +121,11 @@ dist\kopy.exe examples\hello.kpy
 
 저장소의 **Actions → Windows Build**에서 성공한 실행을 열고, **Artifacts → KoPy-Windows**를 받으면 `kopy.exe`가 들어 있습니다.
 
-## 설계 원칙
+## 버전 정책
 
-KoPy는 Python을 대체하려는 언어가 아닙니다. 사용자가 처음에는 한글 음역 표현을 사용하고, 익숙해질수록 실제 Python 영문 표현으로 자연스럽게 이동하도록 돕는 것이 목적입니다.
+KoPy는 각 릴리스마다 기준 Python 버전을 명시합니다. Python 새 버전이 발표되어도 즉시 자동 추종하지 않고, 새 문법·호환성·보안·교육적 가치 등을 검토해 필요할 때만 기준 버전을 올립니다.
 
-Python 새 버전이 발표되어도 KoPy가 자동으로 즉시 따라가지는 않습니다. 새 문법, 호환성, 보안, 교육적 가치 등을 검토해 필요할 때 기준 Python 버전을 올립니다. 각 KoPy 릴리스는 기준 Python 버전을 명시합니다.
+현재 KoPy v0.1.x의 개발 기준은 Python 3.12.10입니다.
 
 ## 현재 단계
 
