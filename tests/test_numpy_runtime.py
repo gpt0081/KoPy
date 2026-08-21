@@ -9,7 +9,7 @@ class NumPyRuntimeTests(unittest.TestCase):
     def test_kopy_numpy_code_executes_with_real_numpy(self):
         source = (
             "임포트 넘파이 애즈 np\n"
-            "x = np.어레이([1, 2, 3, 4], 디타입=np.플로트32)\n"
+            "x = np.어레이([1, 2, 3, 4], np.플로트32)\n"
             "y = x.리셰이프(2, 2)\n"
             "평균 = np.미인(y)\n"
             "크기 = np.린알지.노름(y)\n"
