@@ -12,6 +12,12 @@ from . import PYTHON_BASELINE, __version__
 from .config import set_spelling_enabled, spelling_enabled
 from .editor import diagnose_source, info_payload, words_payload
 from .education import explain_source, syntax_lesson
+from .packs.registry import (
+    pack_by_name,
+    pack_members_payload,
+    packs_payload,
+    resolve_pack_member,
+)
 from .runtime import read_source, run_file
 from .spelling import SpellingHint, find_spelling_hints
 from .translator import to_kopy, translate
@@ -20,6 +26,7 @@ from .words import PY_TO_KO, WORDS, info_for
 _COMMANDS = {
     "run", "check", "translate", "learn", "spelling", "version",
     "words", "diagnose", "info", "help", "to-kopy", "convert-python", "explain",
+    "packs", "libraries",
 }
 
 
@@ -95,8 +102,8 @@ def _build_parser() -> argparse.ArgumentParser:
     reverse_parser.add_argument("file")
     reverse_parser.add_argument("-o", "--output", help="변환 결과를 저장할 파일. 생략하면 화면에 출력합니다.")
 
-    help_parser = sub.add_parser("help", help="KoPy 단어의 Python 의미와 예제를 설명합니다.")
-    help_parser.add_argument("word", help="예: 프린트, print, 이프, if")
+    help_parser = sub.add_parser("help", help="KoPy 단어 또는 라이브러리 API를 설명합니다.")
+    help_parser.add_argument("word", help="예: 프린트, print, np.어레이, numpy.array")
 
     explain_parser = sub.add_parser("explain", help="코드를 실행하지 않고 흐름을 한국어로 설명합니다.")
     explain_parser.add_argument("file")
@@ -107,8 +114,16 @@ def _build_parser() -> argparse.ArgumentParser:
     spelling_parser = sub.add_parser("spelling", help="기본 스펠링 힌트 설정을 변경합니다.")
     spelling_parser.add_argument("state", choices=("on", "off", "status"))
 
-    words_parser = sub.add_parser("words", help="KoPy의 공식 단어 등록부를 표시합니다.")
+    words_parser = sub.add_parser("words", help="KoPy의 공식 Core 단어 등록부를 표시합니다.")
     words_parser.add_argument("--json", action="store_true", help="편집기용 JSON으로 출력합니다.")
+
+    packs_parser = sub.add_parser(
+        "packs",
+        aliases=["libraries"],
+        help="KoPy 라이브러리 팩과 설치 상태를 표시합니다.",
+    )
+    packs_parser.add_argument("name", nargs="?", help="상세히 볼 팩 이름. 예: numpy")
+    packs_parser.add_argument("--json", action="store_true", help="JSON으로 출력합니다.")
 
     diagnose_parser = sub.add_parser("diagnose", help="KoPy Core 규칙으로 편집기용 진단을 생성합니다.")
     diagnose_parser.add_argument("file", nargs="?", help="검사할 .kpy/.py 파일")
@@ -137,7 +152,6 @@ def _cmd_run(args: argparse.Namespace) -> int:
         _print_spelling_stop_message()
         return 1
 
-    # Compile once before execution so syntax lessons are shown consistently.
     compile(translate(source).python, str(Path(args.file)), "exec")
     script_args = list(args.script_args)
     if script_args and script_args[0] == "--":
@@ -181,13 +195,29 @@ def _resolve_help_word(word: str) -> str | None:
 
 
 def _cmd_help(args: argparse.Namespace) -> int:
+    pack_match = resolve_pack_member(args.word)
+    if pack_match is not None:
+        pack, info = pack_match
+        alias = pack.preferred_aliases[0] if pack.preferred_aliases else pack.module
+        print(f"{alias}.{info.kopy} → Python {pack.module}.{info.python}")
+        print(f"팩: {pack.name}")
+        print(f"설명: {info.description}")
+        if info.kopy_example:
+            print("\nKoPy 예제:")
+            print(info.kopy_example)
+        if info.python_example:
+            print("\nPython 예제:")
+            print(info.python_example)
+        return 0
+
     kopy_word = _resolve_help_word(args.word)
     if kopy_word is None:
         candidates = list(WORDS) + list(PY_TO_KO)
         matches = get_close_matches(args.word, candidates, n=3, cutoff=0.5)
         print(f"KoPy 도움말: '{args.word}' 단어를 찾지 못했습니다.", file=sys.stderr)
         if matches:
-            print("비슷한 단어: " + ", ".join(matches), file=sys.stderr)
+            print("비슷한 Core 단어: " + ", ".join(matches), file=sys.stderr)
+        print("라이브러리 API는 'kopy help np.어레이'처럼 조회할 수 있습니다.", file=sys.stderr)
         return 1
 
     info = info_for(kopy_word)
@@ -202,6 +232,39 @@ def _cmd_help(args: argparse.Namespace) -> int:
     if info.python_example:
         print("\nPython 예제:")
         print(info.python_example)
+    return 0
+
+
+def _cmd_packs(args: argparse.Namespace) -> int:
+    if args.name:
+        pack = pack_by_name(args.name)
+        if pack is None:
+            print(f"KoPy 팩 오류: '{args.name}' 팩을 찾지 못했습니다.", file=sys.stderr)
+            return 1
+        payload = pack_members_payload(pack)
+        if args.json:
+            _print_json(payload)
+            return 0
+        state = "설치됨" if payload["installed"] else "Python 라이브러리 미설치"
+        print(f"[{pack.name}] {pack.kopy_module} → {pack.module}")
+        print(f"상태: {state}")
+        print(f"설명: {pack.description}")
+        print(f"등록 API: {len(payload['members'])}개")
+        for item in payload["members"]:
+            print(f"  {item['kopy']:<18} → {item['python']:<22} {item['description']}")
+        return 0
+
+    payload = packs_payload()
+    if args.json:
+        _print_json(payload)
+        return 0
+    print("[KoPy 라이브러리 팩]")
+    for item in payload["packs"]:
+        state = "✅ 설치됨" if item["installed"] else "○ 라이브러리 미설치"
+        print(
+            f"{item['name']:<12} {state}  "
+            f"{item['kopy_module']} → {item['module']}  API {item['member_count']}개"
+        )
     return 0
 
 
@@ -319,6 +382,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "translate": return _cmd_translate(args)
         if args.command in {"to-kopy", "convert-python"}: return _cmd_to_kopy(args)
         if args.command == "help": return _cmd_help(args)
+        if args.command in {"packs", "libraries"}: return _cmd_packs(args)
         if args.command == "explain": return _cmd_explain(args)
         if args.command == "learn": return _cmd_learn(args)
         if args.command == "spelling": return _cmd_spelling(args)
