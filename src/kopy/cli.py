@@ -5,30 +5,25 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from difflib import get_close_matches
 from pathlib import Path
 
 from . import PYTHON_BASELINE, __version__
 from .config import set_spelling_enabled, spelling_enabled
 from .editor import diagnose_source, info_payload, words_payload
+from .education import explain_source, syntax_lesson
 from .runtime import read_source, run_file
 from .spelling import SpellingHint, find_spelling_hints
-from .translator import translate
+from .translator import to_kopy, translate
+from .words import PY_TO_KO, WORDS, info_for
 
 _COMMANDS = {
-    "run",
-    "check",
-    "translate",
-    "learn",
-    "spelling",
-    "version",
-    "words",
-    "diagnose",
-    "info",
+    "run", "check", "translate", "learn", "spelling", "version",
+    "words", "diagnose", "info", "help", "to-kopy", "convert-python", "explain",
 }
 
 
 def _configure_utf8_console() -> None:
-    """Make Korean CLI output safe on Windows and frozen executables."""
     for stream in (sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
         if reconfigure is None:
@@ -53,9 +48,7 @@ def _resolve_spelling(value: bool | None) -> bool:
 
 
 def _collect_hints(source: str, enabled: bool) -> tuple[SpellingHint, ...]:
-    if not enabled:
-        return ()
-    return find_spelling_hints(source)
+    return find_spelling_hints(source) if enabled else ()
 
 
 def _print_hints(hints: tuple[SpellingHint, ...]) -> None:
@@ -78,7 +71,7 @@ def _print_json(payload: object) -> None:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="kopy",
-        description="KoPy - Python 문법을 그대로 배우는 한글 음역 호환 레이어",
+        description="KoPy - Python 문법을 그대로 배우는 한글 음역 호환/학습 레이어",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -91,10 +84,24 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_spelling_option(check_parser)
     check_parser.add_argument("file")
 
-    translate_parser = sub.add_parser("translate", help="KoPy를 표준 Python 코드로 변환해 보여줍니다.")
+    translate_parser = sub.add_parser("translate", help="KoPy를 표준 Python 코드로 변환합니다.")
     translate_parser.add_argument("file")
 
-    learn_parser = sub.add_parser("learn", help="사용한 KoPy 단어와 실제 Python 표현을 함께 보여줍니다.")
+    reverse_parser = sub.add_parser(
+        "to-kopy",
+        aliases=["convert-python"],
+        help="Python 코드를 KoPy 학습 표현으로 변환합니다.",
+    )
+    reverse_parser.add_argument("file")
+    reverse_parser.add_argument("-o", "--output", help="변환 결과를 저장할 파일. 생략하면 화면에 출력합니다.")
+
+    help_parser = sub.add_parser("help", help="KoPy 단어의 Python 의미와 예제를 설명합니다.")
+    help_parser.add_argument("word", help="예: 프린트, print, 이프, if")
+
+    explain_parser = sub.add_parser("explain", help="코드를 실행하지 않고 흐름을 한국어로 설명합니다.")
+    explain_parser.add_argument("file")
+
+    learn_parser = sub.add_parser("learn", help="사용한 KoPy 단어와 Python 표현을 함께 보여줍니다.")
     learn_parser.add_argument("file")
 
     spelling_parser = sub.add_parser("spelling", help="기본 스펠링 힌트 설정을 변경합니다.")
@@ -103,9 +110,9 @@ def _build_parser() -> argparse.ArgumentParser:
     words_parser = sub.add_parser("words", help="KoPy의 공식 단어 등록부를 표시합니다.")
     words_parser.add_argument("--json", action="store_true", help="편집기용 JSON으로 출력합니다.")
 
-    diagnose_parser = sub.add_parser("diagnose", help="KoPy 본체 규칙으로 편집기용 진단을 생성합니다.")
+    diagnose_parser = sub.add_parser("diagnose", help="KoPy Core 규칙으로 편집기용 진단을 생성합니다.")
     diagnose_parser.add_argument("file", nargs="?", help="검사할 .kpy/.py 파일")
-    diagnose_parser.add_argument("--stdin", action="store_true", help="파일 대신 표준 입력의 소스를 검사합니다.")
+    diagnose_parser.add_argument("--stdin", action="store_true", help="파일 대신 표준 입력 소스를 검사합니다.")
     diagnose_parser.add_argument("--json", action="store_true", help="편집기용 JSON으로 출력합니다.")
 
     info_parser = sub.add_parser("info", help="KoPy 런타임 정보를 표시합니다.")
@@ -116,7 +123,6 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def _normalize_argv(argv: list[str]) -> list[str]:
-    # `kopy hello.kpy` is shorthand for `kopy run hello.kpy`.
     if argv and argv[0] not in _COMMANDS and not argv[0].startswith("-"):
         return ["run", *argv]
     return argv
@@ -127,15 +133,15 @@ def _cmd_run(args: argparse.Namespace) -> int:
     source = read_source(args.file)
     hints = _collect_hints(source, enabled)
     _print_hints(hints)
-
     if hints:
         _print_spelling_stop_message()
         return 1
 
+    # Compile once before execution so syntax lessons are shown consistently.
+    compile(translate(source).python, str(Path(args.file)), "exec")
     script_args = list(args.script_args)
     if script_args and script_args[0] == "--":
         script_args = script_args[1:]
-
     run_file(args.file, spelling=False, script_args=script_args)
     return 0
 
@@ -145,27 +151,71 @@ def _cmd_check(args: argparse.Namespace) -> int:
     source = read_source(args.file)
     hints = _collect_hints(source, enabled)
     _print_hints(hints)
-    translation = translate(source)
-    compile(translation.python, str(Path(args.file)), "exec")
-
+    compile(translate(source).python, str(Path(args.file)), "exec")
     if hints:
         print(f"KoPy 검사: 스펠링 오류 의심 {len(hints)}개", file=sys.stderr)
         return 1
-
     print(f"KoPy 검사 완료: {args.file}")
     return 0
 
 
 def _cmd_translate(args: argparse.Namespace) -> int:
+    print(translate(read_source(args.file)).python, end="")
+    return 0
+
+
+def _cmd_to_kopy(args: argparse.Namespace) -> int:
+    result = to_kopy(read_source(args.file)).kopy
+    if args.output:
+        Path(args.output).write_text(result, encoding="utf-8")
+        print(f"KoPy 변환 완료: {args.output}")
+    else:
+        print(result, end="")
+    return 0
+
+
+def _resolve_help_word(word: str) -> str | None:
+    if word in WORDS:
+        return word
+    return PY_TO_KO.get(word)
+
+
+def _cmd_help(args: argparse.Namespace) -> int:
+    kopy_word = _resolve_help_word(args.word)
+    if kopy_word is None:
+        candidates = list(WORDS) + list(PY_TO_KO)
+        matches = get_close_matches(args.word, candidates, n=3, cutoff=0.5)
+        print(f"KoPy 도움말: '{args.word}' 단어를 찾지 못했습니다.", file=sys.stderr)
+        if matches:
+            print("비슷한 단어: " + ", ".join(matches), file=sys.stderr)
+        return 1
+
+    info = info_for(kopy_word)
+    if info is None:
+        return 1
+    print(f"{info.kopy} → Python {info.python}")
+    print(f"분류: {info.category}")
+    print(f"설명: {info.description}")
+    if info.kopy_example:
+        print("\nKoPy 예제:")
+        print(info.kopy_example)
+    if info.python_example:
+        print("\nPython 예제:")
+        print(info.python_example)
+    return 0
+
+
+def _cmd_explain(args: argparse.Namespace) -> int:
     source = read_source(args.file)
-    print(translate(source).python, end="")
+    print(f"[KoPy 코드 설명: {args.file}]")
+    for index, step in enumerate(explain_source(source, str(Path(args.file))), start=1):
+        print(f"{index}. {step}")
     return 0
 
 
 def _cmd_learn(args: argparse.Namespace) -> int:
     source = read_source(args.file)
     result = translate(source)
-
     print("[KoPy → Python 대응]")
     seen: set[tuple[str, str]] = set()
     if not result.replacements:
@@ -176,8 +226,7 @@ def _cmd_learn(args: argparse.Namespace) -> int:
             if pair in seen:
                 continue
             seen.add(pair)
-            print(f"{korean:<12} → {english:<12} (처음 사용: {line}:{column})")
-
+            print(f"{korean:<16} → {english:<18} (처음 사용: {line}:{column})")
     print("\n[표준 Python 변환 결과]")
     print(result.python, end="")
     return 0
@@ -187,7 +236,6 @@ def _cmd_spelling(args: argparse.Namespace) -> int:
     if args.state == "status":
         print("ON" if spelling_enabled() else "OFF")
         return 0
-
     enabled = args.state == "on"
     set_spelling_enabled(enabled)
     print(f"KoPy 스펠링 힌트: {'ON' if enabled else 'OFF'}")
@@ -199,9 +247,8 @@ def _cmd_words(args: argparse.Namespace) -> int:
     if args.json:
         _print_json(payload)
         return 0
-
     for entry in payload["words"]:
-        print(f"{entry['kopy']:<12} → {entry['python']:<16} [{entry['category']}]")
+        print(f"{entry['kopy']:<18} → {entry['python']:<22} [{entry['category']}] {entry['description']}")
     return 0
 
 
@@ -214,16 +261,16 @@ def _cmd_diagnose(args: argparse.Namespace) -> int:
             raise ValueError("diagnose에는 파일 경로 또는 --stdin이 필요합니다.")
         source = read_source(args.file)
         filename = str(Path(args.file))
-
     payload = diagnose_source(source, filename)
     if args.json:
         _print_json(payload)
     else:
         for item in payload["diagnostics"]:
-            print(
-                f"{item['line']}:{item['column']} [{item['severity']}] "
-                f"{item['message']}"
-            )
+            print(f"{item['line']}:{item['column']} [{item['severity']}] {item['message']}")
+            if item.get("lesson"):
+                print(f"  학습 힌트: {item['lesson']}")
+            if item.get("suggestion"):
+                print(f"  수정 제안: {item['suggestion']}")
         if payload["ok"]:
             print("KoPy 진단 완료: 문제 없음")
     return 0 if payload["ok"] else 1
@@ -248,6 +295,18 @@ def _cmd_version() -> int:
     return 0
 
 
+def _print_syntax_lesson(exc: SyntaxError) -> None:
+    lesson = syntax_lesson(exc)
+    location = f"{exc.filename}:{exc.lineno}:{exc.offset}" if exc.filename else "문법"
+    print(f"KoPy 문법 오류 [{location}] {exc.msg}", file=sys.stderr)
+    if exc.text:
+        print(exc.text.rstrip(), file=sys.stderr)
+    print(f"학습 힌트: {lesson.title}", file=sys.stderr)
+    print(lesson.explanation, file=sys.stderr)
+    if lesson.suggestion:
+        print(f"수정 제안: {lesson.suggestion}", file=sys.stderr)
+
+
 def main(argv: list[str] | None = None) -> int:
     _configure_utf8_console()
     raw_argv = list(sys.argv[1:] if argv is None else argv)
@@ -255,24 +314,18 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(_normalize_argv(raw_argv))
 
     try:
-        if args.command == "run":
-            return _cmd_run(args)
-        if args.command == "check":
-            return _cmd_check(args)
-        if args.command == "translate":
-            return _cmd_translate(args)
-        if args.command == "learn":
-            return _cmd_learn(args)
-        if args.command == "spelling":
-            return _cmd_spelling(args)
-        if args.command == "words":
-            return _cmd_words(args)
-        if args.command == "diagnose":
-            return _cmd_diagnose(args)
-        if args.command == "info":
-            return _cmd_info(args)
-        if args.command == "version":
-            return _cmd_version()
+        if args.command == "run": return _cmd_run(args)
+        if args.command == "check": return _cmd_check(args)
+        if args.command == "translate": return _cmd_translate(args)
+        if args.command in {"to-kopy", "convert-python"}: return _cmd_to_kopy(args)
+        if args.command == "help": return _cmd_help(args)
+        if args.command == "explain": return _cmd_explain(args)
+        if args.command == "learn": return _cmd_learn(args)
+        if args.command == "spelling": return _cmd_spelling(args)
+        if args.command == "words": return _cmd_words(args)
+        if args.command == "diagnose": return _cmd_diagnose(args)
+        if args.command == "info": return _cmd_info(args)
+        if args.command == "version": return _cmd_version()
     except FileNotFoundError as exc:
         print(f"KoPy 오류: 파일을 찾을 수 없습니다: {exc.filename}", file=sys.stderr)
         return 2
@@ -280,18 +333,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"KoPy 오류: 파일을 읽을 권한이 없습니다: {exc.filename}", file=sys.stderr)
         return 2
     except SyntaxError as exc:
-        location = f"{exc.filename}:{exc.lineno}:{exc.offset}" if exc.filename else "문법"
-        print(f"KoPy 문법 오류 [{location}] {exc.msg}", file=sys.stderr)
-        if exc.text:
-            print(exc.text.rstrip(), file=sys.stderr)
+        _print_syntax_lesson(exc)
         return 1
     except ValueError as exc:
         print(f"KoPy 오류: {exc}", file=sys.stderr)
         return 2
     except Exception as exc:
-        # User-code runtime failures should stay readable, especially in a
-        # PyInstaller executable. The full Python traceback is intentionally
-        # hidden in normal KoPy mode.
         print(f"KoPy 실행 오류 [{type(exc).__name__}]: {exc}", file=sys.stderr)
         return 1
 
