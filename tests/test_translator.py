@@ -1,6 +1,6 @@
 import unittest
 
-from kopy.translator import translate
+from kopy.translator import to_kopy, translate
 
 
 class TranslatorTests(unittest.TestCase):
@@ -21,6 +21,19 @@ class TranslatorTests(unittest.TestCase):
         result = translate(source)
         self.assertEqual(source, result.python)
         self.assertEqual((), result.replacements)
+
+    def test_python_to_kopy_is_token_safe(self):
+        source = 'for x in range(3):\n    print("for print")  # for print\n'
+        result = to_kopy(source)
+        self.assertIn("포 x 인 레인지(3):", result.kopy)
+        self.assertIn('프린트("for print")', result.kopy)
+        self.assertIn("# for print", result.kopy)
+
+    def test_round_trip_registered_names(self):
+        source = "for x in range(3):\n    print(len([x]))\n"
+        kopy = to_kopy(source).kopy
+        restored = translate(kopy).python
+        self.assertEqual(source, restored)
 
 
 if __name__ == "__main__":
