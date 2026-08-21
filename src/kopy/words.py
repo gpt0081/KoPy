@@ -80,7 +80,7 @@ WORDS: dict[str, str] = {
     "유니코드인코드에러": "UnicodeEncodeError", "유니코드에러": "UnicodeError",
     "유니코드트랜슬레이트에러": "UnicodeTranslateError", "유니코드워닝": "UnicodeWarning",
     "유저워닝": "UserWarning", "밸류에러": "ValueError", "워닝": "Warning",
-    "제로디비전에러": "ZeroDivisionError",
+    "윈도우에러": "WindowsError", "제로디비전에러": "ZeroDivisionError",
 
     # Names installed by Python's normal site initialization.
     "카피라이트": "copyright", "크레딧": "credits", "엑시트": "exit",
