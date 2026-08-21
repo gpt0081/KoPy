@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kopy-lang"
-version = "0.1.1"
-description = "KoPy: Korean-transliterated Python learning layer with native Python compatibility"
+version = "0.4.0"
+description = "KoPy: Korean-transliterated Python compatibility and learning layer"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 license = "MIT"
@@ -13,11 +13,19 @@ authors = [
   { name = "KoPy Project" }
 ]
 classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Education",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.12",
   "Operating System :: OS Independent"
 ]
+keywords = ["python", "korean", "education", "transliteration", "learning"]
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/gpt0081/KoPy"
+Repository = "https://github.com/gpt0081/KoPy"
+Issues = "https://github.com/gpt0081/KoPy/issues"
 
 [project.scripts]
 kopy = "kopy.cli:main"
