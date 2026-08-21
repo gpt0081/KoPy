@@ -1,23 +1,82 @@
 # KoPy (코파이)
 
-KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 내장 함수를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
+KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.4.0**  
+현재 Core 버전: **0.5.0**  
 개발 기준 Python: **3.12.10**
 
-## KoPy v0.4 핵심
+## KoPy v0.5 방향: AI 개발
 
-- KoPy와 Python 코드를 한 파일에서 자유롭게 혼용
-- `이프`, `포`, `프린트`, `인트` 같은 한글 음역 표현
-- 단어 등록부를 Core의 단일 원본으로 관리
-- `kopy help <단어>` 학습 도움말
-- Python → KoPy 역변환
-- 교육형 문법 오류 설명
-- `kopy explain` 정적 코드 설명
-- Python과 KoPy 실행 결과를 비교하는 Golden 호환성 테스트
-- VS Code가 KoPy Core의 공식 단어/진단 API 사용
+v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다.
 
-## 예시
+- 라이브러리별 단어를 Core `words.py`에 섞지 않는 **Library Pack** 구조
+- 첫 공식 팩: **NumPy**
+- 라이브러리가 import된 파일에서만 해당 팩 활성화
+- 모듈 alias, 함수, 속성, ndarray 메서드 스타일 번역
+- Python → KoPy 역변환에도 라이브러리 팩 적용
+- `kopy packs`로 팩과 실제 Python 라이브러리 설치 상태 확인
+- `kopy help np.어레이`처럼 외부 API 학습 도움말 제공
+- Windows / Linux / macOS에서 실제 NumPy를 설치해 자동 실행 테스트
+
+다음 공식 AI 팩 후보는 pandas → Matplotlib → scikit-learn → PyTorch → Hugging Face Transformers/Datasets 순입니다.
+
+## NumPy 예시
+
+KoPy:
+
+```kopy
+임포트 넘파이 애즈 np
+
+x = np.어레이([1, 2, 3, 4], np.플로트32)
+y = x.리셰이프(2, 2)
+평균 = np.미인(y)
+크기 = np.린알지.노름(y)
+
+프린트(평균)
+프린트(크기)
+```
+
+KoPy는 이를 다음 Python으로 변환합니다.
+
+```python
+import numpy as np
+
+x = np.array([1, 2, 3, 4], np.float32)
+y = x.reshape(2, 2)
+평균 = np.mean(y)
+크기 = np.linalg.norm(y)
+
+print(평균)
+print(크기)
+```
+
+NumPy 팩은 KoPy에 포함되지만 **실제 NumPy 라이브러리 자체를 대신 설치하지는 않습니다.** 실행하려면 일반 Python과 동일하게 NumPy가 설치되어 있어야 합니다.
+
+```powershell
+python -m pip install numpy
+```
+
+상태 확인:
+
+```powershell
+kopy packs
+kopy packs numpy
+```
+
+## 라이브러리 팩의 충돌 방지 원칙
+
+외부 라이브러리 API는 전역 단어로 등록하지 않습니다.
+
+```kopy
+임포트 넘파이 애즈 np
+x = np.어레이([1, 2, 3])
+```
+
+처럼 NumPy를 import한 파일에서만 `어레이 → array`, `리셰이프 → reshape` 같은 NumPy 팩 규칙이 활성화됩니다.
+
+앞으로 여러 팩이 동시에 활성화되고 같은 KoPy 철자가 서로 다른 Python API를 가리키면 KoPy는 임의로 추측하지 않습니다. 모호한 표현은 번역하지 않아 사용자가 명시적으로 구분하도록 합니다.
+
+## Core 예시
 
 ```kopy
 이름 = 인풋("이름: ")
@@ -29,7 +88,7 @@ KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 내�
     프린트(이름, "미성년자입니다.")
 ```
 
-KoPy는 이를 표준 Python으로 변환한 뒤 CPython에서 실행합니다.
+KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 뒤 CPython에서 실행합니다.
 
 ## 개발용 설치
 
@@ -46,7 +105,7 @@ git pull
 kopy version
 ```
 
-`pyproject.toml`의 설치 메타데이터나 console script가 바뀐 경우에만 다음을 다시 실행합니다.
+`pyproject.toml`의 설치 메타데이터나 console script가 바뀐 경우에는 다음을 다시 실행합니다.
 
 ```powershell
 python -m pip install -e .
@@ -62,91 +121,80 @@ kopy to-kopy example.py
 kopy convert-python example.py
 kopy help 프린트
 kopy help print
+kopy help np.어레이
 kopy explain examples\hello.kpy
 kopy learn examples\hello.kpy
 kopy words
+kopy packs
+kopy packs numpy
 kopy spelling on
 kopy spelling off
 kopy spelling status
 kopy version
 ```
 
-## 단어 도움말
+## 도움말
+
+Core 단어:
 
 ```powershell
 kopy help 프린트
+kopy help print
 ```
 
-예:
-
-```text
-프린트 → Python print
-분류: builtin
-설명: 값을 화면에 출력합니다.
-
-KoPy 예제:
-프린트("안녕하세요")
-
-Python 예제:
-print("안녕하세요")
-```
-
-Python 이름으로도 찾을 수 있습니다.
+라이브러리 API:
 
 ```powershell
-kopy help print
+kopy help np.어레이
+kopy help numpy.array
+```
+
+NumPy 예:
+
+```text
+np.어레이 → Python numpy.array
+팩: numpy
+설명: Python 시퀀스에서 NumPy 배열을 만듭니다.
 ```
 
 ## Python → KoPy 변환
 
-```powershell
-kopy convert-python hello.py
-```
+Core뿐 아니라 활성 라이브러리 팩도 역변환합니다.
 
 Python:
 
 ```python
-for i in range(3):
-    print(i)
+import numpy as np
+x = np.arange(6).reshape(2, 3)
+average = np.mean(x)
 ```
 
 KoPy:
 
 ```kopy
-포 i 인 레인지(3):
-    프린트(i)
+임포트 넘파이 애즈 np
+x = np.에이레인지(6).리셰이프(2, 3)
+average = np.미인(x)
 ```
 
-문자열과 주석은 변환하지 않습니다. 파일로 저장하려면:
+명령:
 
 ```powershell
-kopy to-kopy hello.py -o hello.kpy
+kopy convert-python example.py
+kopy to-kopy example.py -o example.kpy
 ```
 
-## 교육형 오류
+문자열과 주석은 변환하지 않습니다.
 
-KoPy는 Python 문법을 바꾸지 않습니다. 대신 흔한 오류를 학습용 설명으로 보강합니다.
-
-```kopy
-이프 트루
-    프린트("안녕")
-```
-
-예상 안내:
-
-```text
-학습 힌트: 콜론(:)이 필요합니다.
-if, elif, else, for, while, def, class, try, except 같은 블록 문장은 끝에 ':'를 붙입니다.
-수정 제안: 해당 줄의 끝에 : 를 추가해 보세요.
-```
-
-## 코드 설명
+## 교육형 오류와 코드 설명
 
 ```powershell
 kopy explain examples\hello.kpy
 ```
 
-KoPy는 코드를 실행하지 않고 AST를 읽어 변수 저장, 조건문, 반복문, 함수 정의, 호출 등의 흐름을 한국어로 설명합니다. LLM이 필요하지 않으며 완전히 오프라인입니다.
+KoPy는 코드를 실행하지 않고 AST를 읽어 변수 저장, 조건문, 반복문, 함수 정의, 호출 등의 흐름을 한국어로 설명합니다. LLM이 필요하지 않으며 오프라인입니다.
+
+흔한 Python 문법 오류에는 콜론, 들여쓰기, 괄호 등을 중심으로 학습 힌트를 덧붙입니다.
 
 ## 편집기용 Core API
 
@@ -154,25 +202,15 @@ KoPy는 코드를 실행하지 않고 AST를 읽어 변수 저장, 조건문, �
 kopy words --json
 kopy info --json
 kopy diagnose examples\hello.kpy --json
+kopy packs --json
+kopy packs numpy --json
 ```
 
-미저장 편집 내용도 표준 입력으로 검사할 수 있습니다.
-
-```powershell
-Get-Content examples\hello.kpy | kopy diagnose --stdin --json
-```
-
-- `words --json`: 단어, Python 대응, 분류, 설명, 예제
-- `diagnose --json`: Core의 실제 스펠링 및 문법 진단
-- `info --json`: KoPy/Python 런타임 정보
-
-VS Code 확장은 별도 언어 규칙을 유지하지 않고 이 API를 사용합니다. Core를 `git pull`로 갱신하면 실행, 자동완성, Hover, 진단도 같은 최신 Core를 사용합니다.
+VS Code 확장은 별도 Core 단어표나 오타 알고리즘을 유지하지 않고 KoPy Core를 사용합니다.
 
 ## 테스트 철학
 
 KoPy는 Python 호환성을 가장 중요한 기준으로 둡니다.
-
-Golden 테스트는 다음 두 경로의 출력 결과를 비교합니다.
 
 ```text
 Python 소스 → CPython
@@ -180,31 +218,31 @@ Python 소스 → CPython
 Python 소스 → KoPy 변환 → 다시 Python 변환 → CPython
 ```
 
-동일한 프로그램이 동일한 결과를 내는지 자동 검사합니다. 새 기능을 추가할 때 기존 Python 호환성이 깨지는 것을 조기에 잡는 목적입니다.
+두 경로의 결과를 비교하는 Golden 테스트를 유지합니다.
 
-## Windows EXE
+v0.5부터 AI 라이브러리 팩은 별도의 GitHub Actions 매트릭스에서도 검증합니다.
 
-`dist\kopy.exe`는 개발 본체가 아니라 Python 설치 없이 사용할 수 있는 독립 배포판을 위한 결과물입니다.
-
-```powershell
-build.bat
+```text
+Windows ┐
+Linux   ├→ KoPy 설치 → NumPy 2.5 설치 → 전체 테스트 → 실제 NumPy KoPy 코드 실행
+macOS   ┘
 ```
 
 ## 구조
 
 ```text
 src/kopy
-   ├─ words.py       단어·설명·예제의 단일 원본
-   ├─ translator.py  KoPy ↔ Python 변환
+   ├─ words.py       Python Core 단어·설명·예제
+   ├─ packs/
+   │   ├─ base.py    라이브러리 팩 규격
+   │   ├─ registry.py 팩 등록부
+   │   └─ numpy.py   첫 공식 AI 팩
+   ├─ translator.py  KoPy ↔ Python + 활성 팩 변환
    ├─ spelling.py    오타 판정
    ├─ education.py   교육형 오류·코드 설명
    ├─ runtime.py     실행
    ├─ editor.py      IDE용 Core API
    └─ cli.py         사용자 CLI
-        │
-        ├─ Terminal
-        ├─ VS Code
-        └─ 미래의 IDE / 웹 IDE / AI Tutor
 ```
 
 ## 버전 정책
