@@ -10,10 +10,11 @@ class EditorApiTests(unittest.TestCase):
         mapping = {entry["kopy"]: entry["python"] for entry in entries}
         self.assertEqual(mapping, WORDS)
         self.assertEqual(len(entries), len(WORDS))
+        self.assertTrue(all("description" in entry for entry in entries))
 
     def test_words_payload_contains_registry_metadata(self):
         payload = words_payload()
-        self.assertEqual(payload["schema"], 1)
+        self.assertEqual(payload["schema"], 2)
         self.assertTrue(payload["words"])
         self.assertIn("kopy_version", payload)
         self.assertIn("python_baseline", payload)
@@ -29,6 +30,13 @@ class EditorApiTests(unittest.TestCase):
         payload = diagnose_source('프린트("안녕")\n', "demo.kpy")
         self.assertTrue(payload["ok"])
         self.assertEqual(payload["diagnostics"], [])
+
+    def test_diagnose_adds_teaching_hint_for_syntax_error(self):
+        payload = diagnose_source('이프 트루\n    프린트("x")\n', "demo.kpy")
+        errors = [d for d in payload["diagnostics"] if d["code"] == "syntax"]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("lesson", errors[0])
+        self.assertIn("suggestion", errors[0])
 
     def test_info_payload_reports_runtime(self):
         payload = info_payload()
