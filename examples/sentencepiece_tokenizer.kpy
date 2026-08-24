@@ -1,0 +1,17 @@
+임포트 센텐스피스 애즈 spm
+
+# 먼저 corpus.txt 같은 원시 말뭉치로 모델을 학습합니다.
+spm.센텐스피스트레이너.트레인(
+    input="corpus.txt",
+    model_prefix="m",
+    vocab_size=8000,
+)
+
+토크나이저 = spm.센텐스피스프로세서(model_file="m.model")
+피시들 = 토크나이저.엔코드("KoPy로 AI 토크나이저를 사용합니다.", out_type=str)
+아이디들 = 토크나이저.엔코드("KoPy로 AI 토크나이저를 사용합니다.", out_type=int)
+복원 = 토크나이저.디코드(아이디들)
+
+프린트(피시들)
+프린트(아이디들)
+프린트(복원)

@@ -15,6 +15,7 @@ from .optimum import OPTIMUM_PACK
 from .pandas import PANDAS_PACK
 from .peft import PEFT_PACK
 from .safetensors import SAFETENSORS_PACK
+from .sentencepiece import SENTENCEPIECE_PACK
 from .sklearn import SKLEARN_PACK
 from .tokenizers import TOKENIZERS_PACK
 from .torch import TORCH_PACK
@@ -23,7 +24,7 @@ from .transformers import TRANSFORMERS_PACK
 _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
     NUMPY_PACK, PANDAS_PACK, SKLEARN_PACK, TORCH_PACK, TRANSFORMERS_PACK,
     DATASETS_PACK, TOKENIZERS_PACK, ACCELERATE_PACK, PEFT_PACK,
-    ONNXRUNTIME_PACK, SAFETENSORS_PACK, OPTIMUM_PACK,
+    ONNXRUNTIME_PACK, SAFETENSORS_PACK, OPTIMUM_PACK, SENTENCEPIECE_PACK,
 )
 
 
