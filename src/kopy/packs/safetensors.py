@@ -12,7 +12,6 @@ SAFETENSORS_PACK = LibraryPack(
     preferred_aliases=("st",),
     description="AI 모델 텐서를 안전하고 빠르게 저장·로드하는 Safetensors API 팩",
     members={
-        # Core file reader
         "세이프오픈": "safe_open",
         "키즈": "keys",
         "오프셋키즈": "offset_keys",
@@ -20,16 +19,10 @@ SAFETENSORS_PACK = LibraryPack(
         "겟슬라이스": "get_slice",
         "메타데이터": "metadata",
         "겟셰이프": "get_shape",
-
-        # torch / numpy / flax helpers
         "세이브파일": "save_file",
         "로드파일": "load_file",
         "세이브": "save",
         "로드": "load",
-
-        # Common framework-specific helpers
-        "플래튼": "_flatten",
-        "뷰2스트라이드": "_view2stride",
     },
     member_descriptions={
         "safe_open": "Safetensors 파일을 지연 로딩 방식으로 열어 필요한 텐서만 읽습니다.",
