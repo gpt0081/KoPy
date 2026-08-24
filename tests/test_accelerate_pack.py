@@ -13,9 +13,9 @@ class AcceleratePackTests(unittest.TestCase):
         )
         result = translate(source).python
         self.assertIn("from accelerate import Accelerator", result)
-        self.assertIn("Accelerator()", result)
-        self.assertIn(".prepare(model, optimizer)", result)
-        self.assertIn(".backward(", result)
+        self.assertIn("가속기 = Accelerator()", result)
+        self.assertIn("가속기.prepare(모델, 옵티마이저)", result)
+        self.assertIn("가속기.backward(손실)", result)
 
     def test_reverse_translate_accelerate_api(self):
         source = (
