@@ -21,7 +21,7 @@ python -m pip install "mlflow-skinny>=3.15,<3.16"
 MLflow 3.15.1 정식 배포판은 현재 `pandas<3`을 요구합니다. 따라서 pandas 3.x를 고정한 환경에는 full `mlflow`와 pandas 3.x를 동시에 설치할 수 없습니다. KoPy 팩 자체의 문제가 아니라 upstream 패키지 의존성입니다. KoPy CI는 이를 숨기지 않고 두 환경을 따로 검증합니다.
 
 - 전체 AI stack + pandas 3.x: `mlflow-skinny`로 namespace/tracking 호환성 검증
-- full MLflow 3.15: 별도 Windows/Ubuntu/macOS job에서 실제 local tracking 검증
+- full MLflow 3.15: 별도 Windows/Ubuntu/macOS job에서 실제 SQLite tracking 검증
 
 확인:
 
@@ -32,10 +32,12 @@ kopy help 엠엘플로우.스타트런
 
 ## 기본 실험 추적
 
+MLflow 3.15에서는 파일시스템 tracking backend가 maintenance mode이므로 SQLite 같은 데이터베이스 backend를 사용하는 편이 안전합니다.
+
 ```kopy
 임포트 엠엘플로우 애즈 mlf
 
-mlf.셋트래킹유알아이("file:./mlruns")
+mlf.셋트래킹유알아이("sqlite:///mlflow.db")
 mlf.셋익스페리먼트("kopy-demo")
 
 위드 mlf.스타트런(run_name="baseline") 애즈 실행:
@@ -52,7 +54,7 @@ mlf.셋익스페리먼트("kopy-demo")
 ```python
 import mlflow as mlf
 
-mlf.set_tracking_uri("file:./mlruns")
+mlf.set_tracking_uri("sqlite:///mlflow.db")
 mlf.set_experiment("kopy-demo")
 
 with mlf.start_run(run_name="baseline") as run:
@@ -90,7 +92,7 @@ with mlf.start_run(run_name="baseline") as run:
 
 ## 런타임 테스트
 
-full MLflow CI는 외부 서버 없이 임시 로컬 tracking store를 만들고 실제 MLflow를 사용해 다음을 검증합니다.
+full MLflow CI는 외부 서버 없이 임시 SQLite tracking database와 임시 artifact 디렉터리를 만들고 실제 MLflow를 사용해 다음을 검증합니다.
 
 1. tracking URI 설정
 2. experiment 생성/선택
@@ -99,4 +101,4 @@ full MLflow CI는 외부 서버 없이 임시 로컬 tracking store를 만들고
 5. run ID로 다시 조회
 6. 기록된 값 비교
 
-이 테스트는 Windows, Ubuntu, macOS에서 실행됩니다.
+`mlflow-skinny`만 설치된 통합 AI 환경에서는 full-package 전용 runtime test를 건너뛰고 번역·등록·기존 팩 회귀 테스트를 수행합니다. full runtime test는 Windows, Ubuntu, macOS의 별도 job에서 실행됩니다.
