@@ -33,6 +33,10 @@ jobs:
         with:
           python-version: "3.12.10"
 
+      - name: Install macOS OpenMP runtime
+        if: runner.os == 'macOS'
+        run: brew install libomp
+
       - name: Install KoPy AI libraries
         run: |
           python -m pip install --upgrade pip
