@@ -79,7 +79,7 @@ DATASETS_PACK = LibraryPack(
         # Persistence / export / hub
         "세이브투디스크": "save_to_disk",
         "푸시투허브": "push_to_hub",
-        "투시SV": "to_csv",
+        "투씨에스브이": "to_csv",
         "투제이슨": "to_json",
         "투파케이": "to_parquet",
     },
