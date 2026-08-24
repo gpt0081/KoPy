@@ -1,0 +1,13 @@
+임포트 토치
+프롬 세이프텐서스.torch 임포트 세이브파일, 로드파일
+프롬 세이프텐서스 임포트 세이프오픈
+
+가중치 = 토치.텐서([[1.0, 2.0], [3.0, 4.0]])
+세이브파일({"weight": 가중치}, "model.safetensors", metadata={"purpose": "KoPy example"})
+
+불러온값 = 로드파일("model.safetensors")["weight"]
+프린트(불러온값)
+
+위드 세이프오픈("model.safetensors", framework="pt", device="cpu") 애즈 f:
+    프린트(리스트(f.키즈()))
+    프린트(f.메타데이터())
