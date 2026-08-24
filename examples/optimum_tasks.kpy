@@ -1,0 +1,12 @@
+# KoPy + Hugging Face Optimum
+# 네트워크나 모델 다운로드 없이 Optimum의 작업 관리 API를 확인하는 예제입니다.
+
+프롬 옵티멈.exporters.tasks 임포트 태스크매니저
+
+태스크들 = 태스크매니저.겟올태스크스()
+분류모델클래스 = 태스크매니저.겟모델클래스포태스크("text-classification")
+표준태스크 = 태스크매니저.맵프롬시노님("sequence-classification")
+
+프린트("text-classification 지원:", "text-classification" 인 태스크들)
+프린트("모델 클래스:", 분류모델클래스.__name__)
+프린트("sequence-classification 정규화:", 표준태스크)

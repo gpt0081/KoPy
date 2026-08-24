@@ -11,6 +11,7 @@ from .base import LibraryPack, PackMemberInfo
 from .datasets import DATASETS_PACK
 from .numpy import NUMPY_PACK
 from .onnxruntime import ONNXRUNTIME_PACK
+from .optimum import OPTIMUM_PACK
 from .pandas import PANDAS_PACK
 from .peft import PEFT_PACK
 from .safetensors import SAFETENSORS_PACK
@@ -22,7 +23,7 @@ from .transformers import TRANSFORMERS_PACK
 _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
     NUMPY_PACK, PANDAS_PACK, SKLEARN_PACK, TORCH_PACK, TRANSFORMERS_PACK,
     DATASETS_PACK, TOKENIZERS_PACK, ACCELERATE_PACK, PEFT_PACK,
-    ONNXRUNTIME_PACK, SAFETENSORS_PACK,
+    ONNXRUNTIME_PACK, SAFETENSORS_PACK, OPTIMUM_PACK,
 )
 
 
