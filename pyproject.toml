@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kopy-lang"
-version = "0.5.16"
+version = "0.5.17"
 description = "KoPy: Korean-transliterated Python compatibility and learning layer"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Operating System :: OS Independent"
 ]
-keywords = ["python", "korean", "education", "transliteration", "learning", "numpy", "pandas", "scipy", "scikit-learn", "xgboost", "gradient-boosting", "pytorch", "transformers", "datasets", "tokenizers", "accelerate", "peft", "lora", "onnxruntime", "onnx", "safetensors", "optimum", "sentencepiece", "mlflow", "matplotlib", "visualization", "scientific-computing", "experiment-tracking", "huggingface", "ai"]
+keywords = ["python", "korean", "education", "transliteration", "learning", "numpy", "pandas", "scipy", "scikit-learn", "xgboost", "lightgbm", "gradient-boosting", "pytorch", "transformers", "datasets", "tokenizers", "accelerate", "peft", "lora", "onnxruntime", "onnx", "safetensors", "optimum", "sentencepiece", "mlflow", "matplotlib", "visualization", "scientific-computing", "experiment-tracking", "huggingface", "ai"]
 dependencies = []
 
 [project.urls]
