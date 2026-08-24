@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.15**  
+현재 Core 버전: **0.5.16**  
 개발 기준 Python: **3.12.10**
 
 ## KoPy v0.5 방향: AI 개발
@@ -15,6 +15,7 @@ v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다.
 - **pandas**: DataFrame·정제·집계·파일 입출력
 - **SciPy**: 최적화·통계·희소행렬·선형대수·신호·적분
 - **scikit-learn**: 전처리·모델 학습·평가·파이프라인
+- **XGBoost**: 그래디언트 부스팅 분류·회귀·DMatrix·Booster 학습
 - **PyTorch**: 텐서·자동미분·신경망·최적화
 - **Hugging Face Transformers**: 사전학습 모델·생성·Trainer
 - **Hugging Face Datasets**: 데이터 로딩·전처리·분할
@@ -50,6 +51,22 @@ CPython + 실제 AI 라이브러리
 행렬 = 시이에스알매트릭스([[1, 0], [0, 2]])
 프린트(행렬.토어레이())
 ```
+
+## XGBoost 예시
+
+```kopy
+임포트 넘파이 애즈 np
+임포트 엑스지부스트 애즈 xgb
+
+X = np.어레이([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
+y = np.어레이([0, 0, 0, 1])
+모델 = xgb.엑스지비클래시파이어(n_estimators=20, max_depth=2, tree_method="hist", device="cpu")
+모델.핏(X, y)
+예측 = 모델.프리딕트(X)
+확률 = 모델.프리딕트프로바(X)
+```
+
+XGBoost의 `n_estimators=`, `max_depth=`, `learning_rate=`, `objective=`, `tree_method=`, `device=`, `n_jobs=`, `num_boost_round=` 같은 키워드 인자는 Python 원형을 유지합니다.
 
 ## Matplotlib 예시
 
@@ -213,7 +230,7 @@ y = x.리셰이프(2, 2)
 
 외부 라이브러리 API는 Core 전역 단어표에 섞지 않습니다. 해당 라이브러리를 import한 파일에서만 관련 규칙이 활성화됩니다. 여러 활성 팩이 같은 KoPy 철자를 서로 다른 Python API로 정의하면 KoPy는 임의로 추측하지 않고 모호한 표현을 번역하지 않습니다.
 
-`device=`, `providers=`, `test_size=`, `return_tensors=`, `target_modules=`, `metadata=`, `framework=`, `vocab_size=`, `run_name=`, `method=`, `bounds=`, `axis=`, `dtype=`, `marker=`, `label=`, `figsize=`, `dpi=`, `cmap=` 같은 키워드 인자 이름은 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
+`device=`, `providers=`, `test_size=`, `return_tensors=`, `target_modules=`, `metadata=`, `framework=`, `vocab_size=`, `run_name=`, `method=`, `bounds=`, `axis=`, `dtype=`, `marker=`, `label=`, `figsize=`, `dpi=`, `cmap=`, `n_estimators=`, `max_depth=`, `learning_rate=`, `objective=`, `tree_method=`, `n_jobs=`, `num_boost_round=` 같은 키워드 인자 이름은 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
 
 ## 실제 라이브러리 설치
 
@@ -222,7 +239,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI 스택:
 
 ```powershell
-python -m pip install numpy pandas scipy scikit-learn torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
+python -m pip install numpy pandas scipy scikit-learn xgboost torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
 ```
 
 pandas 3.x 환경에서 MLflow tracking client를 함께 쓰려면:
@@ -243,6 +260,7 @@ python -m pip install "mlflow>=3.15,<3.16"
 kopy packs
 kopy packs numpy
 kopy packs scipy
+kopy packs xgboost
 kopy packs pytorch
 kopy packs transformers
 kopy packs peft
@@ -286,12 +304,14 @@ kopy convert-python example.py
 kopy help 프린트
 kopy help np.어레이
 kopy help 사이파이.옵티마이즈
+kopy help 엑스지부스트.엑스지비클래시파이어
 kopy help 엠엘플로우.스타트런
 kopy explain examples\hello.kpy
 kopy learn examples\hello.kpy
 kopy words
 kopy packs
 kopy packs scipy
+kopy packs xgboost
 kopy packs matplotlib
 kopy version
 ```
@@ -304,6 +324,7 @@ kopy info --json
 kopy diagnose examples\hello.kpy --json
 kopy packs --json
 kopy packs scipy --json
+kopy packs xgboost --json
 kopy packs matplotlib --json
 ```
 
@@ -325,6 +346,7 @@ src/kopy
    │   ├─ pandas.py
    │   ├─ scipy.py
    │   ├─ sklearn.py
+   │   ├─ xgboost.py
    │   ├─ torch.py
    │   ├─ transformers.py
    │   ├─ datasets.py
@@ -347,9 +369,9 @@ src/kopy
 
 ## 다음 AI 확장 후보
 
-- XGBoost
 - TensorBoard
 - Polars
+- LightGBM
 
 ## 버전 정책
 
