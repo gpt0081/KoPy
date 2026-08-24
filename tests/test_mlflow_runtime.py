@@ -1,4 +1,4 @@
-import importlib.util
+from importlib.metadata import PackageNotFoundError, version
 import tempfile
 import unittest
 from pathlib import Path
@@ -6,14 +6,29 @@ from pathlib import Path
 from kopy.translator import translate
 
 
-@unittest.skipUnless(importlib.util.find_spec("mlflow"), "MLflow is not installed")
+def _full_mlflow_installed() -> bool:
+    """Return True only for the full mlflow distribution, not mlflow-skinny."""
+    try:
+        version("mlflow")
+    except PackageNotFoundError:
+        return False
+    return True
+
+
+@unittest.skipUnless(_full_mlflow_installed(), "Full MLflow is not installed")
 class MLflowRuntimeTests(unittest.TestCase):
-    def test_kopy_mlflow_local_tracking_executes(self):
+    def test_kopy_mlflow_sqlite_tracking_executes(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            tracking = (Path(tmpdir) / "mlruns").resolve().as_uri()
+            root = Path(tmpdir).resolve()
+            database = root / "mlflow.db"
+            artifacts = root / "artifacts"
+            tracking = "sqlite:///" + database.as_posix()
+            artifact_uri = artifacts.as_uri()
+
             source = (
                 "임포트 엠엘플로우 애즈 mlf\n"
                 f"mlf.셋트래킹유알아이({tracking!r})\n"
+                f"mlf.크리에이트익스페리먼트('kopy-runtime', artifact_location={artifact_uri!r})\n"
                 "mlf.셋익스페리먼트('kopy-runtime')\n"
                 "위드 mlf.스타트런(run_name='smoke') 애즈 실행:\n"
                 "    mlf.로그파람('learning_rate', 0.01)\n"
@@ -34,6 +49,7 @@ class MLflowRuntimeTests(unittest.TestCase):
             self.assertAlmostEqual(float(namespace["메트릭값"]), 0.25)
             self.assertEqual(namespace["태그값"], "kopy")
             self.assertTrue(namespace["런아이디값"])
+            self.assertTrue(database.exists())
 
 
 if __name__ == "__main__":
