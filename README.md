@@ -2,12 +2,12 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.12**  
+현재 Core 버전: **0.5.13**  
 개발 기준 Python: **3.12.10**
 
 ## KoPy v0.5 방향: AI 개발
 
-v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다. Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. 해당 라이브러리가 import된 파일에서만 API 이름을 KoPy 표현과 Python 표현 사이에서 번역하고, 실제 계산·학습·추론은 원래 Python 라이브러리가 담당합니다.
+v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다. Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. 해당 라이브러리가 import된 파일에서만 API 이름을 KoPy 표현과 Python 표현 사이에서 번역하고, 실제 계산·학습·추론·실험 추적은 원래 Python 라이브러리가 담당합니다.
 
 현재 공식 AI 라이브러리 팩:
 
@@ -24,6 +24,7 @@ v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다.
 - **Safetensors**: AI 텐서의 안전한 저장·로드·부분 읽기
 - **Hugging Face Optimum**: 모델 작업·export 구성·하드웨어 최적화 흐름 연결
 - **SentencePiece**: 서브워드 토크나이저 학습·인코딩·디코딩·어휘 조회
+- **MLflow**: experiment/run 관리·파라미터·메트릭·태그·아티팩트 추적
 
 ```text
 KoPy 코드
@@ -34,6 +35,24 @@ KoPy Core + 활성 Library Pack
    ↓
 CPython + 실제 AI 라이브러리
 ```
+
+## MLflow 예시
+
+```kopy
+임포트 엠엘플로우 애즈 mlf
+
+mlf.셋트래킹유알아이("file:./mlruns")
+mlf.셋익스페리먼트("kopy-demo")
+
+위드 mlf.스타트런(run_name="baseline") 애즈 실행:
+    mlf.로그파람("learning_rate", 0.01)
+    mlf.로그메트릭("loss", 0.25)
+    mlf.셋태그("stage", "baseline")
+    mlf.로그텍스트("KoPy experiment", "notes.txt")
+    프린트(실행.인포.런아이디)
+```
+
+MLflow의 `run_name=`, `experiment_id=`, `artifact_path=`, `step=`, `tags=` 같은 키워드 인자는 Python 원형을 유지합니다.
 
 ## SentencePiece 예시
 
@@ -94,8 +113,6 @@ Optimum의 하드웨어별 backend와 `framework=`, `library_name=`, `exporter=`
 입력값 = np.어레이([[1.0, 2.0]], np.플로트32)
 결과 = 세션.런([출력이름], {입력이름: 입력값})[0]
 ```
-
-표준 Python의 `onnxruntime.InferenceSession`, `get_inputs`, `get_outputs`, `run`으로 번역되며 실제 추론은 ONNX Runtime이 수행합니다.
 
 ## PEFT 예시
 
@@ -164,14 +181,14 @@ y = x.리셰이프(2, 2)
 
 외부 라이브러리 API는 Core 전역 단어표에 섞지 않습니다. 해당 라이브러리를 import한 파일에서만 관련 규칙이 활성화됩니다. 여러 활성 팩이 같은 KoPy 철자를 서로 다른 Python API로 정의하면 KoPy는 임의로 추측하지 않고 모호한 표현을 번역하지 않습니다.
 
-`device=`, `providers=`, `test_size=`, `return_tensors=`, `target_modules=`, `metadata=`, `framework=`, `vocab_size=` 같은 키워드 인자 이름은 아직 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
+`device=`, `providers=`, `test_size=`, `return_tensors=`, `target_modules=`, `metadata=`, `framework=`, `vocab_size=`, `run_name=` 같은 키워드 인자 이름은 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
 
 ## 실제 라이브러리 설치
 
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
 ```powershell
-python -m pip install numpy pandas scikit-learn torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece
+python -m pip install numpy pandas scikit-learn torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece mlflow
 ```
 
 상태 확인:
@@ -186,6 +203,7 @@ kopy packs onnxruntime
 kopy packs safetensors
 kopy packs optimum
 kopy packs sentencepiece
+kopy packs mlflow
 ```
 
 ## Core 예시
@@ -219,18 +237,12 @@ kopy translate examples\hello.kpy
 kopy convert-python example.py
 kopy help 프린트
 kopy help np.어레이
-kopy help 온엑스런타임.인퍼런스세션
-kopy help 세이프텐서스.세이프오픈
-kopy help 옵티멈.태스크매니저
-kopy help 센텐스피스.센텐스피스프로세서
+kopy help 엠엘플로우.스타트런
 kopy explain examples\hello.kpy
 kopy learn examples\hello.kpy
 kopy words
 kopy packs
-kopy packs onnxruntime
-kopy packs safetensors
-kopy packs optimum
-kopy packs sentencepiece
+kopy packs mlflow
 kopy version
 ```
 
@@ -241,17 +253,14 @@ kopy words --json
 kopy info --json
 kopy diagnose examples\hello.kpy --json
 kopy packs --json
-kopy packs onnxruntime --json
-kopy packs safetensors --json
-kopy packs optimum --json
-kopy packs sentencepiece --json
+kopy packs mlflow --json
 ```
 
 VS Code 확장은 별도 Core 단어표나 오타 알고리즘을 유지하지 않고 KoPy Core를 사용합니다.
 
 ## 테스트 철학
 
-KoPy는 Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 GitHub Actions에서 Windows, Linux, macOS 각각에 실제 라이브러리를 설치해 전체 테스트와 런타임 smoke test를 수행합니다. 테스트는 가능한 한 외부 모델·데이터 다운로드 없이 메모리 또는 임시 파일에서 실제 라이브러리 코드를 실행합니다.
+KoPy는 Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 GitHub Actions에서 Windows, Linux, macOS 각각에 실제 라이브러리를 설치해 전체 테스트와 런타임 smoke test를 수행합니다. 테스트는 가능한 한 외부 모델·데이터·서버 다운로드 없이 메모리, 임시 파일 또는 로컬 저장소에서 실제 라이브러리 코드를 실행합니다.
 
 ## 구조
 
@@ -273,7 +282,8 @@ src/kopy
    │   ├─ onnxruntime.py
    │   ├─ safetensors.py
    │   ├─ optimum.py
-   │   └─ sentencepiece.py
+   │   ├─ sentencepiece.py
+   │   └─ mlflow.py
    ├─ translator.py
    ├─ spelling.py
    ├─ education.py
@@ -285,7 +295,6 @@ src/kopy
 ## 다음 AI 확장 후보
 
 - Matplotlib
-- MLflow
 
 ## 버전 정책
 
