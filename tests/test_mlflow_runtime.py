@@ -18,7 +18,10 @@ def _full_mlflow_installed() -> bool:
 @unittest.skipUnless(_full_mlflow_installed(), "Full MLflow is not installed")
 class MLflowRuntimeTests(unittest.TestCase):
     def test_kopy_mlflow_sqlite_tracking_executes(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
+        # MLflow/SQLAlchemy can retain the SQLite file handle briefly on
+        # Windows after the assertions complete. Do not turn that cleanup
+        # timing detail into a false runtime failure.
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             root = Path(tmpdir).resolve()
             database = root / "mlflow.db"
             artifacts = root / "artifacts"
