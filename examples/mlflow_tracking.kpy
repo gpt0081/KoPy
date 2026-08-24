@@ -1,7 +1,7 @@
 임포트 엠엘플로우 애즈 mlf
 
-# 실제 MLflow 저장소 URI는 환경에 맞게 지정합니다.
-mlf.셋트래킹유알아이("file:./mlruns")
+# MLflow 3.15에서는 SQLite 같은 데이터베이스 tracking backend를 권장합니다.
+mlf.셋트래킹유알아이("sqlite:///mlflow.db")
 mlf.셋익스페리먼트("kopy-demo")
 
 위드 mlf.스타트런(run_name="first-run") 애즈 실행:
