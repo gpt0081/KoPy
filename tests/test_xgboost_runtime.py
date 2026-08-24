@@ -1,4 +1,7 @@
 import importlib.util
+import os
+import subprocess
+import sys
 import unittest
 
 from kopy.translator import translate
@@ -20,21 +23,36 @@ class XGBoostRuntimeTests(unittest.TestCase):
             "부스터 = xgb.트레인({\"objective\": \"binary:logistic\", \"max_depth\": 2, \"eta\": 0.5, \"tree_method\": \"hist\", \"device\": \"cpu\", \"nthread\": 1}, 디, num_boost_round=4)\n"
             "부스터예측 = 부스터.프리딕트(디)\n"
         )
-        namespace = {}
-        exec(translate(source).python, namespace, namespace)
+        python_source = translate(source).python + (
+            "\nassert 예측.shape == (6,)\n"
+            "assert 확률.shape == (6, 2)\n"
+            "assert 부스터예측.shape == (6,)\n"
+            "assert np.isfinite(확률).all()\n"
+            "assert np.isfinite(부스터예측).all()\n"
+            "assert np.allclose(확률.sum(axis=1), 1.0, atol=1e-6)\n"
+            "assert 디.num_row() == 6\n"
+            "assert 디.num_col() == 2\n"
+            "print('XGBOOST_RUNTIME_OK')\n"
+        )
 
-        predictions = namespace["예측"]
-        probabilities = namespace["확률"]
-        booster_predictions = namespace["부스터예측"]
+        env = os.environ.copy()
+        env.setdefault("OMP_NUM_THREADS", "1")
+        env.setdefault("OMP_THREAD_LIMIT", "1")
+        completed = subprocess.run(
+            [sys.executable, "-c", python_source],
+            capture_output=True,
+            text=True,
+            env=env,
+            timeout=60,
+            check=False,
+        )
 
-        self.assertEqual(predictions.shape, (6,))
-        self.assertEqual(probabilities.shape, (6, 2))
-        self.assertEqual(booster_predictions.shape, (6,))
-        self.assertTrue(namespace["np"].isfinite(probabilities).all())
-        self.assertTrue(namespace["np"].isfinite(booster_predictions).all())
-        self.assertTrue(namespace["np"].allclose(probabilities.sum(axis=1), 1.0, atol=1e-6))
-        self.assertEqual(namespace["디"].num_row(), 6)
-        self.assertEqual(namespace["디"].num_col(), 2)
+        self.assertEqual(
+            completed.returncode,
+            0,
+            msg=f"stdout:\n{completed.stdout}\nstderr:\n{completed.stderr}",
+        )
+        self.assertIn("XGBOOST_RUNTIME_OK", completed.stdout)
 
 
 if __name__ == "__main__":
