@@ -19,7 +19,7 @@ python -m pip install "optimum>=2.3,<2.4"
 
 태스크들 = 태스크매니저.겟올태스크스()
 모델클래스 = 태스크매니저.겟모델클래스포태스크("text-classification")
-표준태스크 = 태스크매니저.맵프롬시노님("sentiment-analysis")
+표준태스크 = 태스크매니저.맵프롬시노님("sequence-classification")
 ```
 
 표준 Python으로는 다음과 같습니다.
@@ -29,7 +29,7 @@ from optimum.exporters.tasks import TasksManager
 
 tasks = TasksManager.get_all_tasks()
 model_class = TasksManager.get_model_class_for_task("text-classification")
-normalized_task = TasksManager.map_from_synonym("sentiment-analysis")
+normalized_task = TasksManager.map_from_synonym("sequence-classification")
 ```
 
 ## 지원 범위
