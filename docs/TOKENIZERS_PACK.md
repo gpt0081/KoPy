@@ -4,7 +4,7 @@ KoPy v0.5.6 adds a namespace-scoped pack for `tokenizers`.
 
 The pack translates API names only after `tokenizers` / `토크나이저스` is imported. The real Hugging Face Tokenizers library still performs tokenization, vocabulary training and encoding.
 
-Targeted stable line: Tokenizers 0.23.x.
+CI baseline: Tokenizers 0.22.2. Although Tokenizers 0.23.1 is the newest standalone stable release, Transformers 5.15.x currently requires `tokenizers<=0.23.0`, so KoPy tests the latest stable line that is compatible with the rest of its pinned AI stack.
 
 ## Example
 
