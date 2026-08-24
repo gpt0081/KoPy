@@ -9,6 +9,7 @@ from typing import Any
 from .accelerate import ACCELERATE_PACK
 from .base import LibraryPack, PackMemberInfo
 from .datasets import DATASETS_PACK
+from .lightgbm import LIGHTGBM_PACK
 from .matplotlib import MATPLOTLIB_PACK
 from .mlflow import MLFLOW_PACK
 from .numpy import NUMPY_PACK
@@ -29,7 +30,7 @@ _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
     NUMPY_PACK, PANDAS_PACK, SKLEARN_PACK, TORCH_PACK, TRANSFORMERS_PACK,
     DATASETS_PACK, TOKENIZERS_PACK, ACCELERATE_PACK, PEFT_PACK,
     ONNXRUNTIME_PACK, SAFETENSORS_PACK, OPTIMUM_PACK, SENTENCEPIECE_PACK,
-    MLFLOW_PACK, MATPLOTLIB_PACK, SCIPY_PACK, XGBOOST_PACK,
+    MLFLOW_PACK, MATPLOTLIB_PACK, SCIPY_PACK, XGBOOST_PACK, LIGHTGBM_PACK,
 )
 
 
