@@ -6,6 +6,7 @@ import importlib.util
 from dataclasses import asdict
 from typing import Any
 
+from .accelerate import ACCELERATE_PACK
 from .base import LibraryPack, PackMemberInfo
 from .datasets import DATASETS_PACK
 from .numpy import NUMPY_PACK
@@ -24,6 +25,7 @@ _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
     TRANSFORMERS_PACK,
     DATASETS_PACK,
     TOKENIZERS_PACK,
+    ACCELERATE_PACK,
 )
 
 
@@ -73,7 +75,7 @@ def packs_payload() -> dict[str, Any]:
 
 
 def resolve_pack_member(term: str) -> tuple[LibraryPack, PackMemberInfo] | None:
-    """Resolve terms such as np.어레이, 토치.텐서, 트랜스포머스.오토모델 or 토크나이저스.토크나이저."""
+    """Resolve namespace-scoped terms such as np.어레이 or 액셀러레이트.액셀러레이터."""
     if "." not in term:
         return None
     prefix, member = term.split(".", 1)
