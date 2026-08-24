@@ -5,8 +5,8 @@
 
 태스크들 = 태스크매니저.겟올태스크스()
 분류모델클래스 = 태스크매니저.겟모델클래스포태스크("text-classification")
-표준태스크 = 태스크매니저.맵프롬시노님("sentiment-analysis")
+표준태스크 = 태스크매니저.맵프롬시노님("sequence-classification")
 
 프린트("text-classification 지원:", "text-classification" 인 태스크들)
 프린트("모델 클래스:", 분류모델클래스.__name__)
-프린트("sentiment-analysis 정규화:", 표준태스크)
+프린트("sequence-classification 정규화:", 표준태스크)
