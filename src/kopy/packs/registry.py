@@ -13,23 +13,16 @@ from .numpy import NUMPY_PACK
 from .onnxruntime import ONNXRUNTIME_PACK
 from .pandas import PANDAS_PACK
 from .peft import PEFT_PACK
+from .safetensors import SAFETENSORS_PACK
 from .sklearn import SKLEARN_PACK
 from .tokenizers import TOKENIZERS_PACK
 from .torch import TORCH_PACK
 from .transformers import TRANSFORMERS_PACK
 
-
 _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
-    NUMPY_PACK,
-    PANDAS_PACK,
-    SKLEARN_PACK,
-    TORCH_PACK,
-    TRANSFORMERS_PACK,
-    DATASETS_PACK,
-    TOKENIZERS_PACK,
-    ACCELERATE_PACK,
-    PEFT_PACK,
-    ONNXRUNTIME_PACK,
+    NUMPY_PACK, PANDAS_PACK, SKLEARN_PACK, TORCH_PACK, TRANSFORMERS_PACK,
+    DATASETS_PACK, TOKENIZERS_PACK, ACCELERATE_PACK, PEFT_PACK,
+    ONNXRUNTIME_PACK, SAFETENSORS_PACK,
 )
 
 
@@ -61,25 +54,10 @@ def installed(pack: LibraryPack) -> bool:
 
 
 def packs_payload() -> dict[str, Any]:
-    return {
-        "schema": 1,
-        "packs": [
-            {
-                "name": pack.name,
-                "module": pack.module,
-                "kopy_module": pack.kopy_module,
-                "preferred_aliases": list(pack.preferred_aliases),
-                "description": pack.description,
-                "installed": installed(pack),
-                "member_count": len(pack.members),
-            }
-            for pack in _BUILTIN_PACKS
-        ],
-    }
+    return {"schema": 1, "packs": [{"name": pack.name, "module": pack.module, "kopy_module": pack.kopy_module, "preferred_aliases": list(pack.preferred_aliases), "description": pack.description, "installed": installed(pack), "member_count": len(pack.members)} for pack in _BUILTIN_PACKS]}
 
 
 def resolve_pack_member(term: str) -> tuple[LibraryPack, PackMemberInfo] | None:
-    """Resolve namespace-scoped terms such as np.어레이 or 온엑스런타임.인퍼런스세션."""
     if "." not in term:
         return None
     prefix, member = term.split(".", 1)
@@ -96,15 +74,6 @@ def pack_members_payload(pack: LibraryPack) -> dict[str, Any]:
     members = []
     for kopy, python_name in pack.members.items():
         info = pack.member_info(kopy)
-        if info is None:
-            continue
-        members.append(asdict(info))
-    return {
-        "schema": 1,
-        "name": pack.name,
-        "module": pack.module,
-        "kopy_module": pack.kopy_module,
-        "description": pack.description,
-        "installed": installed(pack),
-        "members": members,
-    }
+        if info is not None:
+            members.append(asdict(info))
+    return {"schema": 1, "name": pack.name, "module": pack.module, "kopy_module": pack.kopy_module, "description": pack.description, "installed": installed(pack), "members": members}
