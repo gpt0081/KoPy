@@ -33,7 +33,7 @@ class OnnxRuntimePackTests(unittest.TestCase):
         self.assertIn("ort.세션옵션스()", result)
         self.assertIn("ort.그래프옵티마이제이션레벨.인에이블올", result)
         self.assertIn("ort.인퍼런스세션", result)
-        self.assertIn("session.런(None", result)
+        self.assertIn("session.런(논", result)
 
 
 if __name__ == "__main__":
