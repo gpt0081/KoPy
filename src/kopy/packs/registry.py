@@ -11,6 +11,7 @@ from .datasets import DATASETS_PACK
 from .numpy import NUMPY_PACK
 from .pandas import PANDAS_PACK
 from .sklearn import SKLEARN_PACK
+from .tokenizers import TOKENIZERS_PACK
 from .torch import TORCH_PACK
 from .transformers import TRANSFORMERS_PACK
 
@@ -22,6 +23,7 @@ _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
     TORCH_PACK,
     TRANSFORMERS_PACK,
     DATASETS_PACK,
+    TOKENIZERS_PACK,
 )
 
 
@@ -71,7 +73,7 @@ def packs_payload() -> dict[str, Any]:
 
 
 def resolve_pack_member(term: str) -> tuple[LibraryPack, PackMemberInfo] | None:
-    """Resolve terms such as np.어레이, 토치.텐서, 트랜스포머스.오토모델 or 데이터셋츠.데이터셋."""
+    """Resolve terms such as np.어레이, 토치.텐서, 트랜스포머스.오토모델 or 토크나이저스.토크나이저."""
     if "." not in term:
         return None
     prefix, member = term.split(".", 1)

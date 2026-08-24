@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.5**  
+현재 Core 버전: **0.5.6**  
 개발 기준 Python: **3.12.10**
 
 ## KoPy v0.5 방향: AI 개발
@@ -17,6 +17,7 @@ v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다.
 - **PyTorch**: 텐서·자동미분·신경망·최적화
 - **Hugging Face Transformers**: 토크나이저·사전학습 모델·생성·Trainer
 - **Hugging Face Datasets**: 데이터 로딩·전처리·분할·프레임워크 포맷 변환
+- **Hugging Face Tokenizers**: 고속 토큰화·Encoding·어휘 모델·trainer
 
 Library Pack은 실제 외부 라이브러리를 다시 구현하지 않습니다. 라이브러리가 import된 파일에서만 해당 API 이름을 KoPy 표현과 Python 표현 사이에서 번역하고, 실제 계산과 모델 실행은 원래 Python 라이브러리가 담당합니다.
 
@@ -27,8 +28,25 @@ KoPy Core + 활성 Library Pack
    ↓
 표준 Python 코드
    ↓
-CPython + NumPy / pandas / scikit-learn / PyTorch / Transformers / Datasets
+CPython + NumPy / pandas / scikit-learn / PyTorch / Transformers / Datasets / Tokenizers
 ```
+
+## Tokenizers 예시
+
+```kopy
+프롬 토크나이저스 임포트 토크나이저
+프롬 토크나이저스.models 임포트 워드피스
+프롬 토크나이저스.pre_tokenizers 임포트 화이트스페이스
+
+모델 = 워드피스(vocab={"[UNK]": 0, "hello": 1, "world": 2}, unk_token="[UNK]")
+토크 = 토크나이저(모델)
+토크.pre_tokenizer = 화이트스페이스()
+결과 = 토크.엔코드("hello world")
+프린트(결과.토큰스)
+프린트(결과.아이디스)
+```
+
+표준 Python의 `Tokenizer`, `WordPiece`, `Whitespace`, `encode`, `tokens`, `ids`로 번역되며 실제 토큰화는 Hugging Face Tokenizers가 수행합니다.
 
 ## Datasets 예시
 
@@ -57,7 +75,7 @@ CPython + NumPy / pandas / scikit-learn / PyTorch / Transformers / Datasets
 텍스트 = 토크나이저.배치디코드(출력)
 ```
 
-`return_tensors`, `input_ids`, `model`, `tokenizer`, `device`, `test_size`, `seed`, `batched` 같은 키워드 인자 이름은 아직 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
+`return_tensors`, `input_ids`, `model`, `tokenizer`, `device`, `test_size`, `seed`, `batched`, `vocab`, `unk_token` 같은 키워드 인자 이름은 아직 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
 
 ## NumPy 예시
 
@@ -80,7 +98,7 @@ y = x.리셰이프(2, 2)
 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
 ```powershell
-python -m pip install numpy pandas scikit-learn torch transformers datasets
+python -m pip install numpy pandas scikit-learn torch transformers datasets tokenizers
 ```
 
 상태 확인:
@@ -93,6 +111,7 @@ kopy packs scikit-learn
 kopy packs pytorch
 kopy packs transformers
 kopy packs datasets
+kopy packs tokenizers
 ```
 
 ## Core 예시
@@ -131,11 +150,12 @@ kopy help 프린트
 kopy help np.어레이
 kopy help 트랜스포머스.오토토크나이저
 kopy help 데이터셋츠.로드데이터셋
+kopy help 토크나이저스.엔코드
 kopy explain examples\hello.kpy
 kopy learn examples\hello.kpy
 kopy words
 kopy packs
-kopy packs datasets
+kopy packs tokenizers
 kopy spelling status
 kopy version
 ```
@@ -159,14 +179,14 @@ kopy words --json
 kopy info --json
 kopy diagnose examples\hello.kpy --json
 kopy packs --json
-kopy packs datasets --json
+kopy packs tokenizers --json
 ```
 
 VS Code 확장은 별도 Core 단어표나 오타 알고리즘을 유지하지 않고 KoPy Core를 사용합니다.
 
 ## 테스트 철학
 
-KoPy는 Python 호환성을 가장 중요한 기준으로 둡니다. AI 라이브러리 팩은 GitHub Actions에서 Windows, Linux, macOS 각각에 실제 라이브러리를 설치해 전체 테스트와 런타임 smoke test를 수행합니다. Transformers와 Datasets 테스트는 외부 모델·데이터 다운로드 없이 로컬 메모리에서 실제 라이브러리 코드를 실행합니다.
+KoPy는 Python 호환성을 가장 중요한 기준으로 둡니다. AI 라이브러리 팩은 GitHub Actions에서 Windows, Linux, macOS 각각에 실제 라이브러리를 설치해 전체 테스트와 런타임 smoke test를 수행합니다. Transformers, Datasets, Tokenizers 테스트는 외부 모델·데이터 다운로드 없이 로컬 메모리에서 실제 라이브러리 코드를 실행합니다.
 
 ## 구조
 
@@ -181,7 +201,8 @@ src/kopy
    │   ├─ sklearn.py
    │   ├─ torch.py
    │   ├─ transformers.py
-   │   └─ datasets.py
+   │   ├─ datasets.py
+   │   └─ tokenizers.py
    ├─ translator.py     KoPy ↔ Python + 활성 팩 변환
    ├─ spelling.py
    ├─ education.py
@@ -193,7 +214,7 @@ src/kopy
 ## 다음 AI 확장 후보
 
 - Matplotlib
-- tokenizers / sentencepiece 계열
+- SentencePiece
 - ONNX Runtime
 - Accelerate / PEFT
 
