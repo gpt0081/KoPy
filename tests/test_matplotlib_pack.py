@@ -56,7 +56,7 @@ class MatplotlibPackTests(unittest.TestCase):
             "ax.set_title('demo')\n"
         )
         kopy = to_kopy(source).kopy
-        self.assertIn("임포트 맷플롯립.pyplot 애즈 plt", kopy)
+        self.assertIn("임포트 맷플롯립.파이플롯 애즈 plt", kopy)
         self.assertIn("plt.서브플롯츠()", kopy)
         self.assertIn("ax.플롯([1, 2], [3, 4])", kopy)
         self.assertIn("ax.셋타이틀('demo')", kopy)
