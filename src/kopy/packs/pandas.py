@@ -165,7 +165,7 @@ PANDAS_PACK = LibraryPack(
             'import pandas as pd\nsummary = table.groupby("label").mean()',
         ),
         "get_dummies": (
-            '임포트 판다스 애즈 pd\n특징 = pd.겟더미즈(표, 컬럼즈=["category"])',
+            '임포트 판다스 애즈 pd\n특징 = pd.겟더미즈(표, columns=["category"])',
             'import pandas as pd\nfeatures = pd.get_dummies(table, columns=["category"])',
         ),
     },
