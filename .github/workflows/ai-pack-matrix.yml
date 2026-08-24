@@ -16,8 +16,8 @@ on:
       - ".github/workflows/ai-pack-matrix.yml"
 
 jobs:
-  ai-data-packs:
-    name: NumPy 2.5 + pandas 3.0 + scikit-learn 1.9 / ${{ matrix.os }}
+  ai-packs:
+    name: NumPy 2.5 + pandas 3.0 + scikit-learn 1.9 + PyTorch 2.13 / ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -33,10 +33,10 @@ jobs:
         with:
           python-version: "3.12.10"
 
-      - name: Install KoPy AI data libraries
+      - name: Install KoPy AI libraries
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . "numpy>=2.5,<2.6" "pandas>=3.0,<3.1" "scikit-learn>=1.9,<1.10"
+          python -m pip install -e . "numpy>=2.5,<2.6" "pandas>=3.0,<3.1" "scikit-learn>=1.9,<1.10" "torch>=2.13,<2.14"
 
       - name: Run KoPy test suite
         run: python -m unittest discover -s tests -v
@@ -52,3 +52,6 @@ jobs:
 
       - name: Verify scikit-learn pack details
         run: kopy packs scikit-learn
+
+      - name: Verify PyTorch pack details
+        run: kopy packs pytorch
