@@ -40,7 +40,7 @@ class SciPyPackTests(unittest.TestCase):
         )
         kopy = to_kopy(source).kopy
         self.assertIn("프롬 사이파이.옵티마이즈 임포트 미니마이즈", kopy)
-        self.assertIn("미니마이즈(lambda x: (x[0] - 2) ** 2, [0.0])", kopy)
+        self.assertIn("미니마이즈(람다 x: (x[0] - 2) ** 2, [0.0])", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("사이파이.미니마이즈")
