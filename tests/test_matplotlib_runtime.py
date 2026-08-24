@@ -1,3 +1,4 @@
+import importlib.util
 import tempfile
 import unittest
 from pathlib import Path
@@ -5,6 +6,7 @@ from pathlib import Path
 from kopy.translator import translate
 
 
+@unittest.skipUnless(importlib.util.find_spec("matplotlib"), "Matplotlib is not installed")
 class MatplotlibRuntimeTests(unittest.TestCase):
     def test_real_matplotlib_plot_and_save(self):
         import matplotlib
