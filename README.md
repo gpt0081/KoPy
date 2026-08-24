@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.13**  
+현재 Core 버전: **0.5.15**  
 개발 기준 Python: **3.12.10**
 
 ## KoPy v0.5 방향: AI 개발
@@ -13,6 +13,7 @@ v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다.
 
 - **NumPy**: 배열·통계·선형대수·난수
 - **pandas**: DataFrame·정제·집계·파일 입출력
+- **SciPy**: 최적화·통계·희소행렬·선형대수·신호·적분
 - **scikit-learn**: 전처리·모델 학습·평가·파이프라인
 - **PyTorch**: 텐서·자동미분·신경망·최적화
 - **Hugging Face Transformers**: 사전학습 모델·생성·Trainer
@@ -25,6 +26,7 @@ v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다.
 - **Hugging Face Optimum**: 모델 작업·export 구성·하드웨어 최적화 흐름 연결
 - **SentencePiece**: 서브워드 토크나이저 학습·인코딩·디코딩·어휘 조회
 - **MLflow**: experiment/run 관리·파라미터·메트릭·태그·아티팩트 추적
+- **Matplotlib**: 학습 곡선·분포·이미지·일반 데이터 시각화
 
 ```text
 KoPy 코드
@@ -34,6 +36,34 @@ KoPy Core + 활성 Library Pack
 표준 Python 코드
    ↓
 CPython + 실제 AI 라이브러리
+```
+
+## SciPy 예시
+
+```kopy
+프롬 사이파이.optimize 임포트 미니마이즈
+프롬 사이파이.stats 임포트 지스코어
+프롬 사이파이.sparse 임포트 시이에스알매트릭스
+
+결과 = 미니마이즈(lambda x: (x[0] - 3.0) ** 2, [0.0])
+점수 = 지스코어([1.0, 2.0, 3.0])
+행렬 = 시이에스알매트릭스([[1, 0], [0, 2]])
+프린트(행렬.토어레이())
+```
+
+## Matplotlib 예시
+
+```kopy
+임포트 맷플롯립.pyplot 애즈 plt
+
+피겨, 축 = plt.서브플롯츠()
+축.플롯([1, 2, 3], [1.0, 0.7, 0.5], marker="o", label="loss")
+축.셋타이틀("Training loss")
+축.셋엑스라벨("Epoch")
+축.셋와이라벨("Loss")
+축.레전드()
+피겨.세이브피그("loss.png")
+plt.클로즈(피겨)
 ```
 
 ## MLflow 예시
@@ -183,7 +213,7 @@ y = x.리셰이프(2, 2)
 
 외부 라이브러리 API는 Core 전역 단어표에 섞지 않습니다. 해당 라이브러리를 import한 파일에서만 관련 규칙이 활성화됩니다. 여러 활성 팩이 같은 KoPy 철자를 서로 다른 Python API로 정의하면 KoPy는 임의로 추측하지 않고 모호한 표현을 번역하지 않습니다.
 
-`device=`, `providers=`, `test_size=`, `return_tensors=`, `target_modules=`, `metadata=`, `framework=`, `vocab_size=`, `run_name=` 같은 키워드 인자 이름은 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
+`device=`, `providers=`, `test_size=`, `return_tensors=`, `target_modules=`, `metadata=`, `framework=`, `vocab_size=`, `run_name=`, `method=`, `bounds=`, `axis=`, `dtype=`, `marker=`, `label=`, `figsize=`, `dpi=`, `cmap=` 같은 키워드 인자 이름은 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
 
 ## 실제 라이브러리 설치
 
@@ -192,7 +222,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI 스택:
 
 ```powershell
-python -m pip install numpy pandas scikit-learn torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece
+python -m pip install numpy pandas scipy scikit-learn torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
 ```
 
 pandas 3.x 환경에서 MLflow tracking client를 함께 쓰려면:
@@ -212,6 +242,7 @@ python -m pip install "mlflow>=3.15,<3.16"
 ```powershell
 kopy packs
 kopy packs numpy
+kopy packs scipy
 kopy packs pytorch
 kopy packs transformers
 kopy packs peft
@@ -220,6 +251,7 @@ kopy packs safetensors
 kopy packs optimum
 kopy packs sentencepiece
 kopy packs mlflow
+kopy packs matplotlib
 ```
 
 ## Core 예시
@@ -253,12 +285,14 @@ kopy translate examples\hello.kpy
 kopy convert-python example.py
 kopy help 프린트
 kopy help np.어레이
+kopy help 사이파이.옵티마이즈
 kopy help 엠엘플로우.스타트런
 kopy explain examples\hello.kpy
 kopy learn examples\hello.kpy
 kopy words
 kopy packs
-kopy packs mlflow
+kopy packs scipy
+kopy packs matplotlib
 kopy version
 ```
 
@@ -269,7 +303,8 @@ kopy words --json
 kopy info --json
 kopy diagnose examples\hello.kpy --json
 kopy packs --json
-kopy packs mlflow --json
+kopy packs scipy --json
+kopy packs matplotlib --json
 ```
 
 VS Code 확장은 별도 Core 단어표나 오타 알고리즘을 유지하지 않고 KoPy Core를 사용합니다.
@@ -288,6 +323,7 @@ src/kopy
    │   ├─ registry.py
    │   ├─ numpy.py
    │   ├─ pandas.py
+   │   ├─ scipy.py
    │   ├─ sklearn.py
    │   ├─ torch.py
    │   ├─ transformers.py
@@ -299,7 +335,8 @@ src/kopy
    │   ├─ safetensors.py
    │   ├─ optimum.py
    │   ├─ sentencepiece.py
-   │   └─ mlflow.py
+   │   ├─ mlflow.py
+   │   └─ matplotlib.py
    ├─ translator.py
    ├─ spelling.py
    ├─ education.py
@@ -310,7 +347,9 @@ src/kopy
 
 ## 다음 AI 확장 후보
 
-- Matplotlib
+- XGBoost
+- TensorBoard
+- Polars
 
 ## 버전 정책
 
