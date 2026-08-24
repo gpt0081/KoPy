@@ -7,6 +7,7 @@ from dataclasses import asdict
 from typing import Any
 
 from .base import LibraryPack, PackMemberInfo
+from .datasets import DATASETS_PACK
 from .numpy import NUMPY_PACK
 from .pandas import PANDAS_PACK
 from .sklearn import SKLEARN_PACK
@@ -20,6 +21,7 @@ _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
     SKLEARN_PACK,
     TORCH_PACK,
     TRANSFORMERS_PACK,
+    DATASETS_PACK,
 )
 
 
@@ -69,7 +71,7 @@ def packs_payload() -> dict[str, Any]:
 
 
 def resolve_pack_member(term: str) -> tuple[LibraryPack, PackMemberInfo] | None:
-    """Resolve terms such as np.어레이, pd.데이터프레임, 토치.텐서 or 트랜스포머스.오토모델."""
+    """Resolve terms such as np.어레이, 토치.텐서, 트랜스포머스.오토모델 or 데이터셋츠.데이터셋."""
     if "." not in term:
         return None
     prefix, member = term.split(".", 1)
