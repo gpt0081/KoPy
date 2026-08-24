@@ -41,7 +41,7 @@ CPython + 실제 AI 라이브러리
 ```kopy
 임포트 엠엘플로우 애즈 mlf
 
-mlf.셋트래킹유알아이("file:./mlruns")
+mlf.셋트래킹유알아이("sqlite:///mlflow.db")
 mlf.셋익스페리먼트("kopy-demo")
 
 위드 mlf.스타트런(run_name="baseline") 애즈 실행:
@@ -51,6 +51,8 @@ mlf.셋익스페리먼트("kopy-demo")
     mlf.로그텍스트("KoPy experiment", "notes.txt")
     프린트(실행.인포.런아이디)
 ```
+
+MLflow 3.15 full package는 현재 `pandas<3`을 요구하므로 pandas 3.x를 고정한 환경과 직접 함께 설치할 수 없습니다. pandas 3.x 환경에서는 `mlflow-skinny>=3.15,<3.16`을 사용해 tracking client를 함께 쓸 수 있고, full MLflow가 필요하면 별도 가상환경을 권장합니다. MLflow 3.15의 파일시스템 tracking backend는 maintenance mode이므로 예제와 CI는 SQLite backend를 사용합니다.
 
 MLflow의 `run_name=`, `experiment_id=`, `artifact_path=`, `step=`, `tags=` 같은 키워드 인자는 Python 원형을 유지합니다.
 
@@ -187,8 +189,22 @@ y = x.리셰이프(2, 2)
 
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
+기본 AI 스택:
+
 ```powershell
-python -m pip install numpy pandas scikit-learn torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece mlflow
+python -m pip install numpy pandas scikit-learn torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece
+```
+
+pandas 3.x 환경에서 MLflow tracking client를 함께 쓰려면:
+
+```powershell
+python -m pip install "mlflow-skinny>=3.15,<3.16"
+```
+
+full MLflow 3.15는 현재 `pandas<3` 제약 때문에 별도 가상환경 설치를 권장합니다.
+
+```powershell
+python -m pip install "mlflow>=3.15,<3.16"
 ```
 
 상태 확인:
@@ -260,7 +276,7 @@ VS Code 확장은 별도 Core 단어표나 오타 알고리즘을 유지하지 �
 
 ## 테스트 철학
 
-KoPy는 Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 GitHub Actions에서 Windows, Linux, macOS 각각에 실제 라이브러리를 설치해 전체 테스트와 런타임 smoke test를 수행합니다. 테스트는 가능한 한 외부 모델·데이터·서버 다운로드 없이 메모리, 임시 파일 또는 로컬 저장소에서 실제 라이브러리 코드를 실행합니다.
+KoPy는 Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 GitHub Actions에서 Windows, Linux, macOS 각각에 실제 라이브러리를 설치해 전체 테스트와 런타임 smoke test를 수행합니다. 테스트는 가능한 한 외부 모델·데이터·서버 다운로드 없이 메모리, 임시 파일, SQLite 또는 로컬 저장소에서 실제 라이브러리 코드를 실행합니다.
 
 ## 구조
 
