@@ -11,6 +11,7 @@ from .numpy import NUMPY_PACK
 from .pandas import PANDAS_PACK
 from .sklearn import SKLEARN_PACK
 from .torch import TORCH_PACK
+from .transformers import TRANSFORMERS_PACK
 
 
 _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
@@ -18,6 +19,7 @@ _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
     PANDAS_PACK,
     SKLEARN_PACK,
     TORCH_PACK,
+    TRANSFORMERS_PACK,
 )
 
 
@@ -67,7 +69,7 @@ def packs_payload() -> dict[str, Any]:
 
 
 def resolve_pack_member(term: str) -> tuple[LibraryPack, PackMemberInfo] | None:
-    """Resolve terms such as np.어레이, pd.데이터프레임, 사이킷런.fit or 토치.텐서."""
+    """Resolve terms such as np.어레이, pd.데이터프레임, 토치.텐서 or 트랜스포머스.오토모델."""
     if "." not in term:
         return None
     prefix, member = term.split(".", 1)
