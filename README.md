@@ -41,7 +41,7 @@ CPython + 실제 AI 라이브러리
 
 태스크들 = 태스크매니저.겟올태스크스()
 모델클래스 = 태스크매니저.겟모델클래스포태스크("text-classification")
-표준태스크 = 태스크매니저.맵프롬시노님("sentiment-analysis")
+표준태스크 = 태스크매니저.맵프롬시노님("sequence-classification")
 ```
 
 Optimum의 하드웨어별 backend와 `framework=`, `library_name=`, `exporter=` 같은 키워드 인자는 Python 원형을 유지합니다.
