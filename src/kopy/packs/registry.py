@@ -10,6 +10,7 @@ from .accelerate import ACCELERATE_PACK
 from .base import LibraryPack, PackMemberInfo
 from .datasets import DATASETS_PACK
 from .numpy import NUMPY_PACK
+from .onnxruntime import ONNXRUNTIME_PACK
 from .pandas import PANDAS_PACK
 from .peft import PEFT_PACK
 from .sklearn import SKLEARN_PACK
@@ -28,6 +29,7 @@ _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
     TOKENIZERS_PACK,
     ACCELERATE_PACK,
     PEFT_PACK,
+    ONNXRUNTIME_PACK,
 )
 
 
@@ -77,7 +79,7 @@ def packs_payload() -> dict[str, Any]:
 
 
 def resolve_pack_member(term: str) -> tuple[LibraryPack, PackMemberInfo] | None:
-    """Resolve namespace-scoped terms such as np.어레이 or 페프트.로라컨피그."""
+    """Resolve namespace-scoped terms such as np.어레이 or 온엑스런타임.인퍼런스세션."""
     if "." not in term:
         return None
     prefix, member = term.split(".", 1)
