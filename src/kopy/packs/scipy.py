@@ -40,7 +40,7 @@ SCIPY_PACK = LibraryPack(
         "브렌트큐": "brentq",
 
         # scipy.stats
-        "지노름": "zscore",
+        "지스코어": "zscore",
         "피어슨알": "pearsonr",
         "스피어맨알": "spearmanr",
         "티테스트인드": "ttest_ind",
@@ -71,7 +71,6 @@ SCIPY_PACK = LibraryPack(
         "에스브이디": "svd",
         "큐알": "qr",
         "촐레스키": "cholesky",
-        "노름값": "norm",
 
         # scipy.signal / integrate
         "파인드피크스": "find_peaks",
@@ -83,7 +82,7 @@ SCIPY_PACK = LibraryPack(
         "쿼드": "quad",
         "솔브아이브이피": "solve_ivp",
 
-        # Common result/helper APIs
+        # Common sparse-object APIs
         "토덴스": "todense",
         "토어레이": "toarray",
         "겟엔엔지": "getnnz",
@@ -105,7 +104,7 @@ SCIPY_PACK = LibraryPack(
             "from scipy.optimize import minimize\n결과 = minimize(lambda x: (x[0] - 3) ** 2, [0.0])",
         ),
         "zscore": (
-            "프롬 사이파이.stats 임포트 지노름\n표준화 = 지노름([1.0, 2.0, 3.0])",
+            "프롬 사이파이.stats 임포트 지스코어\n표준화 = 지스코어([1.0, 2.0, 3.0])",
             "from scipy.stats import zscore\n표준화 = zscore([1.0, 2.0, 3.0])",
         ),
         "csr_matrix": (
