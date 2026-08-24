@@ -24,8 +24,8 @@ class SafetensorsRuntimeTests(unittest.TestCase):
                 "    이름들 = 리스트(f.키즈())\n"
                 "    메타 = f.메타데이터()\n"
                 "    직접값 = f.겟텐서('weight')\n"
-                "같음1 = 토치.올클로즈(원본, 불러온값)\n"
-                "같음2 = 토치.올클로즈(원본, 직접값)\n"
+                "같음1 = 토치.allclose(원본, 불러온값)\n"
+                "같음2 = 토치.allclose(원본, 직접값)\n"
             )
             namespace: dict[str, object] = {}
             exec(compile(translate(source).python, "<kopy-safetensors-smoke>", "exec"), namespace)
