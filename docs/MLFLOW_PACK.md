@@ -6,9 +6,22 @@ KoPy 팩은 MLflow를 다시 구현하지 않습니다. KoPy 소스를 표준 Py
 
 ## 설치
 
+전체 MLflow 기능이 필요하면:
+
 ```powershell
 python -m pip install "mlflow>=3.15,<3.16"
 ```
+
+KoPy의 최신 pandas 3.x 환경과 같은 가상환경에서 기본 tracking client만 함께 쓰려면:
+
+```powershell
+python -m pip install "mlflow-skinny>=3.15,<3.16"
+```
+
+MLflow 3.15.1 정식 배포판은 현재 `pandas<3`을 요구합니다. 따라서 pandas 3.x를 고정한 환경에는 full `mlflow`와 pandas 3.x를 동시에 설치할 수 없습니다. KoPy 팩 자체의 문제가 아니라 upstream 패키지 의존성입니다. KoPy CI는 이를 숨기지 않고 두 환경을 따로 검증합니다.
+
+- 전체 AI stack + pandas 3.x: `mlflow-skinny`로 namespace/tracking 호환성 검증
+- full MLflow 3.15: 별도 Windows/Ubuntu/macOS job에서 실제 local tracking 검증
 
 확인:
 
@@ -77,7 +90,7 @@ with mlf.start_run(run_name="baseline") as run:
 
 ## 런타임 테스트
 
-CI는 외부 MLflow 서버 없이 임시 로컬 tracking store를 만들고 실제 MLflow를 사용해 다음을 검증합니다.
+full MLflow CI는 외부 서버 없이 임시 로컬 tracking store를 만들고 실제 MLflow를 사용해 다음을 검증합니다.
 
 1. tracking URI 설정
 2. experiment 생성/선택
