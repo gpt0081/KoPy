@@ -1,0 +1,89 @@
+"""Official Hugging Face Accelerate library pack for KoPy."""
+
+from __future__ import annotations
+
+from .base import LibraryPack
+
+
+ACCELERATE_PACK = LibraryPack(
+    name="accelerate",
+    module="accelerate",
+    kopy_module="액셀러레이트",
+    description="PyTorch 학습·추론을 CPU/GPU/분산 환경에 이식하는 Hugging Face Accelerate API 팩",
+    members={
+        # Core runtime
+        "액셀러레이터": "Accelerator",
+        "액셀러레이터스테이트": "AcceleratorState",
+        "파셜스테이트": "PartialState",
+        "디스트리뷰티드타입": "DistributedType",
+        "데이터로더컨피규레이션": "DataLoaderConfiguration",
+        "프로젝트컨피규레이션": "ProjectConfiguration",
+        "그래디언트어큐뮬레이션플러그인": "GradientAccumulationPlugin",
+        "딥스피드플러그인": "DeepSpeedPlugin",
+        "풀리샤디드데이터패럴렐플러그인": "FullyShardedDataParallelPlugin",
+
+        # Accelerator methods / properties
+        "프리페어": "prepare",
+        "프리페어모델": "prepare_model",
+        "프리페어옵티마이저": "prepare_optimizer",
+        "프리페어데이터로더": "prepare_data_loader",
+        "백워드": "backward",
+        "어큐뮬레이트": "accumulate",
+        "오토캐스트": "autocast",
+        "개더": "gather",
+        "개더포메트릭스": "gather_for_metrics",
+        "패드어크로스프로세시즈": "pad_across_processes",
+        "언랩모델": "unwrap_model",
+        "클립그래드노름": "clip_grad_norm_",
+        "클립그래드밸류": "clip_grad_value_",
+        "웨이트포에브리원": "wait_for_everyone",
+        "메인프로세스퍼스트": "main_process_first",
+        "로컬메인프로세스퍼스트": "local_main_process_first",
+        "세이브": "save",
+        "세이브스테이트": "save_state",
+        "로드스테이트": "load_state",
+        "스킵퍼스트배치스": "skip_first_batches",
+        "프린트": "print",
+        "로그": "log",
+        "엔드트레이닝": "end_training",
+        "디바이스": "device",
+        "프로세스인덱스": "process_index",
+        "로컬프로세스인덱스": "local_process_index",
+        "넘프로세시즈": "num_processes",
+        "이즈메인프로세스": "is_main_process",
+        "이즈로컬메인프로세스": "is_local_main_process",
+        "믹스트프리시전": "mixed_precision",
+        "싱크그래디언츠": "sync_gradients",
+
+        # Common top-level helpers
+        "셋시드": "set_seed",
+        "이니트엠프티웨이츠": "init_empty_weights",
+        "인퍼오토디바이스맵": "infer_auto_device_map",
+        "로드체크포인트앤디스패치": "load_checkpoint_and_dispatch",
+    },
+    member_descriptions={
+        "Accelerator": "학습 루프를 장치·혼합정밀도·분산 환경에 맞게 준비하는 핵심 객체입니다.",
+        "prepare": "모델, 옵티마이저, 데이터로더 등을 현재 실행 환경에 맞게 준비합니다.",
+        "backward": "Accelerate가 관리하는 정밀도·분산 설정을 존중해 역전파를 수행합니다.",
+        "accumulate": "gradient accumulation 구간을 관리하는 컨텍스트입니다.",
+        "gather_for_metrics": "여러 프로세스의 값을 metric 계산용으로 모읍니다.",
+        "unwrap_model": "Accelerate 래퍼를 벗긴 원래 모델을 반환합니다.",
+        "wait_for_everyone": "모든 프로세스가 같은 지점에 도달할 때까지 동기화합니다.",
+        "save_state": "모델·옵티마이저·스케줄러 등 학습 상태를 저장합니다.",
+        "set_seed": "재현성을 위해 Python/NumPy/PyTorch 난수 시드를 함께 설정합니다.",
+    },
+    examples={
+        "Accelerator": (
+            "프롬 액셀러레이트 임포트 액셀러레이터\n가속기 = 액셀러레이터()",
+            "from accelerate import Accelerator\naccelerator = Accelerator()",
+        ),
+        "prepare": (
+            "모델, 옵티마이저 = 가속기.프리페어(모델, 옵티마이저)",
+            "model, optimizer = accelerator.prepare(model, optimizer)",
+        ),
+        "backward": (
+            "가속기.백워드(손실)",
+            "accelerator.backward(loss)",
+        ),
+    },
+)
