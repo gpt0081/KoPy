@@ -11,7 +11,7 @@ class OptimumRuntimeTests(unittest.TestCase):
             "프롬 옵티멈.exporters.tasks 임포트 태스크매니저\n"
             "태스크들 = 태스크매니저.겟올태스크스()\n"
             "모델클래스 = 태스크매니저.겟모델클래스포태스크('text-classification')\n"
-            "정규화 = 태스크매니저.맵프롬시노님('sentiment-analysis')\n"
+            "정규화 = 태스크매니저.맵프롬시노님('sequence-classification')\n"
         )
         namespace: dict[str, object] = {}
         python_source = translate(source).python
