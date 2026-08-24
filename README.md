@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.11**  
+현재 Core 버전: **0.5.12**  
 개발 기준 Python: **3.12.10**
 
 ## KoPy v0.5 방향: AI 개발
@@ -23,6 +23,7 @@ v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다.
 - **ONNX Runtime**: ONNX 모델 로딩·실행 공급자·최적화·추론
 - **Safetensors**: AI 텐서의 안전한 저장·로드·부분 읽기
 - **Hugging Face Optimum**: 모델 작업·export 구성·하드웨어 최적화 흐름 연결
+- **SentencePiece**: 서브워드 토크나이저 학습·인코딩·디코딩·어휘 조회
 
 ```text
 KoPy 코드
@@ -33,6 +34,25 @@ KoPy Core + 활성 Library Pack
    ↓
 CPython + 실제 AI 라이브러리
 ```
+
+## SentencePiece 예시
+
+```kopy
+임포트 센텐스피스 애즈 spm
+
+spm.센텐스피스트레이너.트레인(
+    input="corpus.txt",
+    model_prefix="m",
+    vocab_size=8000,
+)
+
+토크나이저 = spm.센텐스피스프로세서(model_file="m.model")
+피시들 = 토크나이저.엔코드("안녕하세요", out_type=str)
+아이디들 = 토크나이저.엔코드("안녕하세요", out_type=int)
+복원 = 토크나이저.디코드(아이디들)
+```
+
+SentencePiece의 `input=`, `model_prefix=`, `vocab_size=`, `model_file=`, `out_type=` 같은 키워드 인자는 Python 원형을 유지합니다.
 
 ## Optimum 예시
 
@@ -144,14 +164,14 @@ y = x.리셰이프(2, 2)
 
 외부 라이브러리 API는 Core 전역 단어표에 섞지 않습니다. 해당 라이브러리를 import한 파일에서만 관련 규칙이 활성화됩니다. 여러 활성 팩이 같은 KoPy 철자를 서로 다른 Python API로 정의하면 KoPy는 임의로 추측하지 않고 모호한 표현을 번역하지 않습니다.
 
-`device=`, `providers=`, `test_size=`, `return_tensors=`, `target_modules=`, `metadata=`, `framework=` 같은 키워드 인자 이름은 아직 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
+`device=`, `providers=`, `test_size=`, `return_tensors=`, `target_modules=`, `metadata=`, `framework=`, `vocab_size=` 같은 키워드 인자 이름은 아직 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
 
 ## 실제 라이브러리 설치
 
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
 ```powershell
-python -m pip install numpy pandas scikit-learn torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum
+python -m pip install numpy pandas scikit-learn torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece
 ```
 
 상태 확인:
@@ -165,6 +185,7 @@ kopy packs peft
 kopy packs onnxruntime
 kopy packs safetensors
 kopy packs optimum
+kopy packs sentencepiece
 ```
 
 ## Core 예시
@@ -201,6 +222,7 @@ kopy help np.어레이
 kopy help 온엑스런타임.인퍼런스세션
 kopy help 세이프텐서스.세이프오픈
 kopy help 옵티멈.태스크매니저
+kopy help 센텐스피스.센텐스피스프로세서
 kopy explain examples\hello.kpy
 kopy learn examples\hello.kpy
 kopy words
@@ -208,6 +230,7 @@ kopy packs
 kopy packs onnxruntime
 kopy packs safetensors
 kopy packs optimum
+kopy packs sentencepiece
 kopy version
 ```
 
@@ -221,13 +244,14 @@ kopy packs --json
 kopy packs onnxruntime --json
 kopy packs safetensors --json
 kopy packs optimum --json
+kopy packs sentencepiece --json
 ```
 
 VS Code 확장은 별도 Core 단어표나 오타 알고리즘을 유지하지 않고 KoPy Core를 사용합니다.
 
 ## 테스트 철학
 
-KoPy는 Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 GitHub Actions에서 Windows, Linux, macOS 각각에 실제 라이브러리를 설치해 전체 테스트와 런타임 smoke test를 수행합니다. 테스트는 가능한 한 외부 모델·데이터 다운로드 없이 메모리에서 실제 라이브러리 코드를 실행합니다.
+KoPy는 Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 GitHub Actions에서 Windows, Linux, macOS 각각에 실제 라이브러리를 설치해 전체 테스트와 런타임 smoke test를 수행합니다. 테스트는 가능한 한 외부 모델·데이터 다운로드 없이 메모리 또는 임시 파일에서 실제 라이브러리 코드를 실행합니다.
 
 ## 구조
 
@@ -248,7 +272,8 @@ src/kopy
    │   ├─ peft.py
    │   ├─ onnxruntime.py
    │   ├─ safetensors.py
-   │   └─ optimum.py
+   │   ├─ optimum.py
+   │   └─ sentencepiece.py
    ├─ translator.py
    ├─ spelling.py
    ├─ education.py
@@ -260,7 +285,6 @@ src/kopy
 ## 다음 AI 확장 후보
 
 - Matplotlib
-- SentencePiece
 - MLflow
 
 ## 버전 정책
