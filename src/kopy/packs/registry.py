@@ -9,9 +9,10 @@ from typing import Any
 from .base import LibraryPack, PackMemberInfo
 from .numpy import NUMPY_PACK
 from .pandas import PANDAS_PACK
+from .sklearn import SKLEARN_PACK
 
 
-_BUILTIN_PACKS: tuple[LibraryPack, ...] = (NUMPY_PACK, PANDAS_PACK)
+_BUILTIN_PACKS: tuple[LibraryPack, ...] = (NUMPY_PACK, PANDAS_PACK, SKLEARN_PACK)
 
 
 def all_packs() -> tuple[LibraryPack, ...]:
@@ -60,7 +61,7 @@ def packs_payload() -> dict[str, Any]:
 
 
 def resolve_pack_member(term: str) -> tuple[LibraryPack, PackMemberInfo] | None:
-    """Resolve terms such as np.어레이, pd.데이터프레임 or pandas.DataFrame."""
+    """Resolve terms such as np.어레이, pd.데이터프레임 or 사이킷런.fit."""
     if "." not in term:
         return None
     prefix, member = term.split(".", 1)
