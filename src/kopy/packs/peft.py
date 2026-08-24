@@ -52,7 +52,7 @@ PEFT_PACK = LibraryPack(
         "겟베이스모델": "get_base_model",
         "액티브어댑터": "active_adapter",
         "액티브어댑터스": "active_adapters",
-        "페프트컨피그": "peft_config",
+        "페프트컨피그맵": "peft_config",
         "베이스모델": "base_model",
         "푸시투허브": "push_to_hub",
     },
