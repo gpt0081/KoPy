@@ -16,8 +16,8 @@ on:
       - ".github/workflows/ai-pack-matrix.yml"
 
 jobs:
-  numpy-pack:
-    name: NumPy 2.5 / ${{ matrix.os }}
+  ai-data-packs:
+    name: NumPy 2.5 + pandas 3.0 / ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -33,10 +33,10 @@ jobs:
         with:
           python-version: "3.12.10"
 
-      - name: Install KoPy and NumPy
+      - name: Install KoPy AI data libraries
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . "numpy>=2.5,<2.6"
+          python -m pip install -e . "numpy>=2.5,<2.6" "pandas>=3.0,<3.1"
 
       - name: Run KoPy test suite
         run: python -m unittest discover -s tests -v
@@ -46,3 +46,6 @@ jobs:
 
       - name: Verify NumPy pack details
         run: kopy packs numpy
+
+      - name: Verify pandas pack details
+        run: kopy packs pandas
