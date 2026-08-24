@@ -2,27 +2,60 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.0**  
+현재 Core 버전: **0.5.4**  
 개발 기준 Python: **3.12.10**
 
 ## KoPy v0.5 방향: AI 개발
 
 v0.5부터 KoPy는 Python Core를 넘어 AI 개발 생태계로 확장합니다.
 
-- 라이브러리별 단어를 Core `words.py`에 섞지 않는 **Library Pack** 구조
-- 첫 공식 팩: **NumPy**
-- 라이브러리가 import된 파일에서만 해당 팩 활성화
-- 모듈 alias, 함수, 속성, ndarray 메서드 스타일 번역
-- Python → KoPy 역변환에도 라이브러리 팩 적용
-- `kopy packs`로 팩과 실제 Python 라이브러리 설치 상태 확인
-- `kopy help np.어레이`처럼 외부 API 학습 도움말 제공
-- Windows / Linux / macOS에서 실제 NumPy를 설치해 자동 실행 테스트
+현재 공식 AI 라이브러리 팩:
 
-다음 공식 AI 팩 후보는 pandas → Matplotlib → scikit-learn → PyTorch → Hugging Face Transformers/Datasets 순입니다.
+- **NumPy**: 배열·통계·선형대수·난수
+- **pandas**: DataFrame·정제·집계·파일 입출력
+- **scikit-learn**: 전처리·모델 학습·평가·파이프라인
+- **PyTorch**: 텐서·자동미분·신경망·최적화
+- **Hugging Face Transformers**: 토크나이저·사전학습 모델·생성·Trainer
+
+Library Pack은 실제 외부 라이브러리를 다시 구현하지 않습니다. 라이브러리가 import된 파일에서만 해당 API 이름을 KoPy 표현과 Python 표현 사이에서 번역하고, 실제 계산과 모델 실행은 원래 Python 라이브러리가 담당합니다.
+
+```text
+KoPy 코드
+   ↓
+KoPy Core + 활성 Library Pack
+   ↓
+표준 Python 코드
+   ↓
+CPython + NumPy / pandas / scikit-learn / PyTorch / Transformers
+```
+
+## Transformers 예시
+
+```kopy
+프롬 트랜스포머스 임포트 오토토크나이저, 오토모델포코절엘엠
+
+토크나이저 = 오토토크나이저.프롬프리트레인드("local-model")
+모델 = 오토모델포코절엘엠.프롬프리트레인드("local-model")
+입력값 = 토크나이저("안녕하세요", return_tensors="pt")
+출력 = 모델.제너레이트(**입력값)
+텍스트 = 토크나이저.배치디코드(출력)
+```
+
+이는 다음 표준 Python 흐름으로 변환됩니다.
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+tokenizer = AutoTokenizer.from_pretrained("local-model")
+model = AutoModelForCausalLM.from_pretrained("local-model")
+inputs = tokenizer("안녕하세요", return_tensors="pt")
+outputs = model.generate(**inputs)
+text = tokenizer.batch_decode(outputs)
+```
+
+`return_tensors`, `input_ids`, `model`, `tokenizer`, `device` 같은 키워드 인자 이름은 아직 Python 원형을 유지합니다. 라이브러리마다 같은 이름을 다른 의미로 사용할 수 있으므로 전역 치환하지 않습니다.
 
 ## NumPy 예시
-
-KoPy:
 
 ```kopy
 임포트 넘파이 애즈 np
@@ -36,24 +69,21 @@ y = x.리셰이프(2, 2)
 프린트(크기)
 ```
 
-KoPy는 이를 다음 Python으로 변환합니다.
+## 라이브러리 팩의 충돌 방지 원칙
 
-```python
-import numpy as np
+외부 라이브러리 API는 Core 전역 단어표에 섞지 않습니다.
 
-x = np.array([1, 2, 3, 4], np.float32)
-y = x.reshape(2, 2)
-평균 = np.mean(y)
-크기 = np.linalg.norm(y)
-
-print(평균)
-print(크기)
+```kopy
+임포트 넘파이 애즈 np
+x = np.어레이([1, 2, 3])
 ```
 
-NumPy 팩은 KoPy에 포함되지만 **실제 NumPy 라이브러리 자체를 대신 설치하지는 않습니다.** 실행하려면 일반 Python과 동일하게 NumPy가 설치되어 있어야 합니다.
+처럼 해당 라이브러리를 import한 파일에서만 관련 규칙이 활성화됩니다. 여러 활성 팩이 같은 KoPy 철자를 서로 다른 Python API로 정의하면 KoPy는 임의로 추측하지 않고 모호한 표현을 번역하지 않습니다.
+
+실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
 ```powershell
-python -m pip install numpy
+python -m pip install numpy pandas scikit-learn torch transformers
 ```
 
 상태 확인:
@@ -61,20 +91,11 @@ python -m pip install numpy
 ```powershell
 kopy packs
 kopy packs numpy
+kopy packs pandas
+kopy packs scikit-learn
+kopy packs pytorch
+kopy packs transformers
 ```
-
-## 라이브러리 팩의 충돌 방지 원칙
-
-외부 라이브러리 API는 전역 단어로 등록하지 않습니다.
-
-```kopy
-임포트 넘파이 애즈 np
-x = np.어레이([1, 2, 3])
-```
-
-처럼 NumPy를 import한 파일에서만 `어레이 → array`, `리셰이프 → reshape` 같은 NumPy 팩 규칙이 활성화됩니다.
-
-앞으로 여러 팩이 동시에 활성화되고 같은 KoPy 철자가 서로 다른 Python API를 가리키면 KoPy는 임의로 추측하지 않습니다. 모호한 표현은 번역하지 않아 사용자가 명시적으로 구분하도록 합니다.
 
 ## Core 예시
 
@@ -105,7 +126,7 @@ git pull
 kopy version
 ```
 
-`pyproject.toml`의 설치 메타데이터나 console script가 바뀐 경우에는 다음을 다시 실행합니다.
+`pyproject.toml`의 설치 메타데이터나 console script가 바뀐 경우에는 다시 설치합니다.
 
 ```powershell
 python -m pip install -e .
@@ -120,41 +141,15 @@ kopy translate examples\hello.kpy
 kopy to-kopy example.py
 kopy convert-python example.py
 kopy help 프린트
-kopy help print
 kopy help np.어레이
+kopy help 트랜스포머스.오토토크나이저
 kopy explain examples\hello.kpy
 kopy learn examples\hello.kpy
 kopy words
 kopy packs
-kopy packs numpy
-kopy spelling on
-kopy spelling off
+kopy packs transformers
 kopy spelling status
 kopy version
-```
-
-## 도움말
-
-Core 단어:
-
-```powershell
-kopy help 프린트
-kopy help print
-```
-
-라이브러리 API:
-
-```powershell
-kopy help np.어레이
-kopy help numpy.array
-```
-
-NumPy 예:
-
-```text
-np.어레이 → Python numpy.array
-팩: numpy
-설명: Python 시퀀스에서 NumPy 배열을 만듭니다.
 ```
 
 ## Python → KoPy 변환
@@ -164,24 +159,17 @@ Core뿐 아니라 활성 라이브러리 팩도 역변환합니다.
 Python:
 
 ```python
-import numpy as np
-x = np.arange(6).reshape(2, 3)
-average = np.mean(x)
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("local-model")
 ```
 
 KoPy:
 
 ```kopy
-임포트 넘파이 애즈 np
-x = np.에이레인지(6).리셰이프(2, 3)
-average = np.미인(x)
-```
+프롬 트랜스포머스 임포트 오토토크나이저
 
-명령:
-
-```powershell
-kopy convert-python example.py
-kopy to-kopy example.py -o example.kpy
+tokenizer = 오토토크나이저.프롬프리트레인드("local-model")
 ```
 
 문자열과 주석은 변환하지 않습니다.
@@ -194,8 +182,6 @@ kopy explain examples\hello.kpy
 
 KoPy는 코드를 실행하지 않고 AST를 읽어 변수 저장, 조건문, 반복문, 함수 정의, 호출 등의 흐름을 한국어로 설명합니다. LLM이 필요하지 않으며 오프라인입니다.
 
-흔한 Python 문법 오류에는 콜론, 들여쓰기, 괄호 등을 중심으로 학습 힌트를 덧붙입니다.
-
 ## 편집기용 Core API
 
 ```powershell
@@ -203,7 +189,7 @@ kopy words --json
 kopy info --json
 kopy diagnose examples\hello.kpy --json
 kopy packs --json
-kopy packs numpy --json
+kopy packs transformers --json
 ```
 
 VS Code 확장은 별도 Core 단어표나 오타 알고리즘을 유지하지 않고 KoPy Core를 사용합니다.
@@ -218,38 +204,37 @@ Python 소스 → CPython
 Python 소스 → KoPy 변환 → 다시 Python 변환 → CPython
 ```
 
-두 경로의 결과를 비교하는 Golden 테스트를 유지합니다.
-
-v0.5부터 AI 라이브러리 팩은 별도의 GitHub Actions 매트릭스에서도 검증합니다.
-
-```text
-Windows ┐
-Linux   ├→ KoPy 설치 → NumPy 2.5 설치 → 전체 테스트 → 실제 NumPy KoPy 코드 실행
-macOS   ┘
-```
+AI 라이브러리 팩은 GitHub Actions에서 Windows, Linux, macOS 각각에 실제 라이브러리를 설치해 전체 테스트와 런타임 smoke test를 수행합니다. Transformers 테스트는 네트워크 모델 다운로드에 의존하지 않고 작은 BERT 모델을 로컬 메모리에서 직접 구성합니다.
 
 ## 구조
 
 ```text
 src/kopy
-   ├─ words.py       Python Core 단어·설명·예제
+   ├─ words.py          Python Core 단어·설명·예제
    ├─ packs/
-   │   ├─ base.py    라이브러리 팩 규격
-   │   ├─ registry.py 팩 등록부
-   │   └─ numpy.py   첫 공식 AI 팩
-   ├─ translator.py  KoPy ↔ Python + 활성 팩 변환
-   ├─ spelling.py    오타 판정
-   ├─ education.py   교육형 오류·코드 설명
-   ├─ runtime.py     실행
-   ├─ editor.py      IDE용 Core API
-   └─ cli.py         사용자 CLI
+   │   ├─ base.py       라이브러리 팩 규격
+   │   ├─ registry.py   팩 등록부
+   │   ├─ numpy.py
+   │   ├─ pandas.py
+   │   ├─ sklearn.py
+   │   ├─ torch.py
+   │   └─ transformers.py
+   ├─ translator.py     KoPy ↔ Python + 활성 팩 변환
+   ├─ spelling.py
+   ├─ education.py
+   ├─ runtime.py
+   ├─ editor.py
+   └─ cli.py
 ```
 
-## 버전 정책
+## 다음 AI 확장 후보
 
-Python 새 버전이 발표되어도 KoPy가 자동 추종하지는 않습니다. 문법, 호환성, 보안, 교육적 가치를 검토한 뒤 기준 버전을 올립니다.
+- Hugging Face Datasets
+- Matplotlib
+- tokenizers / sentencepiece 계열
+- ONNX Runtime
 
-현재 기준은 Python 3.12.10입니다.
+Python 새 버전이 발표되어도 KoPy가 자동 추종하지는 않습니다. 문법, 호환성, 보안, 교육적 가치를 검토한 뒤 기준 버전을 올립니다. 현재 기준은 Python 3.12.10입니다.
 
 ## 라이선스
 
