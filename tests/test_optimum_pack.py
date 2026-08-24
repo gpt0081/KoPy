@@ -21,6 +21,17 @@ class OptimumPackTests(unittest.TestCase):
         self.assertIn("TasksManager.get_all_tasks()", python_source)
         self.assertIn("TasksManager.get_model_class_for_task('text-classification')", python_source)
 
+    def test_synonym_method_translation(self):
+        source = (
+            "프롬 옵티멈.exporters.tasks 임포트 태스크매니저\n"
+            "표준태스크 = 태스크매니저.맵프롬시노님('sequence-classification')\n"
+        )
+        python_source = translate(source).python
+        self.assertIn(
+            "TasksManager.map_from_synonym('sequence-classification')",
+            python_source,
+        )
+
     def test_unimported_optimum_word_is_not_global(self):
         source = "태스크들 = 태스크매니저.겟올태스크스()\n"
         self.assertEqual(translate(source).python, source)
