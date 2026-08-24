@@ -17,7 +17,7 @@ on:
 
 jobs:
   ai-packs:
-    name: NumPy 2.5 + pandas 3.0 + scikit-learn 1.9 + PyTorch 2.13 + Transformers 5.15 + Datasets 4.8 + Tokenizers 0.22 + Accelerate 1.14 + PEFT 0.20 + ONNX Runtime 1.28 + Safetensors 0.8 + Optimum 2.3 + SentencePiece 0.2.2 + MLflow 3.15 / ${{ matrix.os }}
+    name: NumPy 2.5 + pandas 3.0 + sklearn 1.9 + PyTorch 2.13 + HF stack + ONNX + MLflow Skinny 3.15 / ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -36,7 +36,7 @@ jobs:
       - name: Install KoPy AI libraries
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . "numpy>=2.5,<2.6" "pandas>=3.0,<3.1" "scikit-learn>=1.9,<1.10" "torch>=2.13,<2.14" "transformers>=5.15,<5.16" "datasets>=4.8,<4.9" "tokenizers>=0.22.2,<0.23" "accelerate>=1.14,<1.15" "peft>=0.20,<0.21" "onnxruntime>=1.28,<1.29" "onnx>=1.22,<1.23" "safetensors>=0.8,<0.9" "optimum>=2.3,<2.4" "sentencepiece>=0.2.2,<0.3" "mlflow>=3.15,<3.16"
+          python -m pip install -e . "numpy>=2.5,<2.6" "pandas>=3.0,<3.1" "scikit-learn>=1.9,<1.10" "torch>=2.13,<2.14" "transformers>=5.15,<5.16" "datasets>=4.8,<4.9" "tokenizers>=0.22.2,<0.23" "accelerate>=1.14,<1.15" "peft>=0.20,<0.21" "onnxruntime>=1.28,<1.29" "onnx>=1.22,<1.23" "safetensors>=0.8,<0.9" "optimum>=2.3,<2.4" "sentencepiece>=0.2.2,<0.3" "mlflow-skinny>=3.15,<3.16"
 
       - name: Run KoPy test suite
         run: python -m unittest discover -s tests -v
@@ -70,5 +70,33 @@ jobs:
         run: kopy packs optimum
       - name: Verify SentencePiece pack details
         run: kopy packs sentencepiece
+      - name: Verify MLflow pack details
+        run: kopy packs mlflow
+
+  mlflow-full:
+    name: Full MLflow 3.15 runtime / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.10"
+
+      - name: Install full MLflow
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "mlflow>=3.15,<3.16"
+
+      - name: Run MLflow pack tests
+        run: python -m unittest tests.test_mlflow_pack tests.test_mlflow_runtime -v
+
       - name: Verify MLflow pack details
         run: kopy packs mlflow
