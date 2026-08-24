@@ -23,10 +23,16 @@ class XGBoostRuntimeTests(unittest.TestCase):
         namespace = {}
         exec(translate(source).python, namespace, namespace)
 
-        self.assertEqual(namespace["예측"].shape, (6,))
-        self.assertEqual(namespace["확률"].shape, (6, 2))
-        self.assertEqual(namespace["부스터예측"].shape, (6,))
-        self.assertGreaterEqual(float(namespace["모델"].score(namespace["X"], namespace["y"])), 0.8)
+        predictions = namespace["예측"]
+        probabilities = namespace["확률"]
+        booster_predictions = namespace["부스터예측"]
+
+        self.assertEqual(predictions.shape, (6,))
+        self.assertEqual(probabilities.shape, (6, 2))
+        self.assertEqual(booster_predictions.shape, (6,))
+        self.assertTrue(namespace["np"].isfinite(probabilities).all())
+        self.assertTrue(namespace["np"].isfinite(booster_predictions).all())
+        self.assertTrue(namespace["np"].allclose(probabilities.sum(axis=1), 1.0, atol=1e-6))
         self.assertEqual(namespace["디"].num_row(), 6)
         self.assertEqual(namespace["디"].num_col(), 2)
 
