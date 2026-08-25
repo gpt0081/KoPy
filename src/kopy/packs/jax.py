@@ -20,7 +20,7 @@ JAX_PACK = LibraryPack(
         # Top-level transformations / runtime
         "그라드": "grad",
         "밸류앤드그라드": "value_and_grad",
-        "잇": "jit",
+        "짓": "jit",
         "브이맵": "vmap",
         "피맵": "pmap",
         "쟉포워드": "jacfwd",
@@ -35,14 +35,10 @@ JAX_PACK = LibraryPack(
         "체크포인트": "checkpoint",
         "리맷": "remat",
 
-        # Namespaces
-        "넘파이": "numpy",
-        "랜덤": "random",
-        "엔엔": "nn",
-        "랙스": "lax",
-        "트리": "tree",
-
-        # jax.numpy common array APIs
+        # jax.numpy common array APIs. Dotted submodule names themselves stay
+        # Python-native (jax.numpy, jax.random, jax.nn, jax.lax, jax.tree)
+        # because the current translator deliberately treats import paths as
+        # compatibility-sensitive structure rather than ordinary attributes.
         "어레이": "array",
         "애즈어레이": "asarray",
         "제로즈": "zeros",
@@ -121,7 +117,7 @@ JAX_PACK = LibraryPack(
             "import jax\nfrom jax import grad\nf = lambda x: x ** 2\ndf = grad(f)",
         ),
         "jit": (
-            "임포트 잭스\ncompiled = 잭스.잇(lambda x: x * 2)",
+            "임포트 잭스\ncompiled = 잭스.짓(lambda x: x * 2)",
             "import jax\ncompiled = jax.jit(lambda x: x * 2)",
         ),
         "array": (
@@ -129,7 +125,7 @@ JAX_PACK = LibraryPack(
             "import jax.numpy as jnp\nX = jnp.array([[1.0, 2.0], [3.0, 4.0]])",
         ),
         "key": (
-            "임포트 잭스\nkey = 잭스.랜덤.키(42)",
+            "임포트 잭스\nkey = 잭스.random.키(42)",
             "import jax\nkey = jax.random.key(42)",
         ),
     },
