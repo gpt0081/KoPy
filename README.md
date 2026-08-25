@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.22**  
+현재 Core 버전: **0.5.23**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **23개**입니다.
+현재 공식 Library Pack은 **24개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -43,6 +43,7 @@ CPython + 실제 Python 라이브러리
 | PyTorch | 텐서·자동미분·신경망·최적화 |
 | TorchVision | 이미지 변환·비전 모델·데이터셋·detection ops |
 | timm | 이미지 모델 탐색·생성·특징 추출·학습 유틸리티 |
+| Kornia | 미분가능 이미지 처리·증강·필터·기하·비전 메트릭 |
 | JAX | 자동미분·JIT·벡터화·가속 배열 계산 |
 | OpenCV | 이미지·영상 전처리·엣지·윤곽선·DNN·비디오 I/O |
 | Transformers | 사전학습 모델·생성·Trainer |
@@ -119,6 +120,25 @@ x = 토치.랜드엔((1, 3, 224, 224))
 ```
 
 `model`, `x`, `features`, `pretrained=`, `num_classes=`는 실제 Python/timm 코드에서 자주 보는 관례라 원문 형태를 유지합니다. 자세한 범위는 [`docs/TIMM_PACK.md`](docs/TIMM_PACK.md)를 참고하세요.
+
+## Kornia 예시
+
+```kopy
+임포트 토치
+임포트 코르니아 애즈 K
+
+image = 토치.랜드((1, 3, 64, 64))
+gray = K.컬러.알지비투그레이스케일(image)
+blurred = K.필터즈.가우시안블러투디(gray, (5, 5), (1.5, 1.5))
+
+augment = K.어그멘테이션.어그멘테이션시퀀셜(
+    K.어그멘테이션.랜덤호리즌털플립(p=0.5),
+    K.어그멘테이션.랜덤로테이션(degrees=10.0, p=0.5),
+)
+augmented = augment(blurred)
+```
+
+`image`, `gray`, `blurred`, `augment`, `augmented`, `degrees=`, `p=`는 실제 Python/Kornia 코드를 읽는 데 도움이 되므로 원문 형태를 유지합니다. 자세한 범위는 [`docs/KORNIA_PACK.md`](docs/KORNIA_PACK.md)를 참고하세요.
 
 ## 다른 팩 예시
 
@@ -201,6 +221,7 @@ shape= static_argnums= static_argnames= in_axes= out_axes= has_aux=
 interpolation= scalefactor= size= swapRB= crop= thickness=
 mean= std= inplace= weights= progress= num_classes= download= root= train=
 pretrained= in_chans= features_only= out_indices= checkpoint_path= drop_rate= global_pool=
+degrees= p= same_on_batch= keepdim= align_corners= padding_mode=
 ```
 
 ## 실제 라이브러리 설치
@@ -210,7 +231,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm jax opencv-python transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia jax opencv-python transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -250,6 +271,7 @@ kopy packs xgboost
 kopy packs lightgbm
 kopy packs torchvision
 kopy packs timm
+kopy packs kornia
 kopy packs jax
 kopy packs opencv
 kopy packs matplotlib
@@ -265,6 +287,7 @@ kopy diagnose examples\hello.kpy --json
 kopy packs --json
 kopy packs torchvision --json
 kopy packs timm --json
+kopy packs kornia --json
 ```
 
 ## Core 예시
@@ -292,6 +315,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/PYTORCH_PACK.md`](docs/PYTORCH_PACK.md)
 - [`docs/TORCHVISION_PACK.md`](docs/TORCHVISION_PACK.md)
 - [`docs/TIMM_PACK.md`](docs/TIMM_PACK.md)
+- [`docs/KORNIA_PACK.md`](docs/KORNIA_PACK.md)
 - [`docs/JAX_PACK.md`](docs/JAX_PACK.md)
 - [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
@@ -320,6 +344,7 @@ src/kopy
    │   ├─ torch.py
    │   ├─ torchvision.py
    │   ├─ timm.py
+   │   ├─ kornia.py
    │   ├─ jax.py
    │   ├─ opencv.py
    │   ├─ transformers.py
@@ -344,7 +369,7 @@ src/kopy
 ## 다음 AI 확장 후보
 
 - TensorBoard
-- Kornia
+- PyTorch Lightning
 
 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
 
