@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.24**  
+현재 Core 버전: **0.5.25**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **25개**입니다.
+현재 공식 Library Pack은 **26개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -56,6 +56,7 @@ CPython + 실제 Python 라이브러리
 | Safetensors | AI 텐서의 안전한 저장·로드·부분 읽기 |
 | Optimum | 모델 작업·export 구성·하드웨어 최적화 흐름 연결 |
 | SentencePiece | 서브워드 토크나이저 학습·인코딩·디코딩·어휘 조회 |
+| Optuna | Study/Trial 기반 하이퍼파라미터 탐색·최적화 |
 | MLflow | experiment/run·파라미터·메트릭·태그·아티팩트 추적 |
 | Matplotlib | 학습 곡선·분포·이미지·일반 데이터 시각화 |
 
@@ -185,6 +186,25 @@ model.핏(X_train, y_train)
 predictions = model.프리딕트(X_test)
 ```
 
+### Optuna
+
+```kopy
+임포트 옵튜나
+
+
+def objective(trial):
+    learning_rate = trial.서제스트플로트("learning_rate", 1e-4, 1e-1, log=True)
+    max_depth = trial.서제스트인트("max_depth", 2, 8)
+    return (learning_rate - 0.01) ** 2 + (max_depth - 4) ** 2
+
+
+study = 옵튜나.크리에이트스터디(direction="minimize")
+study.옵티마이즈(objective, n_trials=20)
+프린트(study.베스트파람스)
+```
+
+`study`, `trial`, `objective`, `learning_rate`, `max_depth` 같은 실제 Python/Optuna 관례와 사용자 정의 파라미터 이름은 학습 연결성을 위해 원문 형태를 유지합니다. 자세한 범위는 [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)를 참고하세요.
+
 ### JAX
 
 ```kopy
@@ -237,6 +257,8 @@ interpolation= scalefactor= size= swapRB= crop= thickness=
 mean= std= inplace= weights= progress= num_classes= download= root= train=
 pretrained= in_chans= features_only= out_indices= checkpoint_path= drop_rate= global_pool=
 degrees= p= same_on_batch= keepdim= align_corners= padding_mode=
+direction= study_name= storage= sampler= pruner= n_trials= timeout=
+callbacks= catch= gc_after_trial= show_progress_bar= log=
 ```
 
 Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 KoPy 전역 번역 대상이 아닙니다.
@@ -248,7 +270,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia einops jax opencv-python transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia einops jax opencv-python transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -292,6 +314,7 @@ kopy packs kornia
 kopy packs einops
 kopy packs jax
 kopy packs opencv
+kopy packs optuna
 kopy packs matplotlib
 kopy version
 ```
@@ -307,6 +330,7 @@ kopy packs torchvision --json
 kopy packs timm --json
 kopy packs kornia --json
 kopy packs einops --json
+kopy packs optuna --json
 ```
 
 ## Core 예시
@@ -339,6 +363,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/JAX_PACK.md`](docs/JAX_PACK.md)
 - [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
+- [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)
 - [`docs/MLFLOW_PACK.md`](docs/MLFLOW_PACK.md)
 - [`docs/MATPLOTLIB_PACK.md`](docs/MATPLOTLIB_PACK.md)
 
@@ -377,6 +402,7 @@ src/kopy
    │   ├─ safetensors.py
    │   ├─ optimum.py
    │   ├─ sentencepiece.py
+   │   ├─ optuna.py
    │   ├─ mlflow.py
    │   └─ matplotlib.py
    ├─ translator.py
