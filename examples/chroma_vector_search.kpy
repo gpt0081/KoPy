@@ -1,0 +1,32 @@
+임포트 크로마 애즈 chroma
+
+client = chroma.클라이언트()
+collection = client.크리에이트컬렉션(
+    name="docs",
+    embedding_function=None,
+)
+
+embeddings = [
+    [1.0, 0.0],
+    [0.0, 1.0],
+]
+
+documents = [
+    "alpha document",
+    "beta document",
+]
+
+collection.add(
+    ids=["alpha", "beta"],
+    embeddings=embeddings,
+    documents=documents,
+)
+
+query_embeddings = [[0.99, 0.01]]
+result = collection.query(
+    query_embeddings=query_embeddings,
+    n_results=2,
+)
+
+프린트(result["ids"])
+프린트(result["documents"])
