@@ -161,7 +161,7 @@ trainer = L.트레이너(max_epochs=5, accelerator="cpu", devices=1)
 trainer.핏(model, train_loader)
 ```
 
-`training_step`, `validation_step`, `test_step`, `predict_step`, `configure_optimizers`는 Lightning이 정확한 이름으로 찾는 framework override hook이므로 Python 원형을 유지합니다. 자세한 범위는 [`docs/LIGHTNING_PACK.md`](docs/LIGHTNING_PACK.md)를 참고하세요.
+`training_step`, `validation_step`, `test_step`, `predict_step`, `configure_optimizers`는 Lightning이 정확한 이름으로 찾는 framework override hook이므로 Python 원형을 유지합니다. `model`, `trainer`, `X_train`, `y_train`과 Trainer 키워드 인자도 실제 Lightning 코드를 익히기 위해 원문 형태를 유지합니다. 자세한 범위는 [`docs/LIGHTNING_PACK.md`](docs/LIGHTNING_PACK.md)를 참고하세요.
 
 ## TorchMetrics 예시
 
@@ -179,7 +179,7 @@ f1 = tm.에프원스코어(task="binary")
 프린트(f1(preds, target))
 ```
 
-`preds`, `target`, `metric`, `accuracy`, `f1` 같은 실제 Python/TorchMetrics 관례와 `task=`, `num_classes=`, `average=`, `threshold=` 같은 키워드 인자는 원문 형태를 유지합니다. 자세한 범위는 [`docs/TORCHMETRICS_PACK.md`](docs/TORCHMETRICS_PACK.md)를 참고하세요.
+`preds`, `target`, `metric`, `accuracy`, `f1` 같은 실제 Python/TorchMetrics 관례와 `task=`, `num_classes=`, `average=`, `threshold=` 같은 키워드 인자는 원문 형태를 유지합니다. `update()`, `compute()`, `reset()`, `clone()`, `plot()`도 여러 라이브러리에서 널리 쓰이는 일반 메서드이므로 음역하지 않습니다. 자세한 범위는 [`docs/TORCHMETRICS_PACK.md`](docs/TORCHMETRICS_PACK.md)를 참고하세요.
 
 ## TorchVision 예시
 
@@ -188,15 +188,72 @@ f1 = tm.에프원스코어(task="binary")
 임포트 토치비전 애즈 tv
 
 image = 토치.원즈((3, 32, 32), dtype=토치.플로트32)
+
 transform = tv.트랜스폼즈.컴포즈([
     tv.트랜스폼즈.리사이즈((16, 16)),
-    tv.트랜스폼즈.노멀라이즈(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+    tv.트랜스폼즈.노멀라이즈(
+        mean=[0.5, 0.5, 0.5],
+        std=[0.5, 0.5, 0.5],
+    ),
 ])
+
 features = transform(image)
 model = tv.모델즈.레스넷18(weights=None)
 ```
 
-`tv`, `image`, `features`, `model`, `weights=`, `mean=`, `std=` 같은 실제 Python/TorchVision 관례는 원문 형태를 유지합니다. 자세한 범위는 [`docs/TORCHVISION_PACK.md`](docs/TORCHVISION_PACK.md)를 참고하세요.
+`tv`, `image`, `features`, `model`, `weights=`, `mean=`, `std=` 같은 실제 Python/TorchVision 관례는 학습 가치가 있어 원문 형태를 유지합니다. 자세한 범위는 [`docs/TORCHVISION_PACK.md`](docs/TORCHVISION_PACK.md)를 참고하세요.
+
+## timm 예시
+
+```kopy
+임포트 토치
+임포트 팀엠
+
+model = 팀엠.크리에이트모델(
+    "resnet18",
+    pretrained=False,
+    num_classes=10,
+)
+
+x = 토치.랜드엔((1, 3, 224, 224))
+위드 토치.노그라드():
+    features = model.포워드피처스(x)
+```
+
+`model`, `x`, `features`, `pretrained=`, `num_classes=`는 실제 Python/timm 코드에서 자주 보는 관례라 원문 형태를 유지합니다. 자세한 범위는 [`docs/TIMM_PACK.md`](docs/TIMM_PACK.md)를 참고하세요.
+
+## Kornia 예시
+
+```kopy
+임포트 토치
+임포트 코르니아 애즈 K
+
+image = 토치.랜드((1, 3, 64, 64))
+gray = K.컬러.알지비투그레이스케일(image)
+blurred = K.필터즈.가우시안블러투디(gray, (5, 5), (1.5, 1.5))
+
+augment = K.어그멘테이션.어그멘테이션시퀀셜(
+    K.어그멘테이션.랜덤호리즌털플립(p=0.5),
+    K.어그멘테이션.랜덤로테이션(degrees=10.0, p=0.5),
+)
+augmented = augment(blurred)
+```
+
+`image`, `gray`, `blurred`, `augment`, `augmented`, `degrees=`, `p=`는 실제 Python/Kornia 코드를 읽는 데 도움이 되므로 원문 형태를 유지합니다. 자세한 범위는 [`docs/KORNIA_PACK.md`](docs/KORNIA_PACK.md)를 참고하세요.
+
+## einops 예시
+
+```kopy
+임포트 넘파이 애즈 np
+프롬 에이놉스 임포트 리어레인지, 리듀스, 리피트
+
+images = np.에이레인지(2 * 4 * 4 * 3, dtype=np.플로트64).리셰이프(2, 4, 4, 3)
+features = 리어레인지(images, "batch height width channels -> batch channels height width")
+pooled = 리듀스(features, "batch channels height width -> batch channels", "mean")
+batch = 리피트(pooled[0], "channels -> batch channels", batch=3)
+```
+
+Einops의 pattern 문자열과 `batch=`, `channels=` 같은 축 이름은 실제 Python/einops 코드를 읽는 데 핵심이므로 번역하지 않습니다. 자세한 범위는 [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)를 참고하세요.
 
 ## 다른 팩 예시
 
@@ -303,7 +360,7 @@ task= average= threshold= batch_size= convert_to_tensor= normalize_embeddings= t
 in_channels= out_channels= heads= add_self_loops= num_neighbors=
 ```
 
-TorchMetrics의 `update`, `compute`, `reset`, `clone`, `plot`처럼 일반적인 lifecycle 메서드와 Einops pattern 안의 axis 이름처럼 사용자가 직접 정하는 표현도 전역 번역 대상이 아닙니다.
+TorchMetrics의 `update`, `compute`, `reset`, `clone`, `plot`처럼 일반적인 lifecycle 메서드도 전역 번역 대상이 아닙니다. Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 그대로 둡니다.
 
 ## 실제 라이브러리 설치
 
