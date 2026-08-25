@@ -20,7 +20,7 @@ PyG 2.8 can use its core Python package with PyTorch alone. Optional accelerated
 프롬 토치지오메트릭.nn 임포트 지씨엔컨브, 글로벌미인풀
 
 x = 토치.텐서([[1.0, 0.0], [0.0, 1.0]])
-edge_index = 토치.텐서([[0, 1], [1, 0]], dtype=토치.롱)
+edge_index = 토치.텐서([[0, 1], [1, 0]], dtype=토치.인트64)
 
 graph = 데이터(x=x, edge_index=edge_index)
 conv = 지씨엔컨브(in_channels=2, out_channels=4)
@@ -35,7 +35,7 @@ from torch_geometric.data import Data
 from torch_geometric.nn import GCNConv, global_mean_pool
 
 x = torch.tensor([[1.0, 0.0], [0.0, 1.0]])
-edge_index = torch.tensor([[0, 1], [1, 0]], dtype=torch.long)
+edge_index = torch.tensor([[0, 1], [1, 0]], dtype=torch.int64)
 
 graph = Data(x=x, edge_index=edge_index)
 conv = GCNConv(in_channels=2, out_channels=4)
