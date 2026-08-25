@@ -2,7 +2,7 @@
 프롬 에이놉스 임포트 리어레인지, 리듀스, 리피트
 
 # 실제 Python/einops 코드에서 자주 보는 변수명과 pattern 표기는 그대로 남깁니다.
-images = np.에이레인지(2 * 4 * 4 * 3).리셰이프(2, 4, 4, 3)
+images = np.에이레인지(2 * 4 * 4 * 3, dtype=np.플로트64).리셰이프(2, 4, 4, 3)
 
 # NHWC -> NCHW
 features = 리어레인지(images, "batch height width channels -> batch channels height width")
