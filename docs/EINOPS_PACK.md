@@ -44,7 +44,7 @@ Einops의 핵심 학습 대상은 함수 이름보다도 **pattern 문자열 자
 임포트 넘파이 애즈 np
 프롬 에이놉스 임포트 리어레인지, 리듀스, 리피트
 
-images = np.에이레인지(2 * 4 * 4 * 3).리셰이프(2, 4, 4, 3)
+images = np.에이레인지(2 * 4 * 4 * 3, dtype=np.플로트64).리셰이프(2, 4, 4, 3)
 features = 리어레인지(
     images,
     "batch height width channels -> batch channels height width",
@@ -63,7 +63,7 @@ batch = 리피트(pooled[0], "channels -> batch channels", batch=3)
 import numpy as np
 from einops import rearrange, reduce, repeat
 
-images = np.arange(2 * 4 * 4 * 3).reshape(2, 4, 4, 3)
+images = np.arange(2 * 4 * 4 * 3, dtype=np.float64).reshape(2, 4, 4, 3)
 features = rearrange(
     images,
     "batch height width channels -> batch channels height width",
@@ -75,6 +75,8 @@ pooled = reduce(
 )
 batch = repeat(pooled[0], "channels -> batch channels", batch=3)
 ```
+
+`reduce(..., "mean")`은 정수 tensor에 대해 backend별로 지원되지 않을 수 있으므로 평균 축약 예제는 명시적으로 부동소수점 dtype을 사용합니다.
 
 ## 실제 라이브러리 설치
 
