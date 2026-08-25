@@ -24,10 +24,10 @@ class JaxPackTests(unittest.TestCase):
     def test_top_level_transform_and_random_translation(self):
         source = (
             "임포트 잭스\n"
-            "f = 잭스.잇(lambda x: x ** 2)\n"
+            "f = 잭스.짓(lambda x: x ** 2)\n"
             "df = 잭스.그라드(f)\n"
-            "key = 잭스.랜덤.키(42)\n"
-            "a, b = 잭스.랜덤.스플릿(key)\n"
+            "key = 잭스.random.키(42)\n"
+            "a, b = 잭스.random.스플릿(key)\n"
         )
         python_source = translate(source).python
         self.assertIn("jax.jit", python_source)
@@ -39,6 +39,16 @@ class JaxPackTests(unittest.TestCase):
         source = "프롬 잭스 임포트 그라드, 밸류앤드그라드\n"
         python_source = translate(source).python
         self.assertIn("from jax import grad, value_and_grad", python_source)
+
+    def test_dotted_submodule_paths_remain_python_native(self):
+        source = "임포트 잭스.random 애즈 jr\nkey = jr.키(1)\n"
+        python_source = translate(source).python
+        self.assertIn("import jax.random as jr", python_source)
+        self.assertIn("jr.key(1)", python_source)
+
+        reverse = to_kopy("import jax.random as jr\nkey = jr.key(1)\n").kopy
+        self.assertIn("임포트 잭스.random 애즈 jr", reverse)
+        self.assertIn("jr.키(1)", reverse)
 
     def test_unimported_jax_word_is_not_global(self):
         source = "result = 그라드(f)\n"
