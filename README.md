@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.29**  
+현재 Core 버전: **0.5.30**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -11,13 +11,13 @@ KoPy의 목적은 Python을 한국어로 대체하는 것이 아니라 **원문 
 
 - 표준 Python 코드는 수정 없이 그대로 실행할 수 있어야 합니다.
 - KoPy 표현과 Python 표현을 한 파일에서 혼용할 수 있습니다.
-- `X_train`, `X_test`, `df`, `features`, `model`, `fit`, `predict`, `preds`, `target`, `edge_index`처럼 실제 Python/데이터 과학에서 자주 보는 관례는 학습 가치가 있으면 의도적으로 남깁니다.
+- `X_train`, `X_test`, `df`, `features`, `model`, `fit`, `predict`, `preds`, `target`, `edge_index`, `embeddings`, `query`, `index`처럼 실제 Python/데이터 과학·검색 코드에서 자주 보는 관례는 학습 가치가 있으면 의도적으로 남깁니다.
 - 외부 라이브러리 API 번역은 해당 라이브러리가 import된 파일에서만 활성화되는 namespace-scoped Library Pack으로 제공합니다.
 - 서로 다른 라이브러리에서 의미가 겹칠 수 있는 일반 메서드와 키워드 인자는 가능한 한 Python 원형을 유지합니다.
 
 ## KoPy v0.5 방향: AI 개발
 
-Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy 표현을 표준 Python 표현으로 바꾸고 실제 계산·학습·추론·시각화·평가·실험 추적은 원래 Python 라이브러리가 담당합니다.
+Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy 표현을 표준 Python 표현으로 바꾸고 실제 계산·학습·추론·시각화·평가·실험 추적·검색은 원래 Python 라이브러리가 담당합니다.
 
 ```text
 KoPy 코드
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **30개**입니다.
+현재 공식 Library Pack은 **31개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -52,6 +52,7 @@ CPython + 실제 Python 라이브러리
 | OpenCV | 이미지·영상 전처리·엣지·윤곽선·DNN·비디오 I/O |
 | Transformers | 사전학습 모델·생성·Trainer |
 | Sentence Transformers | 임베딩·유사도·semantic search·reranking 모델 API |
+| FAISS | 벡터 인덱스·nearest-neighbor 검색·L2/IP·IVF·HNSW |
 | Datasets | 데이터 로딩·전처리·분할 |
 | Tokenizers | 고속 토큰화·Encoding·어휘 모델 |
 | Accelerate | 장치·분산 학습 준비와 실행 |
@@ -85,6 +86,26 @@ model = 로지스틱리그레션(max_iter=200)
 model.핏(X_train, y_train)
 predictions = model.프리딕트(X_test)
 ```
+
+## FAISS 벡터 검색 예시
+
+```kopy
+임포트 넘파이 애즈 np
+임포트 파이스 애즈 faiss
+
+embeddings = np.어레이([
+    [0.0, 0.0],
+    [1.0, 1.0],
+    [2.0, 2.0],
+], dtype=np.플로트32)
+
+query = np.어레이([[1.1, 1.0]], dtype=np.플로트32)
+index = faiss.인덱스플랫엘투(embeddings.shape[1])
+index.add(embeddings)
+distances, indices = index.search(query, 2)
+```
+
+`embeddings`, `query`, `index`, `distances`, `indices`와 `add()`, `search()`는 실제 vector search/RAG 코드에서 반복적으로 등장하고 다른 라이브러리에서도 널리 쓰이는 표현이므로 Python 원형을 유지합니다. FAISS 고유 클래스와 함수만 namespace-scoped 방식으로 음역합니다. 자세한 범위는 [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)를 참고하세요.
 
 ## PyTorch Geometric 예시
 
@@ -360,16 +381,16 @@ task= average= threshold= batch_size= convert_to_tensor= normalize_embeddings= t
 in_channels= out_channels= heads= add_self_loops= num_neighbors=
 ```
 
-TorchMetrics의 `update`, `compute`, `reset`, `clone`, `plot`처럼 일반적인 lifecycle 메서드도 전역 번역 대상이 아닙니다. Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 그대로 둡니다.
+TorchMetrics의 `update`, `compute`, `reset`, `clone`, `plot`처럼 일반적인 lifecycle 메서드와 FAISS의 `add`, `search`, `train`, `reset`, `remove_ids`, `reconstruct`처럼 여러 라이브러리에서 반복되는 일반 메서드도 전역 번역 대상이 아닙니다. Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 그대로 둡니다.
 
 ## 실제 라이브러리 설치
 
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
-기본 AI/데이터 스택 예시:
+기본 AI/데이터/검색 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers faiss-cpu datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -419,6 +440,7 @@ kopy packs opencv
 kopy packs lightning
 kopy packs torchmetrics
 kopy packs sentence-transformers
+kopy packs faiss
 kopy packs optuna
 kopy packs matplotlib
 kopy version
@@ -439,6 +461,7 @@ kopy packs einops --json
 kopy packs lightning --json
 kopy packs torchmetrics --json
 kopy packs sentence-transformers --json
+kopy packs faiss --json
 kopy packs optuna --json
 ```
 
@@ -476,6 +499,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
 - [`docs/SENTENCE_TRANSFORMERS_PACK.md`](docs/SENTENCE_TRANSFORMERS_PACK.md)
+- [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)
 - [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)
 - [`docs/MLFLOW_PACK.md`](docs/MLFLOW_PACK.md)
 - [`docs/MATPLOTLIB_PACK.md`](docs/MATPLOTLIB_PACK.md)
@@ -511,6 +535,7 @@ src/kopy
    │   ├─ opencv.py
    │   ├─ transformers.py
    │   ├─ sentence_transformers.py
+   │   ├─ faiss.py
    │   ├─ datasets.py
    │   ├─ tokenizers.py
    │   ├─ accelerate.py
@@ -532,9 +557,11 @@ src/kopy
 
 ## 다음 AI 확장 후보
 
-- TensorBoard
-- ONNX
-- NetworkX
+검색/RAG 방향을 우선합니다.
+
+- Qdrant Client
+- Chroma
+- BM25 / lexical search
 
 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
 
