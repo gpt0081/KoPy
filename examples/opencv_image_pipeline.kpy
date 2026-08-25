@@ -1,0 +1,17 @@
+임포트 넘파이 애즈 np
+임포트 오픈씨브이 애즈 cv2
+
+# NumPy/OpenCV에서 흔히 쓰는 image, gray, edges 같은 변수명은
+# 원문 Python 코드 학습을 위해 의도적으로 남깁니다.
+image = np.제로즈((64, 64, 3), dtype=np.uint8)
+cv2.렉탱글(image, (16, 16), (48, 48), (255, 255, 255), thickness=-1)
+
+gray = cv2.씨브이티컬러(image, cv2.COLOR_BGR2GRAY)
+blurred = cv2.가우시안블러(gray, (5, 5), 0)
+edges = cv2.캐니(blurred, 50, 150)
+
+resized = cv2.리사이즈(edges, (32, 32), interpolation=cv2.INTER_AREA)
+
+프린트("image shape:", image.shape)
+프린트("edges shape:", edges.shape)
+프린트("resized shape:", resized.shape)

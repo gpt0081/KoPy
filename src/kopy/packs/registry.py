@@ -15,6 +15,7 @@ from .matplotlib import MATPLOTLIB_PACK
 from .mlflow import MLFLOW_PACK
 from .numpy import NUMPY_PACK
 from .onnxruntime import ONNXRUNTIME_PACK
+from .opencv import OPENCV_PACK
 from .optimum import OPTIMUM_PACK
 from .pandas import PANDAS_PACK
 from .peft import PEFT_PACK
@@ -33,6 +34,7 @@ _BUILTIN_PACKS: tuple[LibraryPack, ...] = (
     TRANSFORMERS_PACK, DATASETS_PACK, TOKENIZERS_PACK, ACCELERATE_PACK, PEFT_PACK,
     ONNXRUNTIME_PACK, SAFETENSORS_PACK, OPTIMUM_PACK, SENTENCEPIECE_PACK,
     MLFLOW_PACK, MATPLOTLIB_PACK, SCIPY_PACK, XGBOOST_PACK, LIGHTGBM_PACK,
+    OPENCV_PACK,
 )
 
 
