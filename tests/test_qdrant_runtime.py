@@ -8,8 +8,8 @@ from kopy.translator import translate
 class QdrantRuntimeTests(unittest.TestCase):
     def test_real_in_memory_vector_query(self):
         source = (
-            "프롬 큐드란트클라이언트 임포트 큐드란트클라이언트\n"
-            "프롬 큐드란트클라이언트.models 임포트 벡터파람스, 디스턴스, 포인트스트럭트\n"
+            "프롬 큐드란트 임포트 큐드란트클라이언트\n"
+            "프롬 큐드란트.models 임포트 벡터파람스, 디스턴스, 포인트스트럭트\n"
             "client = 큐드란트클라이언트(':memory:')\n"
             "client.크리에이트컬렉션(\n"
             "    collection_name='docs',\n"
