@@ -1,4 +1,7 @@
 import importlib.util
+import os
+import subprocess
+import sys
 import unittest
 
 from kopy.translator import translate
@@ -17,12 +20,32 @@ class FaissRuntimeTests(unittest.TestCase):
             "distances, indices = index.search(query, 2)\n"
             "count = index.ntotal\n"
         )
-        namespace = {}
-        exec(translate(source).python, namespace)
-        self.assertEqual(namespace["count"], 3)
-        self.assertEqual(namespace["indices"].shape, (1, 2))
-        self.assertEqual(namespace["indices"][0, 0], 1)
-        self.assertLess(float(namespace["distances"][0, 0]), float(namespace["distances"][0, 1]))
+        python_source = translate(source).python + (
+            "\nassert count == 3\n"
+            "assert indices.shape == (1, 2)\n"
+            "assert int(indices[0, 0]) == 1\n"
+            "assert float(distances[0, 0]) < float(distances[0, 1])\n"
+            "print('FAISS_RUNTIME_OK')\n"
+        )
+
+        env = os.environ.copy()
+        env.setdefault("OMP_NUM_THREADS", "1")
+        env.setdefault("OMP_THREAD_LIMIT", "1")
+        completed = subprocess.run(
+            [sys.executable, "-c", python_source],
+            capture_output=True,
+            text=True,
+            env=env,
+            timeout=60,
+            check=False,
+        )
+
+        self.assertEqual(
+            completed.returncode,
+            0,
+            msg=f"stdout:\n{completed.stdout}\nstderr:\n{completed.stderr}",
+        )
+        self.assertIn("FAISS_RUNTIME_OK", completed.stdout)
 
 
 if __name__ == "__main__":
