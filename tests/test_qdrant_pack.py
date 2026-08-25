@@ -9,12 +9,12 @@ class QdrantPackTests(unittest.TestCase):
         pack = pack_by_name("qdrant-client")
         self.assertIsNotNone(pack)
         self.assertEqual(pack.module, "qdrant_client")
-        self.assertEqual(pack.kopy_module, "큐드란트클라이언트")
+        self.assertEqual(pack.kopy_module, "큐드란트")
 
     def test_dotted_model_imports_translate(self):
         source = (
-            "프롬 큐드란트클라이언트 임포트 큐드란트클라이언트\n"
-            "프롬 큐드란트클라이언트.models 임포트 벡터파람스, 디스턴스, 포인트스트럭트\n"
+            "프롬 큐드란트 임포트 큐드란트클라이언트\n"
+            "프롬 큐드란트.models 임포트 벡터파람스, 디스턴스, 포인트스트럭트\n"
             "client = 큐드란트클라이언트(':memory:')\n"
             "config = 벡터파람스(size=4, distance=디스턴스.COSINE)\n"
             "point = 포인트스트럭트(id=1, vector=[1.0, 0.0, 0.0, 0.0])\n"
@@ -28,7 +28,7 @@ class QdrantPackTests(unittest.TestCase):
 
     def test_qdrant_specific_client_methods_translate(self):
         source = (
-            "프롬 큐드란트클라이언트 임포트 큐드란트클라이언트\n"
+            "프롬 큐드란트 임포트 큐드란트클라이언트\n"
             "client = 큐드란트클라이언트(':memory:')\n"
             "client.크리에이트컬렉션(collection_name='docs', vectors_config=config)\n"
             "result = client.쿼리포인츠(collection_name='docs', query=query, limit=3)\n"
@@ -39,7 +39,7 @@ class QdrantPackTests(unittest.TestCase):
 
     def test_generic_database_search_methods_remain_python(self):
         source = (
-            "프롬 큐드란트클라이언트 임포트 큐드란트클라이언트\n"
+            "프롬 큐드란트 임포트 큐드란트클라이언트\n"
             "client = 큐드란트클라이언트(':memory:')\n"
             "client.upsert(collection_name='docs', points=points)\n"
             "client.scroll(collection_name='docs', limit=10)\n"
@@ -63,8 +63,8 @@ class QdrantPackTests(unittest.TestCase):
             "result = client.query_points(collection_name='docs', query=query, limit=3)\n"
         )
         kopy = to_kopy(source).kopy
-        self.assertIn("프롬 큐드란트클라이언트 임포트 큐드란트클라이언트", kopy)
-        self.assertIn("프롬 큐드란트클라이언트.models 임포트 벡터파람스, 디스턴스", kopy)
+        self.assertIn("프롬 큐드란트 임포트 큐드란트클라이언트", kopy)
+        self.assertIn("프롬 큐드란트.models 임포트 벡터파람스, 디스턴스", kopy)
         self.assertIn("client.크리에이트컬렉션(", kopy)
         self.assertIn("client.upsert(", kopy)
         self.assertIn("client.쿼리포인츠(", kopy)
@@ -72,7 +72,7 @@ class QdrantPackTests(unittest.TestCase):
             self.assertIn(token, kopy)
 
     def test_help_resolution(self):
-        resolved = resolve_pack_member("큐드란트클라이언트.쿼리포인츠")
+        resolved = resolve_pack_member("큐드란트.쿼리포인츠")
         self.assertIsNotNone(resolved)
         _, info = resolved
         self.assertEqual(info.python, "query_points")
