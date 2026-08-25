@@ -1,0 +1,20 @@
+임포트 센텐스트랜스포머스 애즈 st
+프롬 sentence_transformers.util 임포트 semantic_search
+
+# model/sentences/embeddings 같은 실제 Python 관례를 일부러 남긴다.
+model = st.센텐스트랜스포머("sentence-transformers/all-MiniLM-L6-v2")
+
+sentences = [
+    "KoPy helps learners read Python code.",
+    "Sentence embeddings map text into vectors.",
+    "Rubber compounds contain polymers and additives.",
+]
+
+embeddings = model.인코드(sentences, convert_to_tensor=True)
+query_embeddings = model.인코드(["How can I learn Python?"], convert_to_tensor=True)
+
+scores = model.시밀래리티(query_embeddings, embeddings)
+hits = semantic_search(query_embeddings, embeddings, top_k=2)
+
+프린트(scores)
+프린트(hits)
