@@ -1,0 +1,18 @@
+임포트 비엠이십오에스 애즈 bm25s
+
+corpus = [
+    "machine learning uses data",
+    "rubber chemistry uses vulcanization additives",
+    "vector search retrieves documents",
+]
+
+corpus_tokens = bm25s.토크나이즈(corpus, show_progress=False)
+retriever = bm25s.비엠이십오(corpus=corpus)
+retriever.index(corpus_tokens, show_progress=False)
+
+query = "rubber vulcanization"
+query_tokens = bm25s.토크나이즈([query], show_progress=False)
+results = retriever.retrieve(query_tokens, k=2, show_progress=False)
+
+프린트(results.documents)
+프린트(results.scores)
