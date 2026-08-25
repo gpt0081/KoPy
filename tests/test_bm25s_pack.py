@@ -54,11 +54,12 @@ class BM25SPackTests(unittest.TestCase):
         )
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 비엠이십오에스", kopy)
-        self.assertIn("비엠이십오에스.토크나이즈(corpus, show_progress=False)", kopy)
+        self.assertIn("비엠이십오에스.토크나이즈(corpus, show_progress=펄스)", kopy)
         self.assertIn("비엠이십오에스.비엠이십오(corpus=corpus)", kopy)
         self.assertIn("retriever.index(", kopy)
         self.assertIn("retriever.retrieve(", kopy)
         self.assertIn("k=2", kopy)
+        self.assertIn("show_progress=펄스", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("비엠이십오에스.비엠이십오")
