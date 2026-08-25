@@ -47,8 +47,17 @@ class FaissPackTests(unittest.TestCase):
         )
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 파이스", kopy)
-        self.assertIn("faiss.인덱스플랫아이피", kopy)
-        self.assertIn("faiss.노멀라이즈엘투", kopy)
+        self.assertIn("파이스.인덱스플랫아이피", kopy)
+        self.assertIn("파이스.노멀라이즈엘투", kopy)
+
+    def test_python_alias_is_preserved_for_transfer_learning(self):
+        source = (
+            "import faiss as fx\n"
+            "index = fx.IndexFlatL2(4)\n"
+        )
+        kopy = to_kopy(source).kopy
+        self.assertIn("임포트 파이스 애즈 fx", kopy)
+        self.assertIn("fx.인덱스플랫엘투(4)", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("파이스.인덱스플랫엘투")
