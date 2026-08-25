@@ -1,0 +1,27 @@
+프롬 큐드란트클라이언트 임포트 큐드란트클라이언트
+프롬 큐드란트클라이언트.models 임포트 벡터파람스, 디스턴스, 포인트스트럭트
+
+client = 큐드란트클라이언트(":memory:")
+
+client.크리에이트컬렉션(
+    collection_name="docs",
+    vectors_config=벡터파람스(size=2, distance=디스턴스.COSINE),
+)
+
+points = [
+    포인트스트럭트(id=1, vector=[1.0, 0.0], payload={"text": "alpha"}),
+    포인트스트럭트(id=2, vector=[0.0, 1.0], payload={"text": "beta"}),
+]
+
+client.upsert(collection_name="docs", points=points, wait=True)
+
+query = [0.99, 0.01]
+result = client.쿼리포인츠(
+    collection_name="docs",
+    query=query,
+    limit=2,
+    with_payload=True,
+)
+
+포 이치 인 result.points:
+    프린트(이치.id, 이치.score, 이치.payload)
