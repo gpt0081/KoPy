@@ -147,13 +147,13 @@ augmented = augment(blurred)
 임포트 넘파이 애즈 np
 프롬 에이놉스 임포트 리어레인지, 리듀스, 리피트
 
-images = np.에이레인지(2 * 4 * 4 * 3).리셰이프(2, 4, 4, 3)
+images = np.에이레인지(2 * 4 * 4 * 3, dtype=np.플로트64).리셰이프(2, 4, 4, 3)
 features = 리어레인지(images, "batch height width channels -> batch channels height width")
 pooled = 리듀스(features, "batch channels height width -> batch channels", "mean")
 batch = 리피트(pooled[0], "channels -> batch channels", batch=3)
 ```
 
-Einops의 pattern 문자열과 `batch=`, `channels=` 같은 축 이름은 실제 Python/einops 코드를 읽는 데 핵심이므로 번역하지 않습니다. 자세한 범위는 [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)를 참고하세요.
+Einops의 pattern 문자열과 `batch=`, `channels=` 같은 축 이름은 실제 Python/einops 코드를 읽는 데 핵심이므로 번역하지 않습니다. `mean` 축약 예제는 backend 차이를 피하기 위해 부동소수점 입력을 사용합니다. 자세한 범위는 [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)를 참고하세요.
 
 ## 다른 팩 예시
 
