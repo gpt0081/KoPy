@@ -1,0 +1,17 @@
+임포트 잭스
+임포트 잭스.numpy 애즈 jnp
+
+X = jnp.어레이([1.0, 2.0, 3.0])
+
+def loss_fn(x):
+    리턴 jnp.썸(jnp.스퀘어(x))
+
+grad_fn = 잭스.잇(잭스.그라드(loss_fn))
+grads = grad_fn(X)
+
+key = 잭스.랜덤.키(42)
+noise = 잭스.랜덤.노멀(key, shape=X.shape)
+
+프린트("X:", X)
+프린트("gradients:", grads)
+프린트("noise:", noise)
