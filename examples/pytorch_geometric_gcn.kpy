@@ -1,0 +1,26 @@
+임포트 토치
+프롬 토치지오메트릭.data 임포트 데이터
+프롬 토치지오메트릭.nn 임포트 지씨엔컨브, 글로벌미인풀
+프롬 토치지오메트릭.utils 임포트 투언디렉티드
+
+x = 토치.텐서([
+    [1.0, 0.0],
+    [0.0, 1.0],
+    [1.0, 1.0],
+], dtype=토치.플로트32)
+
+edge_index = 토치.텐서([
+    [0, 1],
+    [1, 2],
+], dtype=토치.인트64)
+edge_index = 투언디렉티드(edge_index)
+
+graph = 데이터(x=x, edge_index=edge_index)
+conv = 지씨엔컨브(in_channels=2, out_channels=4)
+node_embeddings = conv(graph.x, graph.edge_index)
+
+batch = 토치.제로즈(graph.num_nodes, dtype=토치.인트64)
+graph_embedding = 글로벌미인풀(node_embeddings, batch)
+
+프린트("node embeddings:", node_embeddings.shape)
+프린트("graph embedding:", graph_embedding.shape)
