@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.18**  
+현재 Core 버전: **0.5.19**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **19개**입니다.
+현재 공식 Library Pack은 **20개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -41,6 +41,7 @@ CPython + 실제 Python 라이브러리
 | XGBoost | 그래디언트 부스팅 분류·회귀·DMatrix·Booster |
 | LightGBM | 그래디언트 부스팅 분류·회귀·Dataset·Booster |
 | PyTorch | 텐서·자동미분·신경망·최적화 |
+| JAX | 자동미분·JIT·벡터화·가속 배열 계산 |
 | Transformers | 사전학습 모델·생성·Trainer |
 | Datasets | 데이터 로딩·전처리·분할 |
 | Tokenizers | 고속 토큰화·Encoding·어휘 모델 |
@@ -142,6 +143,20 @@ model.핏(X_train, y_train)
 predictions = model.프리딕트(X_test)
 ```
 
+### JAX
+
+```kopy
+임포트 잭스
+임포트 잭스.numpy 애즈 jnp
+
+X = jnp.어레이([1.0, 2.0, 3.0])
+loss_fn = lambda x: jnp.썸(jnp.스퀘어(x))
+grad_fn = 잭스.짓(잭스.그라드(loss_fn))
+grads = grad_fn(X)
+```
+
+`jax.numpy`, `jax.random` 같은 dotted submodule 경로는 Python 원형을 유지하고 API 멤버만 namespace-scoped 방식으로 음역합니다. 자세한 내용은 [`docs/JAX_PACK.md`](docs/JAX_PACK.md)를 참고하세요.
+
 ### Matplotlib
 
 ```kopy
@@ -184,6 +199,7 @@ axis= dtype= marker= label= figsize= dpi= cmap=
 n_estimators= max_depth= learning_rate= objective= tree_method=
 n_jobs= num_boost_round= num_leaves= min_child_samples=
 verbosity= random_state= has_header= separator= schema= strict=
+shape= static_argnums= static_argnames= in_axes= out_axes= has_aux=
 ```
 
 ## 실제 라이브러리 설치
@@ -193,7 +209,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch jax transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
 ```
 
 pandas 3.x 환경에서 MLflow tracking client를 함께 쓰려면:
@@ -233,6 +249,7 @@ kopy packs polars
 kopy packs scipy
 kopy packs xgboost
 kopy packs lightgbm
+kopy packs jax
 kopy packs matplotlib
 kopy version
 ```
@@ -272,6 +289,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/XGBOOST_PACK.md`](docs/XGBOOST_PACK.md)
 - [`docs/LIGHTGBM_PACK.md`](docs/LIGHTGBM_PACK.md)
 - [`docs/PYTORCH_PACK.md`](docs/PYTORCH_PACK.md)
+- [`docs/JAX_PACK.md`](docs/JAX_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
 - [`docs/MLFLOW_PACK.md`](docs/MLFLOW_PACK.md)
 - [`docs/MATPLOTLIB_PACK.md`](docs/MATPLOTLIB_PACK.md)
@@ -296,6 +314,7 @@ src/kopy
    │   ├─ xgboost.py
    │   ├─ lightgbm.py
    │   ├─ torch.py
+   │   ├─ jax.py
    │   ├─ transformers.py
    │   ├─ datasets.py
    │   ├─ tokenizers.py
@@ -318,7 +337,6 @@ src/kopy
 ## 다음 AI 확장 후보
 
 - TensorBoard
-- JAX
 - OpenCV
 
 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
