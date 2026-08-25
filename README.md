@@ -82,60 +82,48 @@ model.핏(X_train, y_train)
 predictions = model.프리딕트(X_test)
 ```
 
-## Optuna 예시
-
-```kopy
-임포트 옵튜나
-
-
-def objective(trial):
-    learning_rate = trial.서제스트플로트(
-        "learning_rate",
-        1e-4,
-        1e-1,
-        log=True,
-    )
-    max_depth = trial.서제스트인트("max_depth", 2, 8)
-    return (learning_rate - 0.01) ** 2 + (max_depth - 4) ** 2
-
-
-study = 옵튜나.크리에이트스터디(direction="minimize")
-study.옵티마이즈(objective, n_trials=20)
-프린트(study.베스트파람스)
-```
-
-`study`, `trial`, `objective`, `learning_rate`, `max_depth`는 실제 Python/Optuna 코드에서 자주 보이는 표현이라 학습 연결성을 위해 남깁니다. `direction=`, `n_trials=`, `sampler=`, `pruner=`, `timeout=`, `log=` 같은 키워드 인자도 Python 원형을 유지합니다. 자세한 범위는 [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)를 참고하세요.
-
-## 비전·텐서 예시
-
-### TorchVision
+## TorchVision 예시
 
 ```kopy
 임포트 토치
 임포트 토치비전 애즈 tv
 
 image = 토치.원즈((3, 32, 32), dtype=토치.플로트32)
+
 transform = tv.트랜스폼즈.컴포즈([
     tv.트랜스폼즈.리사이즈((16, 16)),
-    tv.트랜스폼즈.노멀라이즈(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+    tv.트랜스폼즈.노멀라이즈(
+        mean=[0.5, 0.5, 0.5],
+        std=[0.5, 0.5, 0.5],
+    ),
 ])
+
 features = transform(image)
 model = tv.모델즈.레스넷18(weights=None)
 ```
 
-### timm
+`tv`, `image`, `features`, `model`, `weights=`, `mean=`, `std=` 같은 실제 Python/TorchVision 관례는 학습 가치가 있어 원문 형태를 유지합니다. 자세한 범위는 [`docs/TORCHVISION_PACK.md`](docs/TORCHVISION_PACK.md)를 참고하세요.
+
+## timm 예시
 
 ```kopy
 임포트 토치
 임포트 팀엠
 
-model = 팀엠.크리에이트모델("resnet18", pretrained=False, num_classes=10)
+model = 팀엠.크리에이트모델(
+    "resnet18",
+    pretrained=False,
+    num_classes=10,
+)
+
 x = 토치.랜드엔((1, 3, 224, 224))
 위드 토치.노그라드():
     features = model.포워드피처스(x)
 ```
 
-### Kornia
+`model`, `x`, `features`, `pretrained=`, `num_classes=`는 실제 Python/timm 코드에서 자주 보는 관례라 원문 형태를 유지합니다. 자세한 범위는 [`docs/TIMM_PACK.md`](docs/TIMM_PACK.md)를 참고하세요.
+
+## Kornia 예시
 
 ```kopy
 임포트 토치
@@ -144,9 +132,17 @@ x = 토치.랜드엔((1, 3, 224, 224))
 image = 토치.랜드((1, 3, 64, 64))
 gray = K.컬러.알지비투그레이스케일(image)
 blurred = K.필터즈.가우시안블러투디(gray, (5, 5), (1.5, 1.5))
+
+augment = K.어그멘테이션.어그멘테이션시퀀셜(
+    K.어그멘테이션.랜덤호리즌털플립(p=0.5),
+    K.어그멘테이션.랜덤로테이션(degrees=10.0, p=0.5),
+)
+augmented = augment(blurred)
 ```
 
-### einops
+`image`, `gray`, `blurred`, `augment`, `augmented`, `degrees=`, `p=`는 실제 Python/Kornia 코드를 읽는 데 도움이 되므로 원문 형태를 유지합니다. 자세한 범위는 [`docs/KORNIA_PACK.md`](docs/KORNIA_PACK.md)를 참고하세요.
+
+## einops 예시
 
 ```kopy
 임포트 넘파이 애즈 np
@@ -158,7 +154,7 @@ pooled = 리듀스(features, "batch channels height width -> batch channels", "m
 batch = 리피트(pooled[0], "channels -> batch channels", batch=3)
 ```
 
-Einops의 pattern 문자열과 `batch=`, `channels=` 같은 axis 이름은 실제 Python/einops 코드의 핵심 표현이므로 번역하지 않습니다.
+Einops의 pattern 문자열과 `batch=`, `channels=` 같은 축 이름은 실제 Python/einops 코드를 읽는 데 핵심이므로 번역하지 않습니다. `mean` 축약 예제는 backend 차이를 피하기 위해 부동소수점 입력을 사용합니다. 자세한 범위는 [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)를 참고하세요.
 
 ## 다른 팩 예시
 
@@ -189,6 +185,25 @@ model = lgb.엘지비엠클래시파이어(n_estimators=20, num_leaves=4, n_jobs
 model.핏(X_train, y_train)
 predictions = model.프리딕트(X_test)
 ```
+
+### Optuna
+
+```kopy
+임포트 옵튜나
+
+
+def objective(trial):
+    learning_rate = trial.서제스트플로트("learning_rate", 1e-4, 1e-1, log=True)
+    max_depth = trial.서제스트인트("max_depth", 2, 8)
+    return (learning_rate - 0.01) ** 2 + (max_depth - 4) ** 2
+
+
+study = 옵튜나.크리에이트스터디(direction="minimize")
+study.옵티마이즈(objective, n_trials=20)
+프린트(study.베스트파람스)
+```
+
+`study`, `trial`, `objective`, `learning_rate`, `max_depth` 같은 실제 Python/Optuna 관례와 사용자 정의 파라미터 이름은 학습 연결성을 위해 원문 형태를 유지합니다. 자세한 범위는 [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)를 참고하세요.
 
 ### JAX
 
@@ -246,6 +261,8 @@ direction= study_name= storage= sampler= pruner= n_trials= timeout=
 callbacks= catch= gc_after_trial= show_progress_bar= log=
 ```
 
+Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 KoPy 전역 번역 대상이 아닙니다.
+
 ## 실제 라이브러리 설치
 
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
@@ -282,6 +299,7 @@ kopy check examples\hello.kpy
 kopy translate examples\hello.kpy
 kopy convert-python example.py
 kopy help 프린트
+kopy help np.어레이
 kopy explain examples\hello.kpy
 kopy learn examples\hello.kpy
 kopy words
@@ -308,6 +326,10 @@ kopy words --json
 kopy info --json
 kopy diagnose examples\hello.kpy --json
 kopy packs --json
+kopy packs torchvision --json
+kopy packs timm --json
+kopy packs kornia --json
+kopy packs einops --json
 kopy packs optuna --json
 ```
 
