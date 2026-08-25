@@ -12,14 +12,15 @@ class LinearModel(L.라이트닝모듈):
     def forward(self, x):
         return self.layer(x)
 
-    def 트레이닝스텝(self, batch, batch_idx):
+    # Lightning이 이름으로 찾는 override hook은 upstream Python 이름을 유지한다.
+    def training_step(self, batch, batch_idx):
         X_train, y_train = batch
         predictions = self(X_train)
         loss = self.loss_fn(predictions, y_train)
         self.로그("train_loss", loss)
         return loss
 
-    def 컨피규어옵티마이저스(self):
+    def configure_optimizers(self):
         return 토치.옵팀.아담(self.파라미터스(), lr=0.01)
 
 
