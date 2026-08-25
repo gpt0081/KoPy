@@ -14,7 +14,7 @@ from .base import LibraryPack
 QDRANT_PACK = LibraryPack(
     name="qdrant-client",
     module="qdrant_client",
-    kopy_module="큐드란트클라이언트",
+    kopy_module="큐드란트",
     preferred_aliases=("qdrant", "qdrant-client", "qdrant_client"),
     description="Qdrant 벡터DB collection·point·query·filter API용 클라이언트 팩",
     members={
@@ -50,11 +50,11 @@ QDRANT_PACK = LibraryPack(
     },
     examples={
         "QdrantClient": (
-            "프롬 큐드란트클라이언트 임포트 큐드란트클라이언트\nclient = 큐드란트클라이언트(':memory:')",
+            "프롬 큐드란트 임포트 큐드란트클라이언트\nclient = 큐드란트클라이언트(':memory:')",
             "from qdrant_client import QdrantClient\nclient = QdrantClient(':memory:')",
         ),
         "VectorParams": (
-            "프롬 큐드란트클라이언트.models 임포트 벡터파람스, 디스턴스\nconfig = 벡터파람스(size=384, distance=디스턴스.COSINE)",
+            "프롬 큐드란트.models 임포트 벡터파람스, 디스턴스\nconfig = 벡터파람스(size=384, distance=디스턴스.COSINE)",
             "from qdrant_client.models import VectorParams, Distance\nconfig = VectorParams(size=384, distance=Distance.COSINE)",
         ),
         "query_points": (
