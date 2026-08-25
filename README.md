@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.23**  
+현재 Core 버전: **0.5.24**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **24개**입니다.
+현재 공식 Library Pack은 **25개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -44,6 +44,7 @@ CPython + 실제 Python 라이브러리
 | TorchVision | 이미지 변환·비전 모델·데이터셋·detection ops |
 | timm | 이미지 모델 탐색·생성·특징 추출·학습 유틸리티 |
 | Kornia | 미분가능 이미지 처리·증강·필터·기하·비전 메트릭 |
+| einops | 텐서 차원 재배열·축약·반복·패킹·einsum |
 | JAX | 자동미분·JIT·벡터화·가속 배열 계산 |
 | OpenCV | 이미지·영상 전처리·엣지·윤곽선·DNN·비디오 I/O |
 | Transformers | 사전학습 모델·생성·Trainer |
@@ -140,6 +141,20 @@ augmented = augment(blurred)
 
 `image`, `gray`, `blurred`, `augment`, `augmented`, `degrees=`, `p=`는 실제 Python/Kornia 코드를 읽는 데 도움이 되므로 원문 형태를 유지합니다. 자세한 범위는 [`docs/KORNIA_PACK.md`](docs/KORNIA_PACK.md)를 참고하세요.
 
+## einops 예시
+
+```kopy
+임포트 넘파이 애즈 np
+프롬 에이놉스 임포트 리어레인지, 리듀스, 리피트
+
+images = np.에이레인지(2 * 4 * 4 * 3, dtype=np.플로트64).리셰이프(2, 4, 4, 3)
+features = 리어레인지(images, "batch height width channels -> batch channels height width")
+pooled = 리듀스(features, "batch channels height width -> batch channels", "mean")
+batch = 리피트(pooled[0], "channels -> batch channels", batch=3)
+```
+
+Einops의 pattern 문자열과 `batch=`, `channels=` 같은 축 이름은 실제 Python/einops 코드를 읽는 데 핵심이므로 번역하지 않습니다. `mean` 축약 예제는 backend 차이를 피하기 위해 부동소수점 입력을 사용합니다. 자세한 범위는 [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)를 참고하세요.
+
 ## 다른 팩 예시
 
 ### Polars
@@ -224,6 +239,8 @@ pretrained= in_chans= features_only= out_indices= checkpoint_path= drop_rate= gl
 degrees= p= same_on_batch= keepdim= align_corners= padding_mode=
 ```
 
+Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 KoPy 전역 번역 대상이 아닙니다.
+
 ## 실제 라이브러리 설치
 
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
@@ -231,7 +248,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia jax opencv-python transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia einops jax opencv-python transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -272,6 +289,7 @@ kopy packs lightgbm
 kopy packs torchvision
 kopy packs timm
 kopy packs kornia
+kopy packs einops
 kopy packs jax
 kopy packs opencv
 kopy packs matplotlib
@@ -288,6 +306,7 @@ kopy packs --json
 kopy packs torchvision --json
 kopy packs timm --json
 kopy packs kornia --json
+kopy packs einops --json
 ```
 
 ## Core 예시
@@ -316,6 +335,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/TORCHVISION_PACK.md`](docs/TORCHVISION_PACK.md)
 - [`docs/TIMM_PACK.md`](docs/TIMM_PACK.md)
 - [`docs/KORNIA_PACK.md`](docs/KORNIA_PACK.md)
+- [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)
 - [`docs/JAX_PACK.md`](docs/JAX_PACK.md)
 - [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
@@ -345,6 +365,7 @@ src/kopy
    │   ├─ torchvision.py
    │   ├─ timm.py
    │   ├─ kornia.py
+   │   ├─ einops.py
    │   ├─ jax.py
    │   ├─ opencv.py
    │   ├─ transformers.py
