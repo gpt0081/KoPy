@@ -44,7 +44,7 @@ class TorchGeometricPackTests(unittest.TestCase):
             "graph = Data(x=x, edge_index=edge_index)\n"
         )
         kopy = to_kopy(source).kopy
-        self.assertIn("프롬 토치지오메트릭.데이터 임포트 데이터", kopy)
+        self.assertIn("프롬 토치지오메트릭.data 임포트 데이터", kopy)
         self.assertIn("프롬 토치지오메트릭.nn 임포트 지씨엔컨브", kopy)
         self.assertIn("graph = 데이터(x=x, edge_index=edge_index)", kopy)
 
