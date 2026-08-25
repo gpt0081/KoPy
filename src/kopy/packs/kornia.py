@@ -22,6 +22,7 @@ KORNIA_PACK = LibraryPack(
         "컬러": "color",
         "필터즈": "filters",
         "지오메트리": "geometry",
+        "트랜스폼": "transform",
         "모폴로지": "morphology",
         "메트릭스": "metrics",
         "로시즈": "losses",
