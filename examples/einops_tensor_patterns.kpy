@@ -1,0 +1,22 @@
+임포트 넘파이 애즈 np
+프롬 에이놉스 임포트 리어레인지, 리듀스, 리피트
+
+# 실제 Python/einops 코드에서 자주 보는 변수명과 pattern 표기는 그대로 남깁니다.
+images = np.에이레인지(2 * 4 * 4 * 3).리셰이프(2, 4, 4, 3)
+
+# NHWC -> NCHW
+features = 리어레인지(images, "batch height width channels -> batch channels height width")
+
+# 공간 축 평균 풀링
+pooled = 리듀스(
+    features,
+    "batch channels height width -> batch channels",
+    "mean",
+)
+
+# 하나의 feature vector를 여러 sample로 반복
+batch = 리피트(pooled[0], "channels -> batch channels", batch=3)
+
+프린트("features shape:", features.shape)
+프린트("pooled shape:", pooled.shape)
+프린트("batch shape:", batch.shape)
