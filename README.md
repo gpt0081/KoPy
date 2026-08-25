@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.30**  
+현재 Core 버전: **0.5.31**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **31개**입니다.
+현재 공식 Library Pack은 **32개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -53,6 +53,7 @@ CPython + 실제 Python 라이브러리
 | Transformers | 사전학습 모델·생성·Trainer |
 | Sentence Transformers | 임베딩·유사도·semantic search·reranking 모델 API |
 | FAISS | 벡터 인덱스·nearest-neighbor 검색·L2/IP·IVF·HNSW |
+| Qdrant Client | 벡터DB collection·point 저장·nearest-neighbor query·payload filter |
 | Datasets | 데이터 로딩·전처리·분할 |
 | Tokenizers | 고속 토큰화·Encoding·어휘 모델 |
 | Accelerate | 장치·분산 학습 준비와 실행 |
@@ -106,6 +107,28 @@ distances, indices = index.search(query, 2)
 ```
 
 `embeddings`, `query`, `index`, `distances`, `indices`와 `add()`, `search()`는 실제 vector search/RAG 코드에서 반복적으로 등장하고 다른 라이브러리에서도 널리 쓰이는 표현이므로 Python 원형을 유지합니다. FAISS 고유 클래스와 함수만 namespace-scoped 방식으로 음역합니다. 자세한 범위는 [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)를 참고하세요.
+
+## Qdrant 벡터DB 예시
+
+```kopy
+프롬 큐드란트 임포트 큐드란트클라이언트
+프롬 큐드란트.models 임포트 벡터파람스, 디스턴스, 포인트스트럭트
+
+client = 큐드란트클라이언트(":memory:")
+client.크리에이트컬렉션(
+    collection_name="docs",
+    vectors_config=벡터파람스(size=384, distance=디스턴스.COSINE),
+)
+
+client.upsert(collection_name="docs", points=points)
+result = client.쿼리포인츠(
+    collection_name="docs",
+    query=query,
+    limit=5,
+)
+```
+
+모듈 음역 `큐드란트`와 클래스 음역 `큐드란트클라이언트`는 `from ... import ...` 변환의 모호성을 피하기 위해 의도적으로 구분합니다. `client`, `collection`, `points`, `query`, `result`, `payload`, `score`, `vector`와 `collection_name=`, `vectors_config=`, `with_payload=`, `limit=` 같은 실제 Qdrant/RAG 관례는 Python 원형을 유지합니다. `upsert()`, `scroll()`, `retrieve()`, `delete()`, `count()` 역시 데이터베이스·검색 라이브러리 전반에서 흔한 메서드라 번역하지 않습니다. 자세한 범위는 [`docs/QDRANT_PACK.md`](docs/QDRANT_PACK.md)를 참고하세요.
 
 ## PyTorch Geometric 예시
 
@@ -379,9 +402,10 @@ max_epochs= accelerator= devices= logger= precision= strategy=
 enable_checkpointing= limit_train_batches= enable_progress_bar= enable_model_summary=
 task= average= threshold= batch_size= convert_to_tensor= normalize_embeddings= top_k=
 in_channels= out_channels= heads= add_self_loops= num_neighbors=
+collection_name= vectors_config= with_payload= limit=
 ```
 
-TorchMetrics의 `update`, `compute`, `reset`, `clone`, `plot`처럼 일반적인 lifecycle 메서드와 FAISS의 `add`, `search`, `train`, `reset`, `remove_ids`, `reconstruct`처럼 여러 라이브러리에서 반복되는 일반 메서드도 전역 번역 대상이 아닙니다. Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 그대로 둡니다.
+TorchMetrics의 `update`, `compute`, `reset`, `clone`, `plot`처럼 일반적인 lifecycle 메서드와 FAISS의 `add`, `search`, `train`, `reset`, `remove_ids`, `reconstruct`, Qdrant의 `upsert`, `scroll`, `retrieve`, `delete`, `count`처럼 여러 라이브러리에서 반복되는 일반 메서드도 전역 번역 대상이 아닙니다. Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 그대로 둡니다.
 
 ## 실제 라이브러리 설치
 
@@ -390,7 +414,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터/검색 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers faiss-cpu datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers faiss-cpu qdrant-client datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -441,6 +465,7 @@ kopy packs lightning
 kopy packs torchmetrics
 kopy packs sentence-transformers
 kopy packs faiss
+kopy packs qdrant
 kopy packs optuna
 kopy packs matplotlib
 kopy version
@@ -462,6 +487,7 @@ kopy packs lightning --json
 kopy packs torchmetrics --json
 kopy packs sentence-transformers --json
 kopy packs faiss --json
+kopy packs qdrant --json
 kopy packs optuna --json
 ```
 
@@ -500,6 +526,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
 - [`docs/SENTENCE_TRANSFORMERS_PACK.md`](docs/SENTENCE_TRANSFORMERS_PACK.md)
 - [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)
+- [`docs/QDRANT_PACK.md`](docs/QDRANT_PACK.md)
 - [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)
 - [`docs/MLFLOW_PACK.md`](docs/MLFLOW_PACK.md)
 - [`docs/MATPLOTLIB_PACK.md`](docs/MATPLOTLIB_PACK.md)
@@ -536,6 +563,7 @@ src/kopy
    │   ├─ transformers.py
    │   ├─ sentence_transformers.py
    │   ├─ faiss.py
+   │   ├─ qdrant.py
    │   ├─ datasets.py
    │   ├─ tokenizers.py
    │   ├─ accelerate.py
@@ -559,9 +587,9 @@ src/kopy
 
 검색/RAG 방향을 우선합니다.
 
-- Qdrant Client
 - Chroma
 - BM25 / lexical search
+- Hybrid retrieval
 
 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
 
