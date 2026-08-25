@@ -10,7 +10,7 @@ class EinopsRuntimeTests(unittest.TestCase):
         source = (
             "임포트 넘파이 애즈 np\n"
             "프롬 에이놉스 임포트 리어레인지, 리듀스, 리피트, 팩, 언팩, 파스셰이프\n"
-            "x = np.에이레인지(24).리셰이프(2, 3, 4)\n"
+            "x = np.에이레인지(24, dtype=np.플로트64).리셰이프(2, 3, 4)\n"
             "reordered = 리어레인지(x, 'b h w -> b w h')\n"
             "pooled = 리듀스(x, 'b h w -> b h', 'mean')\n"
             "repeated = 리피트(np.어레이([1, 2, 3]), 'c -> b c', b=2)\n"
