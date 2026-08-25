@@ -20,8 +20,11 @@ CPU CI에서는 위 패키지를 그대로 사용합니다. GPU/TPU 설치는 JA
 
 X = jnp.어레이([1.0, 2.0, 3.0])
 loss_fn = lambda x: jnp.썸(jnp.스퀘어(x))
-grad_fn = 잭스.잇(잭스.그라드(loss_fn))
+grad_fn = 잭스.짓(잭스.그라드(loss_fn))
 grads = grad_fn(X)
+
+key = 잭스.random.키(42)
+noise = 잭스.random.노멀(key, shape=X.shape)
 
 프린트(grads)
 ```
@@ -36,6 +39,9 @@ X = jnp.array([1.0, 2.0, 3.0])
 loss_fn = lambda x: jnp.sum(jnp.square(x))
 grad_fn = jax.jit(jax.grad(loss_fn))
 grads = grad_fn(X)
+
+key = jax.random.key(42)
+noise = jax.random.normal(key, shape=X.shape)
 
 print(grads)
 ```
@@ -59,9 +65,20 @@ CLI에서 전체 멤버를 확인할 수 있습니다.
 kopy packs jax
 ```
 
+## dotted import 경로 정책
+
+현재 KoPy translator는 `jax.numpy`, `jax.random`, `jax.nn`, `jax.lax`, `jax.tree` 같은 dotted submodule 경로를 Python 원형으로 유지합니다. 따라서 다음처럼 씁니다.
+
+```kopy
+임포트 잭스.numpy 애즈 jnp
+임포트 잭스.random 애즈 jr
+```
+
+서브모듈 경로 자체까지 음역하면 alias import를 Python으로 왕복 변환할 때 모호성이 생길 수 있기 때문입니다. 대신 `jnp.어레이`, `jr.키`, `잭스.그라드`, `잭스.짓`처럼 실제 API 멤버는 JAX 팩 범위에서 음역할 수 있습니다.
+
 ## 충돌 방지
 
-JAX API 이름은 Core 전역 단어표에 추가하지 않습니다. `잭스`, `jax`, `jax.numpy`가 import된 파일에서만 팩이 활성화됩니다.
+JAX API 이름은 Core 전역 단어표에 추가하지 않습니다. `잭스`, `jax`, `jax.numpy` 등이 import된 파일에서만 팩이 활성화됩니다.
 
 다음과 같은 키워드 인자는 여러 라이브러리에서 공통으로 쓰이므로 Python 원형을 유지합니다.
 
