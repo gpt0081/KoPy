@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.20**  
+현재 Core 버전: **0.5.21**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -11,7 +11,7 @@ KoPy의 목적은 Python을 한국어로 대체하는 것이 아니라 **원문 
 
 - 표준 Python 코드는 수정 없이 그대로 실행할 수 있어야 합니다.
 - KoPy 표현과 Python 표현을 한 파일에서 혼용할 수 있습니다.
-- `X_train`, `X_test`, `df`, `features`, `fit`, `predict`처럼 실제 Python/데이터 과학에서 자주 보는 관례는 학습 가치가 있으면 의도적으로 남깁니다.
+- `X_train`, `X_test`, `df`, `features`, `model`, `fit`, `predict`처럼 실제 Python/데이터 과학에서 자주 보는 관례는 학습 가치가 있으면 의도적으로 남깁니다.
 - 외부 라이브러리 API 번역은 해당 라이브러리가 import된 파일에서만 활성화되는 namespace-scoped Library Pack으로 제공합니다.
 - 서로 다른 라이브러리에서 의미가 겹칠 수 있는 키워드 인자는 가능한 한 Python 원형을 유지합니다.
 
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **21개**입니다.
+현재 공식 Library Pack은 **22개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -41,6 +41,7 @@ CPython + 실제 Python 라이브러리
 | XGBoost | 그래디언트 부스팅 분류·회귀·DMatrix·Booster |
 | LightGBM | 그래디언트 부스팅 분류·회귀·Dataset·Booster |
 | PyTorch | 텐서·자동미분·신경망·최적화 |
+| TorchVision | 이미지 변환·비전 모델·데이터셋·detection ops |
 | JAX | 자동미분·JIT·벡터화·가속 배열 계산 |
 | OpenCV | 이미지·영상 전처리·엣지·윤곽선·DNN·비디오 I/O |
 | Transformers | 사전학습 모델·생성·Trainer |
@@ -55,38 +56,9 @@ CPython + 실제 Python 라이브러리
 | MLflow | experiment/run·파라미터·메트릭·태그·아티팩트 추적 |
 | Matplotlib | 학습 곡선·분포·이미지·일반 데이터 시각화 |
 
-## Polars 예시
-
-최근 추가된 Polars 팩은 실제 Python 데이터 처리 관례를 함께 익히도록 `df`, `features`, `summary` 같은 변수명을 의도적으로 유지하는 예제를 제공합니다.
-
-```kopy
-임포트 폴라스 애즈 pl
-
-df = pl.데이터프레임({
-    "label": ["A", "A", "B", "B"],
-    "x": [1, 2, 3, 4],
-})
-
-features = df.위드컬럼즈(
-    (pl.컬("x") * 2).에일리어스("x2")
-)
-
-summary = (
-    features
-    .필터(pl.컬("x2") >= 4)
-    .그룹바이("label")
-    .어그(pl.컬("x2").미인().에일리어스("x2_mean"))
-    .소트("label")
-)
-
-프린트(summary)
-```
-
-Polars의 `has_header=`, `separator=`, `schema=`, `strict=` 같은 키워드 인자는 Python 원형을 유지합니다. 자세한 범위는 [`docs/POLARS_PACK.md`](docs/POLARS_PACK.md)를 참고하세요.
-
 ## 기계학습 예시
 
-KoPy는 영문 ML 관례를 지우지 않습니다. 아래처럼 변수명은 실제 Python 교재와 코드에서 흔한 형태를 남기면서 API만 KoPy 표현으로 익힐 수 있습니다.
+KoPy는 영문 ML 관례를 지우지 않습니다. 변수명은 실제 Python 교재와 코드에서 흔한 형태를 남기면서 API만 KoPy 표현으로 익힐 수 있습니다.
 
 ```kopy
 프롬 사이킷런.model_selection 임포트 트레인테스트스플릿
@@ -106,40 +78,54 @@ model.핏(X_train, y_train)
 predictions = model.프리딕트(X_test)
 ```
 
-이 방식으로 `train/test`, `model`, `fit`, `predict`가 실제 Python에서 어떤 역할을 하는지 KoPy와 원문을 대응시켜 학습할 수 있습니다.
+## TorchVision 예시
+
+```kopy
+임포트 토치
+임포트 토치비전 애즈 tv
+
+image = 토치.원즈((3, 32, 32), dtype=토치.플로트32)
+
+transform = tv.트랜스폼즈.컴포즈([
+    tv.트랜스폼즈.리사이즈((16, 16)),
+    tv.트랜스폼즈.노멀라이즈(
+        mean=[0.5, 0.5, 0.5],
+        std=[0.5, 0.5, 0.5],
+    ),
+])
+
+features = transform(image)
+model = tv.모델즈.레스넷18(weights=None)
+```
+
+`tv`, `image`, `features`, `model`, `weights=`, `mean=`, `std=` 같은 실제 Python/TorchVision 관례는 학습 가치가 있어 원문 형태를 유지합니다. 자세한 범위는 [`docs/TORCHVISION_PACK.md`](docs/TORCHVISION_PACK.md)를 참고하세요.
 
 ## 다른 팩 예시
+
+### Polars
+
+```kopy
+임포트 폴라스 애즈 pl
+
+df = pl.데이터프레임({"label": ["A", "A", "B"], "x": [1, 2, 3]})
+features = df.위드컬럼즈((pl.컬("x") * 2).에일리어스("x2"))
+summary = features.그룹바이("label").어그(pl.컬("x2").미인())
+```
 
 ### XGBoost
 
 ```kopy
-임포트 넘파이 애즈 np
 임포트 엑스지부스트 애즈 xgb
-
-X = np.어레이([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
-y = np.어레이([0, 0, 0, 1])
-model = xgb.엑스지비클래시파이어(
-    n_estimators=20,
-    max_depth=2,
-    tree_method="hist",
-    device="cpu",
-)
-model.핏(X, y)
-predictions = model.프리딕트(X)
+model = xgb.엑스지비클래시파이어(n_estimators=20, max_depth=2, tree_method="hist")
+model.핏(X_train, y_train)
+predictions = model.프리딕트(X_test)
 ```
 
 ### LightGBM
 
 ```kopy
 임포트 라이트지비엠 애즈 lgb
-
-model = lgb.엘지비엠클래시파이어(
-    n_estimators=20,
-    num_leaves=4,
-    min_child_samples=1,
-    verbosity=-1,
-    n_jobs=1,
-)
+model = lgb.엘지비엠클래시파이어(n_estimators=20, num_leaves=4, n_jobs=1)
 model.핏(X_train, y_train)
 predictions = model.프리딕트(X_test)
 ```
@@ -156,48 +142,27 @@ grad_fn = 잭스.짓(잭스.그라드(loss_fn))
 grads = grad_fn(X)
 ```
 
-`jax.numpy`, `jax.random` 같은 dotted submodule 경로는 Python 원형을 유지하고 API 멤버만 namespace-scoped 방식으로 음역합니다. 자세한 내용은 [`docs/JAX_PACK.md`](docs/JAX_PACK.md)를 참고하세요.
+`jax.numpy`, `jax.random` 같은 dotted submodule 경로는 Python 원형을 유지하고 API 멤버만 namespace-scoped 방식으로 음역합니다.
 
 ### OpenCV
 
 ```kopy
 임포트 오픈씨브이 애즈 cv2
-
 resized = cv2.리사이즈(image, (224, 224))
 gray = cv2.씨브이티컬러(resized, cv2.COLOR_BGR2GRAY)
 edges = cv2.캐니(gray, 50, 150)
 ```
 
-`cv2.COLOR_BGR2GRAY`, `cv2.INTER_AREA` 같은 상수와 `interpolation=`, `scalefactor=`, `size=`, `swapRB=` 같은 키워드 인자는 실제 OpenCV 원문 학습과 충돌 방지를 위해 Python 원형을 유지합니다. 자세한 범위는 [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)를 참고하세요.
-
 ### Matplotlib
 
 ```kopy
 임포트 맷플롯립.pyplot 애즈 plt
-
 figure, ax = plt.서브플롯츠()
 ax.플롯([1, 2, 3], [1.0, 0.7, 0.5], marker="o", label="loss")
 ax.셋타이틀("Training loss")
 ax.레전드()
 figure.세이브피그("loss.png")
-plt.클로즈(figure)
 ```
-
-### MLflow
-
-```kopy
-임포트 엠엘플로우 애즈 mlf
-
-mlf.셋트래킹유알아이("sqlite:///mlflow.db")
-mlf.셋익스페리먼트("kopy-demo")
-
-위드 mlf.스타트런(run_name="baseline") 애즈 run:
-    mlf.로그파람("learning_rate", 0.01)
-    mlf.로그메트릭("loss", 0.25)
-    프린트(run.인포.런아이디)
-```
-
-MLflow 3.15 full package는 현재 `pandas<3` 제약이 있으므로 pandas 3.x 통합 환경에서는 `mlflow-skinny>=3.15,<3.16`을 사용하고 full MLflow는 별도 가상환경 사용을 권장합니다.
 
 ## 충돌 방지 원칙
 
@@ -214,6 +179,7 @@ n_jobs= num_boost_round= num_leaves= min_child_samples=
 verbosity= random_state= has_header= separator= schema= strict=
 shape= static_argnums= static_argnames= in_axes= out_axes= has_aux=
 interpolation= scalefactor= size= swapRB= crop= thickness=
+mean= std= inplace= weights= progress= num_classes= download= root= train=
 ```
 
 ## 실제 라이브러리 설치
@@ -223,7 +189,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch jax opencv-python transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision jax opencv-python transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -235,10 +201,6 @@ python -m pip install "mlflow-skinny>=3.15,<3.16"
 ```
 
 full MLflow 3.15는 별도 가상환경 설치를 권장합니다.
-
-```powershell
-python -m pip install "mlflow>=3.15,<3.16"
-```
 
 ## 개발용 설치
 
@@ -265,6 +227,7 @@ kopy packs polars
 kopy packs scipy
 kopy packs xgboost
 kopy packs lightgbm
+kopy packs torchvision
 kopy packs jax
 kopy packs opencv
 kopy packs matplotlib
@@ -278,10 +241,8 @@ kopy words --json
 kopy info --json
 kopy diagnose examples\hello.kpy --json
 kopy packs --json
-kopy packs opencv --json
+kopy packs torchvision --json
 ```
-
-VS Code 확장은 별도 Core 단어표나 오타 알고리즘을 유지하지 않고 KoPy Core를 사용합니다.
 
 ## Core 예시
 
@@ -306,6 +267,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/XGBOOST_PACK.md`](docs/XGBOOST_PACK.md)
 - [`docs/LIGHTGBM_PACK.md`](docs/LIGHTGBM_PACK.md)
 - [`docs/PYTORCH_PACK.md`](docs/PYTORCH_PACK.md)
+- [`docs/TORCHVISION_PACK.md`](docs/TORCHVISION_PACK.md)
 - [`docs/JAX_PACK.md`](docs/JAX_PACK.md)
 - [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
@@ -332,6 +294,7 @@ src/kopy
    │   ├─ xgboost.py
    │   ├─ lightgbm.py
    │   ├─ torch.py
+   │   ├─ torchvision.py
    │   ├─ jax.py
    │   ├─ opencv.py
    │   ├─ transformers.py
