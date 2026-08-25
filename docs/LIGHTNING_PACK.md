@@ -24,14 +24,15 @@ class Model(L.라이트닝모듈):
     def forward(self, x):
         return self.layer(x)
 
-    def 트레이닝스텝(self, batch, batch_idx):
+    # Lightning이 이름으로 찾는 framework override hook은 Python 원형 유지
+    def training_step(self, batch, batch_idx):
         X_train, y_train = batch
         predictions = self(X_train)
         loss = 토치.엔엔.엠에스이로스()(predictions, y_train)
         self.로그("train_loss", loss)
         return loss
 
-    def 컨피규어옵티마이저스(self):
+    def configure_optimizers(self):
         return 토치.옵팀.아담(self.파라미터스(), lr=0.001)
 
 model = Model()
@@ -51,13 +52,18 @@ trainer.핏(model, train_loader)
 | `.밸리데이트()` | `.validate()` |
 | `.테스트()` | `.test()` |
 | `.프리딕트()` | `.predict()` |
-| `.트레이닝스텝()` | `.training_step()` |
-| `.밸리데이션스텝()` | `.validation_step()` |
-| `.컨피규어옵티마이저스()` | `.configure_optimizers()` |
 | `.로그()` | `.log()` |
+| `.로그딕트()` | `.log_dict()` |
 | `.세이브하이퍼파라미터스()` | `.save_hyperparameters()` |
+| `.매뉴얼백워드()` | `.manual_backward()` |
 
-## 원문으로 남기는 것
+## framework override hook은 영어 원형 유지
+
+`training_step`, `validation_step`, `test_step`, `predict_step`, `configure_optimizers`는 Lightning이 subclass에서 **정확한 메서드 이름으로 검색하는 framework hook**입니다. 현재 KoPy Library Pack은 import된 namespace와 객체 attribute만 안전하게 번역하며, 클래스 본문의 bare method definition을 전역 치환하지 않습니다.
+
+따라서 이 hook들을 억지로 전역 번역하지 않습니다. 이는 Python 호환성을 지키면서 실제 Lightning 원문 코드를 자연스럽게 익히게 하는 KoPy의 교육 목적에도 맞습니다.
+
+## 그 밖에 원문으로 남기는 것
 
 `model`, `trainer`, `train_loader`, `X_train`, `y_train`, `predictions` 같은 변수명은 실제 Python/ML 자료에서 매우 자주 보이므로 학습 연결성을 위해 그대로 둘 수 있습니다.
 
