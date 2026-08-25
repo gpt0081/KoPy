@@ -13,12 +13,12 @@ class TorchGeometricRuntimeTests(unittest.TestCase):
             "프롬 토치지오메트릭.nn 임포트 지씨엔컨브, 글로벌미인풀\n"
             "프롬 토치지오메트릭.utils 임포트 투언디렉티드\n"
             "x = 토치.텐서([[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]], dtype=토치.플로트32)\n"
-            "edge_index = 토치.텐서([[0, 1], [1, 2]], dtype=토치.롱)\n"
+            "edge_index = 토치.텐서([[0, 1], [1, 2]], dtype=토치.인트64)\n"
             "edge_index = 투언디렉티드(edge_index)\n"
             "graph = 데이터(x=x, edge_index=edge_index)\n"
             "conv = 지씨엔컨브(in_channels=2, out_channels=4)\n"
             "node_embeddings = conv(graph.x, graph.edge_index)\n"
-            "batch = 토치.제로즈(graph.num_nodes, dtype=토치.롱)\n"
+            "batch = 토치.제로즈(graph.num_nodes, dtype=토치.인트64)\n"
             "graph_embedding = 글로벌미인풀(node_embeddings, batch)\n"
         )
         namespace = {}
