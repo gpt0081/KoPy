@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.25**  
+현재 Core 버전: **0.5.26**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **26개**입니다.
+현재 공식 Library Pack은 **27개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -46,6 +46,7 @@ CPython + 실제 Python 라이브러리
 | Kornia | 미분가능 이미지 처리·증강·필터·기하·비전 메트릭 |
 | einops | 텐서 차원 재배열·축약·반복·패킹·einsum |
 | JAX | 자동미분·JIT·벡터화·가속 배열 계산 |
+| Lightning | PyTorch 모델·Trainer·학습/검증/테스트/예측 실행·로깅 |
 | OpenCV | 이미지·영상 전처리·엣지·윤곽선·DNN·비디오 I/O |
 | Transformers | 사전학습 모델·생성·Trainer |
 | Datasets | 데이터 로딩·전처리·분할 |
@@ -81,6 +82,37 @@ model = 로지스틱리그레션(max_iter=200)
 model.핏(X_train, y_train)
 predictions = model.프리딕트(X_test)
 ```
+
+## Lightning 예시
+
+```kopy
+임포트 라이트닝 애즈 L
+임포트 토치
+
+class Model(L.라이트닝모듈):
+    def __init__(self):
+        super().__init__()
+        self.layer = 토치.엔엔.리니어(4, 1)
+
+    def forward(self, x):
+        return self.layer(x)
+
+    def training_step(self, batch, batch_idx):
+        X_train, y_train = batch
+        predictions = self(X_train)
+        loss = 토치.엔엔.엠에스이로스()(predictions, y_train)
+        self.로그("train_loss", loss)
+        return loss
+
+    def configure_optimizers(self):
+        return 토치.옵팀.아담(self.파라미터스(), lr=0.001)
+
+model = Model()
+trainer = L.트레이너(max_epochs=5, accelerator="cpu", devices=1)
+trainer.핏(model, train_loader)
+```
+
+`training_step`, `validation_step`, `test_step`, `predict_step`, `configure_optimizers`는 Lightning이 정확한 이름으로 찾는 framework override hook이므로 Python 원형을 유지합니다. `model`, `trainer`, `X_train`, `y_train`과 Trainer 키워드 인자도 실제 Lightning 코드를 익히기 위해 원문 형태를 유지합니다. 자세한 범위는 [`docs/LIGHTNING_PACK.md`](docs/LIGHTNING_PACK.md)를 참고하세요.
 
 ## TorchVision 예시
 
@@ -259,6 +291,8 @@ pretrained= in_chans= features_only= out_indices= checkpoint_path= drop_rate= gl
 degrees= p= same_on_batch= keepdim= align_corners= padding_mode=
 direction= study_name= storage= sampler= pruner= n_trials= timeout=
 callbacks= catch= gc_after_trial= show_progress_bar= log=
+max_epochs= accelerator= devices= logger= precision= strategy=
+enable_checkpointing= limit_train_batches= enable_progress_bar= enable_model_summary=
 ```
 
 Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 KoPy 전역 번역 대상이 아닙니다.
@@ -270,7 +304,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia einops jax opencv-python transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia einops jax opencv-python lightning transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -314,6 +348,7 @@ kopy packs kornia
 kopy packs einops
 kopy packs jax
 kopy packs opencv
+kopy packs lightning
 kopy packs optuna
 kopy packs matplotlib
 kopy version
@@ -330,6 +365,7 @@ kopy packs torchvision --json
 kopy packs timm --json
 kopy packs kornia --json
 kopy packs einops --json
+kopy packs lightning --json
 kopy packs optuna --json
 ```
 
@@ -361,6 +397,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/KORNIA_PACK.md`](docs/KORNIA_PACK.md)
 - [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)
 - [`docs/JAX_PACK.md`](docs/JAX_PACK.md)
+- [`docs/LIGHTNING_PACK.md`](docs/LIGHTNING_PACK.md)
 - [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
 - [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)
@@ -392,6 +429,7 @@ src/kopy
    │   ├─ kornia.py
    │   ├─ einops.py
    │   ├─ jax.py
+   │   ├─ lightning.py
    │   ├─ opencv.py
    │   ├─ transformers.py
    │   ├─ datasets.py
@@ -416,7 +454,7 @@ src/kopy
 ## 다음 AI 확장 후보
 
 - TensorBoard
-- PyTorch Lightning
+- TorchMetrics
 
 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
 

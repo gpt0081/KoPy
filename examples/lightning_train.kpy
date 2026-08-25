@@ -1,0 +1,39 @@
+임포트 라이트닝 애즈 L
+임포트 토치
+프롬 torch.utils.data 임포트 DataLoader, TensorDataset
+
+
+class LinearModel(L.라이트닝모듈):
+    def __init__(self):
+        super().__init__()
+        self.layer = 토치.엔엔.리니어(2, 1)
+        self.loss_fn = 토치.엔엔.엠에스이로스()
+
+    def forward(self, x):
+        return self.layer(x)
+
+    # Lightning이 이름으로 찾는 override hook은 upstream Python 이름을 유지한다.
+    def training_step(self, batch, batch_idx):
+        X_train, y_train = batch
+        predictions = self(X_train)
+        loss = self.loss_fn(predictions, y_train)
+        self.로그("train_loss", loss)
+        return loss
+
+    def configure_optimizers(self):
+        return 토치.옵팀.아담(self.파라미터스(), lr=0.01)
+
+
+X_train = 토치.텐서([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+y_train = 토치.텐서([[0.0], [2.0], [4.0], [6.0]])
+train_loader = DataLoader(TensorDataset(X_train, y_train), batch_size=4)
+
+model = LinearModel()
+trainer = L.트레이너(
+    max_epochs=5,
+    accelerator="cpu",
+    devices=1,
+    logger=False,
+    enable_checkpointing=False,
+)
+trainer.핏(model, train_loader)
