@@ -12,11 +12,11 @@ class JaxRuntimeTests(unittest.TestCase):
             "임포트 잭스.numpy 애즈 jnp\n"
             "X = jnp.어레이([1.0, 2.0, 3.0])\n"
             "loss_fn = lambda x: jnp.썸(jnp.스퀘어(x))\n"
-            "grad_fn = 잭스.잇(잭스.그라드(loss_fn))\n"
+            "grad_fn = 잭스.짓(잭스.그라드(loss_fn))\n"
             "grads = grad_fn(X)\n"
             "batched = 잭스.브이맵(lambda x: x * 2)(X)\n"
-            "key = 잭스.랜덤.키(7)\n"
-            "sample = 잭스.랜덤.노멀(key, shape=(3,))\n"
+            "key = 잭스.random.키(7)\n"
+            "sample = 잭스.random.노멀(key, shape=(3,))\n"
         )
         namespace = {}
         exec(translate(source).python, namespace)
