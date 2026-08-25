@@ -1,0 +1,20 @@
+임포트 토치
+임포트 팀엠
+
+# 실제 Python/timm 관례를 일부러 남긴다.
+# model, x, features 같은 이름에 익숙해지면 원문 AI 코드를 읽기 쉽다.
+model = 팀엠.크리에이트모델(
+    "resnet18",
+    pretrained=False,
+    num_classes=10,
+)
+
+model.이밸()
+x = 토치.랜드엔((1, 3, 224, 224))
+
+위드 토치.노그라드():
+    features = model.포워드피처스(x)
+    logits = model(x)
+
+프린트("feature shape:", features.셰이프)
+프린트("logit shape:", logits.셰이프)
