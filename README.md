@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.26**  
+현재 Core 버전: **0.5.27**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -11,13 +11,13 @@ KoPy의 목적은 Python을 한국어로 대체하는 것이 아니라 **원문 
 
 - 표준 Python 코드는 수정 없이 그대로 실행할 수 있어야 합니다.
 - KoPy 표현과 Python 표현을 한 파일에서 혼용할 수 있습니다.
-- `X_train`, `X_test`, `df`, `features`, `model`, `fit`, `predict`처럼 실제 Python/데이터 과학에서 자주 보는 관례는 학습 가치가 있으면 의도적으로 남깁니다.
+- `X_train`, `X_test`, `df`, `features`, `model`, `fit`, `predict`, `preds`, `target`처럼 실제 Python/데이터 과학에서 자주 보는 관례는 학습 가치가 있으면 의도적으로 남깁니다.
 - 외부 라이브러리 API 번역은 해당 라이브러리가 import된 파일에서만 활성화되는 namespace-scoped Library Pack으로 제공합니다.
-- 서로 다른 라이브러리에서 의미가 겹칠 수 있는 키워드 인자는 가능한 한 Python 원형을 유지합니다.
+- 서로 다른 라이브러리에서 의미가 겹칠 수 있는 일반 메서드와 키워드 인자는 가능한 한 Python 원형을 유지합니다.
 
 ## KoPy v0.5 방향: AI 개발
 
-Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy 표현을 표준 Python 표현으로 바꾸고 실제 계산·학습·추론·시각화·실험 추적은 원래 Python 라이브러리가 담당합니다.
+Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy 표현을 표준 Python 표현으로 바꾸고 실제 계산·학습·추론·시각화·평가·실험 추적은 원래 Python 라이브러리가 담당합니다.
 
 ```text
 KoPy 코드
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **27개**입니다.
+현재 공식 Library Pack은 **28개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -47,6 +47,7 @@ CPython + 실제 Python 라이브러리
 | einops | 텐서 차원 재배열·축약·반복·패킹·einsum |
 | JAX | 자동미분·JIT·벡터화·가속 배열 계산 |
 | Lightning | PyTorch 모델·Trainer·학습/검증/테스트/예측 실행·로깅 |
+| TorchMetrics | 분류·회귀 등 모델 평가 metric과 MetricCollection |
 | OpenCV | 이미지·영상 전처리·엣지·윤곽선·DNN·비디오 I/O |
 | Transformers | 사전학습 모델·생성·Trainer |
 | Datasets | 데이터 로딩·전처리·분할 |
@@ -113,6 +114,24 @@ trainer.핏(model, train_loader)
 ```
 
 `training_step`, `validation_step`, `test_step`, `predict_step`, `configure_optimizers`는 Lightning이 정확한 이름으로 찾는 framework override hook이므로 Python 원형을 유지합니다. `model`, `trainer`, `X_train`, `y_train`과 Trainer 키워드 인자도 실제 Lightning 코드를 익히기 위해 원문 형태를 유지합니다. 자세한 범위는 [`docs/LIGHTNING_PACK.md`](docs/LIGHTNING_PACK.md)를 참고하세요.
+
+## TorchMetrics 예시
+
+```kopy
+임포트 토치
+임포트 토치메트릭스 애즈 tm
+
+preds = 토치.텐서([0, 1, 1, 0])
+target = 토치.텐서([0, 1, 0, 0])
+
+accuracy = tm.애큐러시(task="binary")
+f1 = tm.에프원스코어(task="binary")
+
+프린트(accuracy(preds, target))
+프린트(f1(preds, target))
+```
+
+`preds`, `target`, `metric`, `accuracy`, `f1` 같은 실제 Python/TorchMetrics 관례와 `task=`, `num_classes=`, `average=`, `threshold=` 같은 키워드 인자는 원문 형태를 유지합니다. `update()`, `compute()`, `reset()`, `clone()`, `plot()`도 여러 라이브러리에서 널리 쓰이는 일반 메서드이므로 음역하지 않습니다. 자세한 범위는 [`docs/TORCHMETRICS_PACK.md`](docs/TORCHMETRICS_PACK.md)를 참고하세요.
 
 ## TorchVision 예시
 
@@ -186,7 +205,7 @@ pooled = 리듀스(features, "batch channels height width -> batch channels", "m
 batch = 리피트(pooled[0], "channels -> batch channels", batch=3)
 ```
 
-Einops의 pattern 문자열과 `batch=`, `channels=` 같은 축 이름은 실제 Python/einops 코드를 읽는 데 핵심이므로 번역하지 않습니다. `mean` 축약 예제는 backend 차이를 피하기 위해 부동소수점 입력을 사용합니다. 자세한 범위는 [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)를 참고하세요.
+Einops의 pattern 문자열과 `batch=`, `channels=` 같은 축 이름은 실제 Python/einops 코드를 읽는 데 핵심이므로 번역하지 않습니다. 자세한 범위는 [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)를 참고하세요.
 
 ## 다른 팩 예시
 
@@ -223,19 +242,15 @@ predictions = model.프리딕트(X_test)
 ```kopy
 임포트 옵튜나
 
-
 def objective(trial):
     learning_rate = trial.서제스트플로트("learning_rate", 1e-4, 1e-1, log=True)
     max_depth = trial.서제스트인트("max_depth", 2, 8)
     return (learning_rate - 0.01) ** 2 + (max_depth - 4) ** 2
 
-
 study = 옵튜나.크리에이트스터디(direction="minimize")
 study.옵티마이즈(objective, n_trials=20)
 프린트(study.베스트파람스)
 ```
-
-`study`, `trial`, `objective`, `learning_rate`, `max_depth` 같은 실제 Python/Optuna 관례와 사용자 정의 파라미터 이름은 학습 연결성을 위해 원문 형태를 유지합니다. 자세한 범위는 [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)를 참고하세요.
 
 ### JAX
 
@@ -293,9 +308,10 @@ direction= study_name= storage= sampler= pruner= n_trials= timeout=
 callbacks= catch= gc_after_trial= show_progress_bar= log=
 max_epochs= accelerator= devices= logger= precision= strategy=
 enable_checkpointing= limit_train_batches= enable_progress_bar= enable_model_summary=
+task= average= threshold=
 ```
 
-Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 KoPy 전역 번역 대상이 아닙니다.
+TorchMetrics의 `update`, `compute`, `reset`, `clone`, `plot`처럼 일반적인 lifecycle 메서드도 전역 번역 대상이 아닙니다. Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 그대로 둡니다.
 
 ## 실제 라이브러리 설치
 
@@ -304,7 +320,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia einops jax opencv-python lightning transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia einops jax opencv-python lightning torchmetrics transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -349,6 +365,7 @@ kopy packs einops
 kopy packs jax
 kopy packs opencv
 kopy packs lightning
+kopy packs torchmetrics
 kopy packs optuna
 kopy packs matplotlib
 kopy version
@@ -366,6 +383,7 @@ kopy packs timm --json
 kopy packs kornia --json
 kopy packs einops --json
 kopy packs lightning --json
+kopy packs torchmetrics --json
 kopy packs optuna --json
 ```
 
@@ -398,6 +416,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/EINOPS_PACK.md`](docs/EINOPS_PACK.md)
 - [`docs/JAX_PACK.md`](docs/JAX_PACK.md)
 - [`docs/LIGHTNING_PACK.md`](docs/LIGHTNING_PACK.md)
+- [`docs/TORCHMETRICS_PACK.md`](docs/TORCHMETRICS_PACK.md)
 - [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
 - [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)
@@ -430,6 +449,7 @@ src/kopy
    │   ├─ einops.py
    │   ├─ jax.py
    │   ├─ lightning.py
+   │   ├─ torchmetrics.py
    │   ├─ opencv.py
    │   ├─ transformers.py
    │   ├─ datasets.py
@@ -454,7 +474,8 @@ src/kopy
 ## 다음 AI 확장 후보
 
 - TensorBoard
-- TorchMetrics
+- ONNX
+- PyTorch Geometric
 
 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
 
