@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kopy-lang"
-version = "0.5.22"
+version = "0.5.23"
 description = "KoPy: Korean-transliterated Python compatibility and learning layer"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Operating System :: OS Independent"
 ]
-keywords = ["python", "korean", "education", "transliteration", "learning", "numpy", "pandas", "polars", "dataframe", "scipy", "scikit-learn", "xgboost", "lightgbm", "gradient-boosting", "pytorch", "torchvision", "timm", "pytorch-image-models", "computer-vision", "image-transforms", "jax", "autodiff", "jit", "opencv", "image-processing", "transformers", "datasets", "tokenizers", "accelerate", "peft", "lora", "onnxruntime", "onnx", "safetensors", "optimum", "sentencepiece", "mlflow", "matplotlib", "visualization", "scientific-computing", "experiment-tracking", "huggingface", "ai"]
+keywords = ["python", "korean", "education", "transliteration", "learning", "numpy", "pandas", "polars", "dataframe", "scipy", "scikit-learn", "xgboost", "lightgbm", "gradient-boosting", "pytorch", "torchvision", "timm", "pytorch-image-models", "kornia", "differentiable-computer-vision", "augmentation", "computer-vision", "image-transforms", "jax", "autodiff", "jit", "opencv", "image-processing", "transformers", "datasets", "tokenizers", "accelerate", "peft", "lora", "onnxruntime", "onnx", "safetensors", "optimum", "sentencepiece", "mlflow", "matplotlib", "visualization", "scientific-computing", "experiment-tracking", "huggingface", "ai"]
 dependencies = []
 
 [project.urls]
