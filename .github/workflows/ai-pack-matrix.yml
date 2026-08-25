@@ -17,7 +17,7 @@ on:
 
 jobs:
   ai-packs:
-    name: NumPy 2.5 + pandas 3.0 + Polars 1.43 + SciPy 1.18 + sklearn 1.9 + XGBoost 3.4 + LightGBM 4.7 + PyTorch 2.13 + TorchVision 0.28 + PyG 2.8 + timm 1.0 + Kornia 0.8 + einops 0.8 + JAX 0.11 + OpenCV 5.0 + Lightning 2.6 + TorchMetrics 1.9 + HF stack + Sentence Transformers 6.0 + FAISS 1.15 + Optuna 4.9 + ONNX + MLflow Skinny 3.15 + Matplotlib 3.11 / ${{ matrix.os }}
+    name: NumPy 2.5 + pandas 3.0 + Polars 1.43 + SciPy 1.18 + sklearn 1.9 + XGBoost 3.4 + LightGBM 4.7 + PyTorch 2.13 + TorchVision 0.28 + PyG 2.8 + timm 1.0 + Kornia 0.8 + einops 0.8 + JAX 0.11 + OpenCV 5.0 + Lightning 2.6 + TorchMetrics 1.9 + HF stack + Sentence Transformers 6.0 + FAISS 1.15 + Qdrant Client 1.19 + Optuna 4.9 + ONNX + MLflow Skinny 3.15 + Matplotlib 3.11 / ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -40,7 +40,7 @@ jobs:
       - name: Install KoPy AI libraries
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . "numpy>=2.5,<2.6" "pandas>=3.0,<3.1" "polars>=1.43.2,<1.44" "scipy>=1.18,<1.19" "scikit-learn>=1.9,<1.10" "xgboost>=3.4,<3.5" "lightgbm>=4.7,<4.8" "torch>=2.13,<2.14" "torchvision>=0.28,<0.29" "torch-geometric>=2.8.0.post1,<2.9" "timm>=1.0.28,<1.1" "kornia>=0.8.3,<0.9" "einops>=0.8.2,<0.9" "jax>=0.11.1,<0.12" "opencv-python-headless==5.0.0.93" "lightning>=2.6.5,<2.7" "torchmetrics>=1.9,<1.10" "transformers>=5.15,<5.16" "sentence-transformers>=6.0,<6.1" "faiss-cpu>=1.15,<1.16" "datasets>=4.8,<4.9" "tokenizers>=0.22.2,<0.23" "accelerate>=1.14,<1.15" "peft>=0.20,<0.21" "onnxruntime>=1.28,<1.29" "onnx>=1.22,<1.23" "safetensors>=0.8,<0.9" "optimum>=2.3,<2.4" "sentencepiece>=0.2.2,<0.3" "optuna>=4.9,<5" "mlflow-skinny>=3.15,<3.16" "matplotlib>=3.11,<3.12"
+          python -m pip install -e . "numpy>=2.5,<2.6" "pandas>=3.0,<3.1" "polars>=1.43.2,<1.44" "scipy>=1.18,<1.19" "scikit-learn>=1.9,<1.10" "xgboost>=3.4,<3.5" "lightgbm>=4.7,<4.8" "torch>=2.13,<2.14" "torchvision>=0.28,<0.29" "torch-geometric>=2.8.0.post1,<2.9" "timm>=1.0.28,<1.1" "kornia>=0.8.3,<0.9" "einops>=0.8.2,<0.9" "jax>=0.11.1,<0.12" "opencv-python-headless==5.0.0.93" "lightning>=2.6.5,<2.7" "torchmetrics>=1.9,<1.10" "transformers>=5.15,<5.16" "sentence-transformers>=6.0,<6.1" "faiss-cpu>=1.15,<1.16" "qdrant-client>=1.19,<1.20" "datasets>=4.8,<4.9" "tokenizers>=0.22.2,<0.23" "accelerate>=1.14,<1.15" "peft>=0.20,<0.21" "onnxruntime>=1.28,<1.29" "onnx>=1.22,<1.23" "safetensors>=0.8,<0.9" "optimum>=2.3,<2.4" "sentencepiece>=0.2.2,<0.3" "optuna>=4.9,<5" "mlflow-skinny>=3.15,<3.16" "matplotlib>=3.11,<3.12"
 
       - name: Run KoPy test suite
         run: python -m unittest discover -s tests -v
@@ -88,6 +88,8 @@ jobs:
         run: kopy packs sentence-transformers
       - name: Verify FAISS pack details
         run: kopy packs faiss
+      - name: Verify Qdrant Client pack details
+        run: kopy packs qdrant-client
       - name: Verify Datasets pack details
         run: kopy packs datasets
       - name: Verify Tokenizers pack details
