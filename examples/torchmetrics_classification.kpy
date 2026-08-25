@@ -1,0 +1,16 @@
+임포트 토치
+임포트 토치메트릭스 애즈 tm
+
+preds = 토치.텐서([0, 1, 1, 0])
+target = 토치.텐서([0, 1, 0, 0])
+
+accuracy = tm.애큐러시(task="binary")
+f1 = tm.에프원스코어(task="binary")
+
+프린트("accuracy:", accuracy(preds, target))
+프린트("f1:", f1(preds, target))
+
+loss_mean = tm.미인메트릭()
+loss_mean.update(토치.텐서(0.8))
+loss_mean.update(토치.텐서(0.4))
+프린트("mean loss:", loss_mean.compute())
