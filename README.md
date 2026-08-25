@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.27**  
+현재 Core 버전: **0.5.28**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **28개**입니다.
+현재 공식 Library Pack은 **29개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -50,6 +50,7 @@ CPython + 실제 Python 라이브러리
 | TorchMetrics | 분류·회귀 등 모델 평가 metric과 MetricCollection |
 | OpenCV | 이미지·영상 전처리·엣지·윤곽선·DNN·비디오 I/O |
 | Transformers | 사전학습 모델·생성·Trainer |
+| Sentence Transformers | 임베딩·유사도·semantic search·reranking 모델 API |
 | Datasets | 데이터 로딩·전처리·분할 |
 | Tokenizers | 고속 토큰화·Encoding·어휘 모델 |
 | Accelerate | 장치·분산 학습 준비와 실행 |
@@ -83,6 +84,21 @@ model = 로지스틱리그레션(max_iter=200)
 model.핏(X_train, y_train)
 predictions = model.프리딕트(X_test)
 ```
+
+## Sentence Transformers 예시
+
+```kopy
+임포트 센텐스트랜스포머스 애즈 st
+프롬 sentence_transformers.util 임포트 semantic_search
+
+model = st.센텐스트랜스포머("sentence-transformers/all-MiniLM-L6-v2")
+embeddings = model.인코드(sentences, convert_to_tensor=True)
+query_embeddings = model.인코드(query, convert_to_tensor=True)
+scores = model.시밀래리티(query_embeddings, embeddings)
+hits = semantic_search(query_embeddings, embeddings, top_k=2)
+```
+
+`model`, `sentences`, `embeddings`, `query_embeddings`, `batch_size=`, `convert_to_tensor=`, `top_k=` 같은 실제 Python/Sentence Transformers 관례는 원문 형태를 유지합니다. Sentence Transformers 6.x에서 `models`, `util`은 `import sentence_transformers as st`의 공개 top-level 속성이 아니므로 `sentence_transformers.models`, `sentence_transformers.util` 같은 dotted submodule 경로도 실제 Python 원문을 유지합니다. 자세한 범위는 [`docs/SENTENCE_TRANSFORMERS_PACK.md`](docs/SENTENCE_TRANSFORMERS_PACK.md)를 참고하세요.
 
 ## Lightning 예시
 
@@ -308,7 +324,7 @@ direction= study_name= storage= sampler= pruner= n_trials= timeout=
 callbacks= catch= gc_after_trial= show_progress_bar= log=
 max_epochs= accelerator= devices= logger= precision= strategy=
 enable_checkpointing= limit_train_batches= enable_progress_bar= enable_model_summary=
-task= average= threshold=
+task= average= threshold= batch_size= convert_to_tensor= normalize_embeddings= top_k=
 ```
 
 TorchMetrics의 `update`, `compute`, `reset`, `clone`, `plot`처럼 일반적인 lifecycle 메서드도 전역 번역 대상이 아닙니다. Einops의 pattern 안에 쓰는 `batch`, `channels`, `height`, `width` 같은 축 이름과 동일한 axis-length keyword도 사용자가 정하는 표준 표현이므로 그대로 둡니다.
@@ -320,7 +336,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia einops jax opencv-python lightning torchmetrics transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -366,6 +382,7 @@ kopy packs jax
 kopy packs opencv
 kopy packs lightning
 kopy packs torchmetrics
+kopy packs sentence-transformers
 kopy packs optuna
 kopy packs matplotlib
 kopy version
@@ -384,6 +401,7 @@ kopy packs kornia --json
 kopy packs einops --json
 kopy packs lightning --json
 kopy packs torchmetrics --json
+kopy packs sentence-transformers --json
 kopy packs optuna --json
 ```
 
@@ -419,6 +437,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/TORCHMETRICS_PACK.md`](docs/TORCHMETRICS_PACK.md)
 - [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
+- [`docs/SENTENCE_TRANSFORMERS_PACK.md`](docs/SENTENCE_TRANSFORMERS_PACK.md)
 - [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)
 - [`docs/MLFLOW_PACK.md`](docs/MLFLOW_PACK.md)
 - [`docs/MATPLOTLIB_PACK.md`](docs/MATPLOTLIB_PACK.md)
@@ -452,6 +471,7 @@ src/kopy
    │   ├─ torchmetrics.py
    │   ├─ opencv.py
    │   ├─ transformers.py
+   │   ├─ sentence_transformers.py
    │   ├─ datasets.py
    │   ├─ tokenizers.py
    │   ├─ accelerate.py
