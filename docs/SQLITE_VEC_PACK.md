@@ -50,7 +50,7 @@ KoPy does not rewrite text inside SQL strings. SQL therefore remains exactly the
 
 Python's standard `sqlite3` module is not built with loadable-extension support on every platform. This is especially common on macOS, where `sqlite3.Connection` may not expose `enable_load_extension()` at all. That is a Python/SQLite build limitation rather than a KoPy or sqlite-vec translation issue.
 
-For macOS, sqlite-vec upstream recommends a Homebrew Python linked against a SQLite build that permits extensions. KoPy CI therefore keeps the normal Python 3.12.10 matrix, skips only the unsupported extension-loading runtime on that interpreter, and separately executes the real `vec0` KNN test with Homebrew `python@3.12`.
+For macOS, sqlite-vec upstream recommends a Homebrew Python linked against a SQLite build that permits extensions. KoPy CI therefore keeps the normal Python 3.12.10 matrix, skips only the unsupported extension-loading runtime on that interpreter, and separately executes the real `vec0` KNN test with Homebrew `python@3.12`. This keeps the normal compatibility matrix intact while still exercising a real macOS sqlite-vec search rather than replacing it with a mock.
 
 ## Local KNN example
 
