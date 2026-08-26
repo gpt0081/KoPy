@@ -1,0 +1,14 @@
+프롬 패스트임베드.rerank.cross_encoder 임포트 텍스트크로스인코더
+
+query = "Who maintains Qdrant FastEmbed?"
+documents = [
+    "This sentence is about unrelated weather.",
+    "FastEmbed is supported by and maintained by Qdrant.",
+]
+
+reranker = 텍스트크로스인코더(
+    model_name="Xenova/ms-marco-MiniLM-L-6-v2",
+)
+
+scores = list(reranker.rerank(query, documents))
+프린트(scores)
