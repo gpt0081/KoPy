@@ -1,0 +1,28 @@
+프롬 라가스 임포트 이밸류에이션데이터셋, 싱글턴샘플
+프롬 라가스.metrics.collections 임포트 논엘엘엠스트링시밀래리티, 디스턴스메저
+
+query = "Where is the Eiffel Tower?"
+response = "The Eiffel Tower is in Paris."
+reference = "The Eiffel Tower is in Paris."
+contexts = ["The Eiffel Tower is located in Paris."]
+
+sample = 싱글턴샘플(
+    user_input=query,
+    response=response,
+    reference=reference,
+    retrieved_contexts=contexts,
+)
+
+dataset = 이밸류에이션데이터셋(samples=[sample])
+
+metric = 논엘엘엠스트링시밀래리티(
+    distance_measure=디스턴스메저.LEVENSHTEIN,
+)
+
+result = metric.score(
+    reference=sample.reference,
+    response=sample.response,
+)
+
+프린트("samples:", len(dataset.samples))
+프린트("string similarity:", result.value)
