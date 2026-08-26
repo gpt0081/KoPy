@@ -4,6 +4,8 @@ sqlite-vec embeds vector search inside SQLite. The pack transliterates the
 small Python binding surface while intentionally preserving transferable
 SQLite/vector-search vocabulary such as ``connection``, ``query``, SQL
 statements, ``execute()``, and vector column names in upstream Python form.
+SQL strings are never rewritten, so ``vec0`` table definitions and KNN
+queries remain valid upstream sqlite-vec SQL.
 """
 
 from __future__ import annotations
