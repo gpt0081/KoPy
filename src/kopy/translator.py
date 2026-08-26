@@ -58,6 +58,96 @@ def _replace_names(
     return tokenize.untokenize(tokens), tuple(replacements)
 
 
+def _common_import_path_indices(tokens: list[tokenize.TokenInfo]) -> set[int]:
+    """Return NAME-token indices that belong to real Python module paths.
+
+    Common educational identifiers are intentionally broader than a LibraryPack,
+    so names such as ``index`` and ``documents`` can be transliterated in normal
+    code. They must *not* rewrite package paths such as ``usearch.index`` or
+    ``langchain_core.documents`` because those paths are part of Python's actual
+    import structure and can collide with class/member transliterations.
+    """
+
+    protected: set[int] = set()
+    segment: list[int] = []
+
+    def protect_segment(indices: list[int]) -> None:
+        significant = [
+            index
+            for index in indices
+            if tokens[index].type not in _IGNORED and tokens[index].string != ";"
+        ]
+        if not significant:
+            return
+
+        first = tokens[significant[0]]
+        if first.type != tokenize.NAME:
+            return
+
+        if first.string == "from":
+            for index in significant[1:]:
+                token = tokens[index]
+                if token.type == tokenize.NAME and token.string == "import":
+                    break
+                if token.type == tokenize.NAME:
+                    protected.add(index)
+            return
+
+        if first.string != "import":
+            return
+
+        # In ``import package.path as alias, other.path`` protect only package
+        # path segments. Aliases are user identifiers and may be transliterated.
+        in_alias = False
+        for index in significant[1:]:
+            token = tokens[index]
+            if token.string == ",":
+                in_alias = False
+                continue
+            if token.type == tokenize.NAME and token.string == "as":
+                in_alias = True
+                continue
+            if token.type == tokenize.NAME and not in_alias:
+                protected.add(index)
+
+    for index, token in enumerate(tokens):
+        if token.type in {tokenize.NEWLINE, tokenize.ENDMARKER} or token.string == ";":
+            protect_segment(segment)
+            segment = []
+            continue
+        segment.append(index)
+    protect_segment(segment)
+    return protected
+
+
+def _replace_common_names(
+    source: str,
+    mapping: dict[str, str],
+) -> tuple[str, tuple[tuple[str, str, int, int], ...]]:
+    """Replace common identifiers while preserving actual Python import paths."""
+
+    reader = io.StringIO(source).readline
+    tokens = list(tokenize.generate_tokens(reader))
+    protected = _common_import_path_indices(tokens)
+    output_tokens: list[tokenize.TokenInfo] = []
+    replacements: list[tuple[str, str, int, int]] = []
+
+    for index, token in enumerate(tokens):
+        if index not in protected and token.type == tokenize.NAME and token.string in mapping:
+            replacement = mapping[token.string]
+            replacements.append((token.string, replacement, token.start[0], token.start[1] + 1))
+            token = tokenize.TokenInfo(
+                token.type,
+                replacement,
+                token.start,
+                token.end,
+                token.line,
+            )
+        output_tokens.append(token)
+
+    return tokenize.untokenize(output_tokens), tuple(replacements)
+
+
 def _pack_for_module_token(name: str):
     for pack in all_packs():
         if name in {pack.module, pack.kopy_module}:
@@ -287,7 +377,7 @@ def translate(source: str) -> Translation:
     """Translate KoPy source to Python while preserving strings/comments."""
     core_source, core_replacements = _replace_names(source, WORDS)
     pack_source, pack_replacements = _translate_library_packs(core_source, reverse=False)
-    python_source, identifier_replacements = _replace_names(pack_source, COMMON_IDENTIFIERS)
+    python_source, identifier_replacements = _replace_common_names(pack_source, COMMON_IDENTIFIERS)
     return Translation(
         source=source,
         python=python_source,
@@ -298,7 +388,7 @@ def translate(source: str) -> Translation:
 def to_kopy(source: str) -> ReverseTranslation:
     """Translate Python source to KoPy, including active library packs."""
     pack_source, pack_replacements = _translate_library_packs(source, reverse=True)
-    identifier_source, identifier_replacements = _replace_names(pack_source, COMMON_PY_TO_KO)
+    identifier_source, identifier_replacements = _replace_common_names(pack_source, COMMON_PY_TO_KO)
     kopy_source, core_replacements = _replace_names(identifier_source, PY_TO_KO)
     return ReverseTranslation(
         source=source,
