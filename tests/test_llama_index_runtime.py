@@ -1,8 +1,10 @@
+import importlib.util
 import unittest
 
 from kopy.translator import translate
 
 
+@unittest.skipUnless(importlib.util.find_spec("llama_index"), "llama-index-core is not installed")
 class LlamaIndexRuntimeTests(unittest.TestCase):
     def test_real_vector_index_and_retriever(self):
         source = (
