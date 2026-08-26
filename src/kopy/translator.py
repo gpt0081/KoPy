@@ -7,7 +7,7 @@ import tokenize
 from dataclasses import dataclass
 
 from .packs.registry import all_packs
-from .words import PY_TO_KO, WORDS
+from .words import COMMON_IDENTIFIERS, COMMON_PY_TO_KO, PY_TO_KO, WORDS
 
 
 @dataclass(frozen=True)
@@ -286,20 +286,22 @@ def _translate_library_packs(
 def translate(source: str) -> Translation:
     """Translate KoPy source to Python while preserving strings/comments."""
     core_source, core_replacements = _replace_names(source, WORDS)
-    python_source, pack_replacements = _translate_library_packs(core_source, reverse=False)
+    pack_source, pack_replacements = _translate_library_packs(core_source, reverse=False)
+    python_source, identifier_replacements = _replace_names(pack_source, COMMON_IDENTIFIERS)
     return Translation(
         source=source,
         python=python_source,
-        replacements=core_replacements + pack_replacements,
+        replacements=core_replacements + pack_replacements + identifier_replacements,
     )
 
 
 def to_kopy(source: str) -> ReverseTranslation:
     """Translate Python source to KoPy, including active library packs."""
     pack_source, pack_replacements = _translate_library_packs(source, reverse=True)
-    kopy_source, core_replacements = _replace_names(pack_source, PY_TO_KO)
+    identifier_source, identifier_replacements = _replace_names(pack_source, COMMON_PY_TO_KO)
+    kopy_source, core_replacements = _replace_names(identifier_source, PY_TO_KO)
     return ReverseTranslation(
         source=source,
         kopy=kopy_source,
-        replacements=pack_replacements + core_replacements,
+        replacements=pack_replacements + identifier_replacements + core_replacements,
     )
