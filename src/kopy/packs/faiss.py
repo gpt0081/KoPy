@@ -1,10 +1,8 @@
 """Official FAISS library pack for KoPy.
 
-FAISS is the first KoPy vector-search pack.  The pack intentionally translates
-recognisable FAISS class/function names while leaving generic index methods such
-as ``add`` and ``search`` in upstream Python form.  That avoids ambiguous
-attribute translations and helps learners transfer directly to real FAISS/RAG
-examples.
+FAISS-specific class/function names are namespace-scoped. Shared search names
+can use KoPy's common educational identifier vocabulary. Numeric fragments stay
+as digits: L2 -> 엘2, IDMap2 -> 아이디맵2.
 """
 
 from __future__ import annotations
@@ -19,15 +17,15 @@ FAISS_PACK = LibraryPack(
     preferred_aliases=("faiss",),
     description="벡터 유사도 검색·최근접 이웃 인덱스·벡터 정규화용 FAISS 팩",
     members={
-        "인덱스플랫엘투": "IndexFlatL2",
+        "인덱스플랫엘2": "IndexFlatL2",
         "인덱스플랫아이피": "IndexFlatIP",
         "인덱스아이디맵": "IndexIDMap",
-        "인덱스아이디맵투": "IndexIDMap2",
+        "인덱스아이디맵2": "IndexIDMap2",
         "인덱스아이브이에프플랫": "IndexIVFFlat",
         "인덱스에이치엔에스더블유플랫": "IndexHNSWFlat",
         "인덱스스칼라퀀타이저": "IndexScalarQuantizer",
         "인덱스피큐": "IndexPQ",
-        "노멀라이즈엘투": "normalize_L2",
+        "노멀라이즈엘2": "normalize_L2",
         "인덱스팩토리": "index_factory",
         "라이트인덱스": "write_index",
         "리드인덱스": "read_index",
@@ -48,15 +46,15 @@ FAISS_PACK = LibraryPack(
     },
     examples={
         "IndexFlatL2": (
-            "임포트 파이스 애즈 faiss\nindex = faiss.인덱스플랫엘투(384)",
+            "임포트 파이스 애즈 faiss\n인덱스 = faiss.인덱스플랫엘2(384)",
             "import faiss\nindex = faiss.IndexFlatL2(384)",
         ),
         "normalize_L2": (
-            "faiss.노멀라이즈엘투(embeddings)",
+            "faiss.노멀라이즈엘2(임베딩즈)",
             "faiss.normalize_L2(embeddings)",
         ),
         "index_factory": (
-            "index = faiss.인덱스팩토리(384, 'Flat')",
+            "인덱스 = faiss.인덱스팩토리(384, 'Flat')",
             "index = faiss.index_factory(384, 'Flat')",
         ),
     },
