@@ -24,7 +24,10 @@ class RanxRuntimeTests(unittest.TestCase):
 
         self.assertAlmostEqual(float(namespace["ndcg_at_1"]), 1.0, places=6)
         hybrid_run = namespace["hybrid_run"]
-        self.assertEqual(hybrid_run.name, "sum")
+        # ranx maps method='sum' to its CombSUM implementation, whose default
+        # Run name is 'comb_sum'. Verify the real library behavior rather than
+        # assuming the method selector is copied into Run.name.
+        self.assertEqual(hybrid_run.name, "comb_sum")
 
 
 if __name__ == "__main__":
