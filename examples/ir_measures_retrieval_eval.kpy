@@ -1,0 +1,26 @@
+프롬 아이알메저스 임포트 캘크어그리게이트, 파스메저, nDCG, P, RR
+
+qrels = {
+    "q1": {
+        "doc_relevant": 1,
+        "doc_other": 0,
+    }
+}
+
+run = {
+    "q1": {
+        "doc_relevant": 0.95,
+        "doc_other": 0.30,
+    }
+}
+
+metrics = 캘크어그리게이트(
+    [nDCG@2, P@1, RR],
+    qrels,
+    run,
+)
+
+parsed_metric = 파스메저("nDCG@2")
+
+프린트(metrics)
+프린트(parsed_metric)
