@@ -14,15 +14,15 @@ class SentenceTransformersPackTests(unittest.TestCase):
     def test_namespace_scoped_translation(self):
         source = (
             "임포트 센텐스트랜스포머스 애즈 st\n"
-            "model = st.센텐스트랜스포머('local-model')\n"
-            "embeddings = model.인코드(sentences, convert_to_tensor=True)\n"
-            "scores = model.시밀래리티(embeddings, embeddings)\n"
+            "모델 = st.센텐스트랜스포머('local-model')\n"
+            "임베딩즈 = 모델.인코드(sentences, convert_to_tensor=True)\n"
+            "스코어즈 = 모델.시밀래리티(임베딩즈, 임베딩즈)\n"
         )
         python_source = translate(source).python
         self.assertIn("import sentence_transformers as st", python_source)
-        self.assertIn("st.SentenceTransformer('local-model')", python_source)
-        self.assertIn("model.encode(sentences, convert_to_tensor=True)", python_source)
-        self.assertIn("model.similarity(embeddings, embeddings)", python_source)
+        self.assertIn("model = st.SentenceTransformer('local-model')", python_source)
+        self.assertIn("embeddings = model.encode(sentences, convert_to_tensor=True)", python_source)
+        self.assertIn("scores = model.similarity(embeddings, embeddings)", python_source)
 
     def test_dotted_submodule_paths_remain_python_native(self):
         source = (
@@ -47,9 +47,9 @@ class SentenceTransformersPackTests(unittest.TestCase):
         )
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 센텐스트랜스포머스 애즈 st", kopy)
-        self.assertIn("st.센텐스트랜스포머('local-model')", kopy)
-        self.assertIn("model.인코드(sentences)", kopy)
-        self.assertIn("model.시밀래리티(embeddings, embeddings)", kopy)
+        self.assertIn("모델 = st.센텐스트랜스포머('local-model')", kopy)
+        self.assertIn("임베딩즈 = 모델.인코드(sentences)", kopy)
+        self.assertIn("스코어즈 = 모델.시밀래리티(임베딩즈, 임베딩즈)", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("센텐스트랜스포머스.센텐스트랜스포머")
@@ -60,7 +60,7 @@ class SentenceTransformersPackTests(unittest.TestCase):
     def test_generic_keywords_remain_python(self):
         source = (
             "임포트 센텐스트랜스포머스 애즈 st\n"
-            "embeddings = model.인코드(sentences, batch_size=16, convert_to_tensor=True, normalize_embeddings=True)\n"
+            "임베딩즈 = 모델.인코드(sentences, batch_size=16, convert_to_tensor=True, normalize_embeddings=True)\n"
         )
         python_source = translate(source).python
         for token in ("batch_size=", "convert_to_tensor=", "normalize_embeddings="):
