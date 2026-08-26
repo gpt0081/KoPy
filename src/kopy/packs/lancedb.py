@@ -15,7 +15,7 @@ LANCEDB_PACK = LibraryPack(
     name="lancedb",
     module="lancedb",
     kopy_module="랜스디비",
-    preferred_aliases=("lancedb", "lance"),
+    preferred_aliases=("lancedb", "lance", "ldb"),
     description="LanceDB 로컬 벡터DB·FTS·hybrid search용 namespace-scoped 팩",
     members={
         "디비커넥션": "DBConnection",
@@ -37,8 +37,8 @@ LANCEDB_PACK = LibraryPack(
     },
     examples={
         "DBConnection": (
-            "임포트 랜스디비 애즈 lancedb\ndb = lancedb.connect('./data')",
-            "import lancedb\ndb = lancedb.connect('./data')",
+            "임포트 랜스디비 애즈 ldb\ndb = ldb.connect('./data')",
+            "import lancedb as ldb\ndb = ldb.connect('./data')",
         ),
         "LanceModel": (
             "프롬 랜스디비.pydantic 임포트 랜스모델, 벡터",
