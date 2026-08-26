@@ -1,7 +1,7 @@
 """Official FAISS library pack for KoPy.
 
-FAISS-specific class/function names are namespace-scoped. Shared search names
-can use KoPy's common educational identifier vocabulary. Numeric fragments stay
+FAISS-specific class/function names and common FAISS index operations are
+transliterated only while the FAISS namespace is active. Numeric fragments stay
 as digits: L2 -> 엘2, IDMap2 -> 아이디맵2.
 """
 
@@ -32,6 +32,12 @@ FAISS_PACK = LibraryPack(
         "클론인덱스": "clone_index",
         "벡터투어레이": "vector_to_array",
         "어레이투벡터": "copy_array_to_vector",
+        "애드": "add",
+        "서치": "search",
+        "트레인": "train",
+        "리셋": "reset",
+        "리무브아이디즈": "remove_ids",
+        "리컨스트럭트": "reconstruct",
     },
     member_descriptions={
         "IndexFlatL2": "정확한 L2(유클리드) 최근접 이웃 검색 인덱스입니다.",
@@ -43,6 +49,9 @@ FAISS_PACK = LibraryPack(
         "index_factory": "문자열 factory 설명으로 FAISS 인덱스를 생성합니다.",
         "write_index": "FAISS 인덱스를 파일로 저장합니다.",
         "read_index": "저장된 FAISS 인덱스를 읽습니다.",
+        "add": "벡터를 인덱스에 추가합니다.",
+        "search": "쿼리 벡터의 최근접 이웃을 검색합니다.",
+        "train": "학습형 FAISS 인덱스를 벡터 데이터로 학습합니다.",
     },
     examples={
         "IndexFlatL2": (
@@ -53,9 +62,9 @@ FAISS_PACK = LibraryPack(
             "faiss.노멀라이즈엘2(임베딩즈)",
             "faiss.normalize_L2(embeddings)",
         ),
-        "index_factory": (
-            "인덱스 = faiss.인덱스팩토리(384, 'Flat')",
-            "index = faiss.index_factory(384, 'Flat')",
+        "search": (
+            "인덱스.애드(임베딩즈)\n디스턴시즈, 인디시즈 = 인덱스.서치(쿼리, 5)",
+            "index.add(embeddings)\ndistances, indices = index.search(query, 5)",
         ),
     },
 )
