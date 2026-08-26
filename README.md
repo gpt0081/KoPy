@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.34**  
+현재 Core 버전: **0.5.35**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **35개**입니다.
+현재 공식 Library Pack은 **36개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -57,6 +57,7 @@ CPython + 실제 Python 라이브러리
 | Chroma | 로컬·서버 vector DB client·collection 관리·embedding query |
 | BM25S | BM25 sparse lexical retrieval·tokenization·ranked document search |
 | ranx | dense·lexical run fusion·rank fusion·IR evaluation |
+| ir-measures | nDCG·Precision·Recall·RR·AP 등 표준 retrieval metric 평가 |
 | Datasets | 데이터 로딩·전처리·분할 |
 | Tokenizers | 고속 토큰화·Encoding·어휘 모델 |
 | Accelerate | 장치·분산 학습 준비와 실행 |
@@ -201,6 +202,28 @@ ndcg = evaluate(qrels, hybrid_run, "ndcg@2")
 
 ranx는 새로운 retriever를 만드는 팩이 아니라 dense·lexical 검색의 ranking을 합치고 평가하는 층입니다. `runs`, `qrels`, `method`, `norm`, `metric`, `evaluate`, `compare`와 `dense_run`, `lexical_run`, `hybrid_run` 같은 IR 관례는 Python 원형을 유지합니다. 자세한 범위는 [`docs/RANX_PACK.md`](docs/RANX_PACK.md)를 참고하세요.
 
+### ir-measures retrieval evaluation
+
+```kopy
+프롬 아이알메저스 임포트 캘크어그리게이트, 파스메저, nDCG, P, RR
+
+qrels = {
+    "q1": {"doc_relevant": 1, "doc_other": 0},
+}
+run = {
+    "q1": {"doc_relevant": 0.95, "doc_other": 0.30},
+}
+
+metrics = 캘크어그리게이트(
+    [nDCG@2, P@1, RR],
+    qrels,
+    run,
+)
+parsed_metric = 파스메저("nDCG@2")
+```
+
+`qrels`, `run`, `query_id`, `doc_id`, `score`와 `nDCG`, `P`, `R`, `RR`, `AP`, `MAP` 같은 표준 IR 표현은 논문·benchmark·원문 Python에서 그대로 쓰이므로 번역하지 않습니다. 자세한 범위는 [`docs/IR_MEASURES_PACK.md`](docs/IR_MEASURES_PACK.md)를 참고하세요.
+
 ## 충돌 방지 원칙
 
 외부 라이브러리 API는 Core 전역 단어표에 섞지 않습니다. 해당 라이브러리를 import한 파일에서만 관련 규칙이 활성화됩니다. 여러 활성 팩이 같은 KoPy 철자를 서로 다른 Python API로 정의하면 KoPy는 임의로 추측하지 않고 모호한 표현을 번역하지 않습니다.
@@ -227,7 +250,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터/검색 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers faiss-cpu qdrant-client chromadb bm25s ranx datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers faiss-cpu qdrant-client chromadb bm25s ranx ir-measures datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -282,6 +305,7 @@ kopy packs qdrant
 kopy packs chroma
 kopy packs bm25s
 kopy packs ranx
+kopy packs ir-measures
 kopy packs optuna
 kopy packs matplotlib
 kopy version
@@ -300,6 +324,7 @@ kopy packs qdrant --json
 kopy packs chroma --json
 kopy packs bm25s --json
 kopy packs ranx --json
+kopy packs ir-measures --json
 kopy packs optuna --json
 ```
 
@@ -342,6 +367,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/CHROMA_PACK.md`](docs/CHROMA_PACK.md)
 - [`docs/BM25S_PACK.md`](docs/BM25S_PACK.md)
 - [`docs/RANX_PACK.md`](docs/RANX_PACK.md)
+- [`docs/IR_MEASURES_PACK.md`](docs/IR_MEASURES_PACK.md)
 - [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)
 - [`docs/MLFLOW_PACK.md`](docs/MLFLOW_PACK.md)
 - [`docs/MATPLOTLIB_PACK.md`](docs/MATPLOTLIB_PACK.md)
@@ -382,6 +408,7 @@ src/kopy
    │   ├─ chroma.py
    │   ├─ bm25s.py
    │   ├─ ranx.py
+   │   ├─ ir_measures.py
    │   ├─ datasets.py
    │   ├─ tokenizers.py
    │   ├─ accelerate.py
@@ -406,9 +433,9 @@ src/kopy
 검색/RAG 방향을 우선합니다.
 
 - Reranking
-- Retrieval evaluation
+- End-to-end RAG evaluation
 
-현재 검색 스택은 dense vector search(FAISS/Qdrant/Chroma) + sparse lexical search(BM25S) + ranx rank fusion/evaluation까지 이어집니다. 다음 단계는 후보 문서를 더 정교하게 재정렬하는 reranking과 retrieval 품질 평가를 확장하는 것입니다. 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
+현재 검색 스택은 dense vector search(FAISS/Qdrant/Chroma) + sparse lexical search(BM25S) + ranx rank fusion + ir-measures 표준 retrieval evaluation까지 이어집니다. 다음 단계는 후보 문서를 더 정교하게 재정렬하는 reranking과 검색 결과가 최종 RAG 응답 품질에 미치는 영향을 평가하는 계층입니다. 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
 
 ## 버전 정책
 
