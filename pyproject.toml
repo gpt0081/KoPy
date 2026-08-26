@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kopy-lang"
-version = "0.5.34"
+version = "0.5.35"
 description = "KoPy: Korean-transliterated Python compatibility and learning layer"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -19,7 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Operating System :: OS Independent"
 ]
-keywords = ["python", "korean", "education", "transliteration", "learning", "numpy", "pandas", "polars", "dataframe", "scipy", "scikit-learn", "xgboost", "lightgbm", "gradient-boosting", "pytorch", "torchvision", "torch-geometric", "pytorch-geometric", "graph-neural-networks", "geometric-deep-learning", "timm", "pytorch-image-models", "kornia", "differentiable-computer-vision", "augmentation", "computer-vision", "image-transforms", "einops", "tensor-manipulation", "jax", "autodiff", "jit", "opencv", "image-processing", "lightning", "pytorch-lightning", "trainer", "torchmetrics", "metrics", "transformers", "sentence-transformers", "embeddings", "semantic-search", "faiss", "qdrant", "qdrant-client", "chroma", "chromadb", "bm25", "bm25s", "ranx", "lexical-search", "sparse-retrieval", "hybrid-retrieval", "rank-fusion", "information-retrieval", "vector-database", "vector-search", "nearest-neighbors", "retrieval", "rag", "datasets", "tokenizers", "accelerate", "peft", "lora", "onnxruntime", "onnx", "safetensors", "optimum", "sentencepiece", "optuna", "hyperparameter-optimization", "mlflow", "matplotlib", "visualization", "scientific-computing", "experiment-tracking", "huggingface", "ai"]
+keywords = ["python", "korean", "education", "transliteration", "learning", "numpy", "pandas", "polars", "dataframe", "scipy", "scikit-learn", "xgboost", "lightgbm", "gradient-boosting", "pytorch", "torchvision", "torch-geometric", "pytorch-geometric", "graph-neural-networks", "geometric-deep-learning", "timm", "pytorch-image-models", "kornia", "differentiable-computer-vision", "augmentation", "computer-vision", "image-transforms", "einops", "tensor-manipulation", "jax", "autodiff", "jit", "opencv", "image-processing", "lightning", "pytorch-lightning", "trainer", "torchmetrics", "metrics", "transformers", "sentence-transformers", "embeddings", "semantic-search", "faiss", "qdrant", "qdrant-client", "chroma", "chromadb", "bm25", "bm25s", "ranx", "ir-measures", "retrieval-evaluation", "ndcg", "precision", "recall", "lexical-search", "sparse-retrieval", "hybrid-retrieval", "rank-fusion", "information-retrieval", "vector-database", "vector-search", "nearest-neighbors", "retrieval", "rag", "datasets", "tokenizers", "accelerate", "peft", "lora", "onnxruntime", "onnx", "safetensors", "optimum", "sentencepiece", "optuna", "hyperparameter-optimization", "mlflow", "matplotlib", "visualization", "scientific-computing", "experiment-tracking", "huggingface", "ai"]
 dependencies = []
 
 [project.urls]
