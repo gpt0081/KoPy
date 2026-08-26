@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.40**  
+현재 Core 버전: **0.5.41**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **41개**입니다.
+현재 공식 Library Pack은 **42개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -54,6 +54,7 @@ CPython + 실제 Python 라이브러리
 | Sentence Transformers | 임베딩·유사도·semantic search·reranking 모델 API |
 | FastEmbed | ONNX 기반 dense/sparse embedding·late interaction·cross-encoder reranking |
 | FAISS | 벡터 인덱스·nearest-neighbor 검색·L2/IP·IVF·HNSW |
+| USearch | 경량 로컬 ANN index·cosine/L2/IP 검색·벡터 양자화 |
 | Qdrant Client | 벡터DB collection·point 저장·nearest-neighbor query·payload filter |
 | Chroma | 로컬·서버 vector DB client·collection 관리·embedding query |
 | LanceDB | 로컬·원격 vector DB·vector search·FTS·hybrid retrieval·reranker |
@@ -106,7 +107,7 @@ Sentence Transformers / FastEmbed
              ↓
           embeddings
              ↓
-FAISS / Qdrant / Chroma / LanceDB
+FAISS / USearch / Qdrant / Chroma / LanceDB
         + BM25S
              ↓
             ranx
@@ -173,6 +174,27 @@ distances, indices = index.search(query, 2)
 
 `embeddings`, `query`, `index`, `distances`, `indices`, `add()`, `search()`는 실제 vector search/RAG 코드에서 반복적으로 등장하므로 Python 원형을 유지합니다.
 
+### USearch 로컬 ANN 검색
+
+```kopy
+임포트 넘파이 애즈 np
+프롬 유서치.index 임포트 인덱스
+
+vectors = np.어레이([
+    [1.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0],
+    [0.0, 0.0, 1.0],
+], dtype=np.플로트32)
+keys = np.어레이([10, 20, 30], dtype=np.인트64)
+query = np.어레이([0.95, 0.05, 0.0], dtype=np.플로트32)
+
+index = 인덱스(ndim=3, metric="cos", dtype="f32")
+index.add(keys, vectors)
+matches = index.search(query, 2)
+```
+
+`vectors`, `keys`, `query`, `matches`, `add()`, `search()`, `ndim=`, `metric=`, `dtype=`는 실제 ANN/vector-search 코드 학습을 위해 Python 원형을 유지합니다. 실제 `usearch.index` dotted path도 그대로 노출합니다. 자세한 범위는 [`docs/USEARCH_PACK.md`](docs/USEARCH_PACK.md)를 참고하세요.
+
 ### BM25S lexical search
 
 ```kopy
@@ -218,7 +240,7 @@ query_embeddings= n_results= collection_name= vectors_config=
 show_progress= method= backend= norm= metric= model_name=
 user_input= response= reference= retrieved_contexts=
 similarity_top_k= embed_model= storage_context= transformations=
-document_store=
+document_store= ndim= connectivity= expansion_add= expansion_search=
 
 add() search() train() reset() update() compute() get() query()
 upsert() retrieve() delete() count() index() save() load()
@@ -233,7 +255,7 @@ add_component() run() write_documents()
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu qdrant-client chromadb lancedb bm25s ranx ir-measures ragas llama-index-core haystack-ai datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu usearch qdrant-client chromadb lancedb bm25s ranx ir-measures ragas llama-index-core haystack-ai datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -263,6 +285,7 @@ kopy packs
 kopy packs sentence-transformers
 kopy packs fastembed
 kopy packs faiss
+kopy packs usearch
 kopy packs qdrant
 kopy packs chroma
 kopy packs lancedb
@@ -279,6 +302,7 @@ kopy version
 
 ```powershell
 kopy packs --json
+kopy packs usearch --json
 kopy packs haystack-ai --json
 ```
 
@@ -301,6 +325,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/SENTENCE_TRANSFORMERS_PACK.md`](docs/SENTENCE_TRANSFORMERS_PACK.md)
 - [`docs/FASTEMBED_PACK.md`](docs/FASTEMBED_PACK.md)
 - [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)
+- [`docs/USEARCH_PACK.md`](docs/USEARCH_PACK.md)
 - [`docs/QDRANT_PACK.md`](docs/QDRANT_PACK.md)
 - [`docs/CHROMA_PACK.md`](docs/CHROMA_PACK.md)
 - [`docs/LANCEDB_PACK.md`](docs/LANCEDB_PACK.md)

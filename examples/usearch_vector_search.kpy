@@ -1,0 +1,19 @@
+임포트 넘파이 애즈 np
+프롬 유서치.index 임포트 인덱스
+
+vectors = np.어레이([
+    [1.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0],
+    [0.0, 0.0, 1.0],
+], dtype=np.플로트32)
+
+keys = np.어레이([10, 20, 30], dtype=np.인트64)
+query = np.어레이([0.95, 0.05, 0.0], dtype=np.플로트32)
+
+index = 인덱스(ndim=3, metric="cos", dtype="f32")
+index.add(keys, vectors)
+
+matches = index.search(query, 2)
+
+프린트("nearest key:", matches[0].key)
+프린트("distance:", matches[0].distance)
