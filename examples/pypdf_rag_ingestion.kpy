@@ -6,8 +6,8 @@ reader = 피디에프리더(path)
 pages = []
 포 page 인 reader.pages:
     text = page.익스트랙트텍스트() or ""
-    pages.어펜드(text)
+    pages.append(text)
 
-# reader, pages, text 같은 원문 Python/RAG 관례는 의도적으로 유지합니다.
+# reader, pages, text, append 같은 원문 Python/RAG 관례는 의도적으로 유지합니다.
 document_text = "\n\n".join(pages)
 프린트(document_text[:1000])
