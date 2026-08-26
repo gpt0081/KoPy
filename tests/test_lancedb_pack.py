@@ -20,7 +20,7 @@ class LanceDBPackTests(unittest.TestCase):
         self.assertIn("from lancedb.pydantic import LanceModel, Vector", python_source)
         self.assertIn("from lancedb.rerankers import RRFReranker", python_source)
 
-    def test_transferable_database_and_retrieval_vocabulary_stays_python(self):
+    def test_python_spellings_remain_accepted(self):
         source = (
             "임포트 랜스디비 애즈 ldb\n"
             "db = ldb.connect(path)\n"
@@ -31,22 +31,16 @@ class LanceDBPackTests(unittest.TestCase):
         python_source = translate(source).python
         self.assertIn("import lancedb as ldb", python_source)
         for token in (
-            "ldb.connect(",
-            "db.create_table(",
-            "table.search(",
-            ".limit(5)",
-            ".to_list()",
-            "table.add(",
-            "data=",
-            "mode=",
+            "ldb.connect(", "db.create_table(", "table.search(", ".limit(5)",
+            ".to_list()", "table.add(", "data=", "mode=",
         ):
             self.assertIn(token, python_source)
 
-    def test_unimported_lancedb_words_are_not_global(self):
+    def test_unimported_lancedb_words_are_not_pack_global(self):
         source = "reranker = lib.알알에프리랭커()\n"
         self.assertEqual(translate(source).python, source)
 
-    def test_python_to_kopy_preserves_generic_vocabulary(self):
+    def test_python_to_kopy_transliterates_common_search_vocabulary(self):
         source = (
             "import lancedb as ldb\n"
             "from lancedb.rerankers import RRFReranker\n"
@@ -57,7 +51,7 @@ class LanceDBPackTests(unittest.TestCase):
         self.assertIn("임포트 랜스디비 애즈 ldb", kopy)
         self.assertIn("프롬 랜스디비.rerankers 임포트 알알에프리랭커", kopy)
         self.assertIn("ldb.connect(path)", kopy)
-        self.assertIn("table.search(query).limit(5).to_list()", kopy)
+        self.assertIn("리절츠 = table.search(쿼리).limit(5).to_list()", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("랜스디비.알알에프리랭커")
