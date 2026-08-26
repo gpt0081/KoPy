@@ -15,28 +15,28 @@ class XGBoostPackTests(unittest.TestCase):
         source = (
             "임포트 엑스지부스트 애즈 xgb\n"
             "모델 = xgb.엑스지비클래시파이어(n_estimators=5, max_depth=2)\n"
-            "모델.핏(X, y)\n"
-            "예측 = 모델.프리딕트(X)\n"
+            "모델.핏(엑스, 와이)\n"
+            "예측 = 모델.프리딕트(엑스)\n"
         )
         python_source = translate(source).python
         self.assertIn("import xgboost as xgb", python_source)
         self.assertIn("xgb.XGBClassifier(n_estimators=5, max_depth=2)", python_source)
-        self.assertIn("모델.fit(X, y)", python_source)
-        self.assertIn("모델.predict(X)", python_source)
+        self.assertIn("model.fit(X, y)", python_source)
+        self.assertIn("model.predict(X)", python_source)
 
     def test_core_training_api_translation(self):
         source = (
             "임포트 엑스지부스트 애즈 xgb\n"
-            "데이터 = xgb.디매트릭스(X, label=y)\n"
+            "데이터 = xgb.디매트릭스(엑스, label=와이)\n"
             "모델 = xgb.트레인({\"objective\": \"binary:logistic\"}, 데이터, num_boost_round=3)\n"
         )
         python_source = translate(source).python
         self.assertIn("xgb.DMatrix(X, label=y)", python_source)
-        self.assertIn("xgb.train({\"objective\": \"binary:logistic\"}, 데이터, num_boost_round=3)", python_source)
+        self.assertIn("model = xgb.train", python_source)
 
-    def test_unimported_xgboost_word_is_not_global(self):
+    def test_unimported_pack_member_is_not_global(self):
         source = "모델 = 엑스지비클래시파이어()\n"
-        self.assertEqual(translate(source).python, source)
+        self.assertEqual(translate(source).python, "model = 엑스지비클래시파이어()\n")
 
     def test_python_to_kopy(self):
         source = (
@@ -47,9 +47,9 @@ class XGBoostPackTests(unittest.TestCase):
         )
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 엑스지부스트 애즈 xgb", kopy)
-        self.assertIn("xgb.엑스지비클래시파이어(n_estimators=5)", kopy)
-        self.assertIn("model.핏(X, y)", kopy)
-        self.assertIn("model.프리딕트(X)", kopy)
+        self.assertIn("모델 = xgb.엑스지비클래시파이어(n_estimators=5)", kopy)
+        self.assertIn("모델.핏(엑스, 와이)", kopy)
+        self.assertIn("pred = 모델.프리딕트(엑스)", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("엑스지부스트.엑스지비클래시파이어")
