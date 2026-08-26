@@ -15,16 +15,16 @@ class TorchMetricsPackTests(unittest.TestCase):
         source = (
             "임포트 토치메트릭스 애즈 tm\n"
             "accuracy = tm.애큐러시(task='binary')\n"
-            "f1 = tm.에프원스코어(task='multiclass', num_classes=3)\n"
+            "에프1 = tm.에프1스코어(task='multiclass', num_classes=3)\n"
             "mean_loss = tm.미인메트릭()\n"
         )
         python_source = translate(source).python
         self.assertIn("import torchmetrics as tm", python_source)
         self.assertIn("tm.Accuracy(task='binary')", python_source)
-        self.assertIn("tm.F1Score(task='multiclass', num_classes=3)", python_source)
+        self.assertIn("f1 = tm.F1Score(task='multiclass', num_classes=3)", python_source)
         self.assertIn("tm.MeanMetric()", python_source)
 
-    def test_unimported_words_are_not_global(self):
+    def test_unimported_words_are_not_pack_global(self):
         source = "accuracy = tm.애큐러시(task='binary')\n"
         self.assertEqual(translate(source).python, source)
 
@@ -32,7 +32,7 @@ class TorchMetricsPackTests(unittest.TestCase):
         source = (
             "임포트 토치메트릭스 애즈 tm\n"
             "metric = tm.애큐러시(task='binary')\n"
-            "metric.update(preds, target)\n"
+            "metric.update(프레즈, 타깃)\n"
             "value = metric.compute()\n"
             "metric.reset()\n"
         )
@@ -50,18 +50,18 @@ class TorchMetricsPackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 토치메트릭스 애즈 tm", kopy)
         self.assertIn("tm.애큐러시(task='binary')", kopy)
-        self.assertIn("tm.에프원스코어(task='binary')", kopy)
+        self.assertIn("에프1 = tm.에프1스코어(task='binary')", kopy)
 
     def test_help_resolution(self):
-        resolved = resolve_pack_member("토치메트릭스.애큐러시")
+        resolved = resolve_pack_member("토치메트릭스.에프1스코어")
         self.assertIsNotNone(resolved)
         _, info = resolved
-        self.assertEqual(info.python, "Accuracy")
+        self.assertEqual(info.python, "F1Score")
 
     def test_generic_keywords_remain_python(self):
         source = (
             "임포트 토치메트릭스 애즈 tm\n"
-            "metric = tm.에프원스코어(task='multiclass', num_classes=4, average='macro')\n"
+            "metric = tm.에프1스코어(task='multiclass', num_classes=4, average='macro')\n"
         )
         python_source = translate(source).python
         for token in ("task=", "num_classes=", "average="):
