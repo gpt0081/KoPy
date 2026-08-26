@@ -27,27 +27,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Python 3.12.10
         uses: actions/setup-python@v5
         with:
           python-version: "3.12.10"
-
       - name: Install macOS OpenMP runtime
         if: runner.os == 'macOS'
         run: brew install libomp
-
       - name: Install KoPy AI libraries
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . "numpy>=2.5,<2.6" "pandas>=3.0,<3.1" "polars>=1.43.2,<1.44" "scipy>=1.18,<1.19" "scikit-learn>=1.9,<1.10" "xgboost>=3.4,<3.5" "lightgbm>=4.7,<4.8" "torch>=2.13,<2.14" "torchvision>=0.28,<0.29" "torch-geometric>=2.8.0.post1,<2.9" "timm>=1.0.28,<1.1" "kornia>=0.8.3,<0.9" "einops>=0.8.2,<0.9" "jax>=0.11.1,<0.12" "opencv-python-headless==5.0.0.93" "lightning>=2.6.5,<2.7" "torchmetrics>=1.9,<1.10" "transformers>=5.15,<5.16" "sentence-transformers>=6.0,<6.1" "fastembed>=0.8,<0.9" "faiss-cpu>=1.15,<1.16" "usearch>=2.26,<2.27" "qdrant-client>=1.19,<1.20" "chromadb>=1.5.9,<1.6" "lancedb>=0.37.1,<0.38" "bm25s>=0.3.10,<0.4" "ranx>=0.3.21,<0.4" "ir-measures>=0.4.3,<0.5" "llama-index-core>=0.14.24,<0.15" "haystack-ai>=3.0,<3.1" "datasets>=4.8,<4.9" "tokenizers>=0.22.2,<0.23" "accelerate>=1.14,<1.15" "peft>=0.20,<0.21" "onnxruntime>=1.28,<1.29" "onnx>=1.22,<1.23" "safetensors>=0.8,<0.9" "optimum>=2.3,<2.4" "sentencepiece>=0.2.2,<0.3" "optuna>=4.9,<5" "mlflow-skinny>=3.15,<3.16" "matplotlib>=3.11,<3.12"
-
+          python -m pip install -e . "numpy>=2.5,<2.6" "pandas>=3.0,<3.1" "polars>=1.43.2,<1.44" "scipy>=1.18,<1.19" "scikit-learn>=1.9,<1.10" "xgboost>=3.4,<3.5" "lightgbm>=4.7,<4.8" "torch>=2.13,<2.14" "torchvision>=0.28,<0.29" "torch-geometric>=2.8.0.post1,<2.9" "timm>=1.0.28,<1.1" "kornia>=0.8.3,<0.9" "einops>=0.8.2,<0.9" "jax>=0.11.1,<0.12" "opencv-python-headless==5.0.0.93" "lightning>=2.6.5,<2.7" "torchmetrics>=1.9,<1.10" "transformers>=5.15,<5.16" "sentence-transformers>=6.0,<6.1" "fastembed>=0.8,<0.9" "faiss-cpu>=1.15,<1.16" "usearch>=2.26,<2.27" "sqlite-vec==0.1.9" "qdrant-client>=1.19,<1.20" "chromadb>=1.5.9,<1.6" "lancedb>=0.37.1,<0.38" "bm25s>=0.3.10,<0.4" "ranx>=0.3.21,<0.4" "ir-measures>=0.4.3,<0.5" "llama-index-core>=0.14.24,<0.15" "haystack-ai>=3.0,<3.1" "datasets>=4.8,<4.9" "tokenizers>=0.22.2,<0.23" "accelerate>=1.14,<1.15" "peft>=0.20,<0.21" "onnxruntime>=1.28,<1.29" "onnx>=1.22,<1.23" "safetensors>=0.8,<0.9" "optimum>=2.3,<2.4" "sentencepiece>=0.2.2,<0.3" "optuna>=4.9,<5" "mlflow-skinny>=3.15,<3.16" "matplotlib>=3.11,<3.12"
       - name: Run KoPy test suite
         run: python -m unittest discover -s tests -v
-
       - name: Show library packs
         run: kopy packs
-
       - name: Verify NumPy pack details
         run: kopy packs numpy
       - name: Verify pandas pack details
@@ -92,6 +86,8 @@ jobs:
         run: kopy packs faiss
       - name: Verify USearch pack details
         run: kopy packs usearch
+      - name: Verify sqlite-vec pack details
+        run: kopy packs sqlite-vec
       - name: Verify Qdrant Client pack details
         run: kopy packs qdrant-client
       - name: Verify Chroma pack details
@@ -138,7 +134,6 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -164,7 +159,6 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4

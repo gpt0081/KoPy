@@ -14,20 +14,20 @@ class SQLiteVecPackTests(unittest.TestCase):
     def test_python_binding_members_translate(self):
         source = (
             "임포트 sqlite3\n"
-            "임포트 에스큐엘라이트벡 애즈 sqlite_vec\n"
+            "임포트 에스큐엘라이트벡 애즈 sv\n"
             "connection = sqlite3.connect(':memory:')\n"
-            "sqlite_vec.로드(connection)\n"
-            "blob = sqlite_vec.시리얼라이즈플로트32(embedding)\n"
+            "sv.로드(connection)\n"
+            "blob = sv.시리얼라이즈플로트32(embedding)\n"
         )
         python_source = translate(source).python
-        self.assertIn("import sqlite_vec as sqlite_vec", python_source)
-        self.assertIn("sqlite_vec.load(connection)", python_source)
-        self.assertIn("sqlite_vec.serialize_float32(embedding)", python_source)
+        self.assertIn("import sqlite_vec as sv", python_source)
+        self.assertIn("sv.load(connection)", python_source)
+        self.assertIn("sv.serialize_float32(embedding)", python_source)
 
     def test_generic_sqlite_and_search_vocabulary_stays_python(self):
         source = (
-            "임포트 에스큐엘라이트벡 애즈 sqlite_vec\n"
-            "sqlite_vec.로드(connection)\n"
+            "임포트 에스큐엘라이트벡 애즈 sv\n"
+            "sv.로드(connection)\n"
             "rows = connection.execute(query, [embedding]).fetchall()\n"
         )
         python_source = translate(source).python
