@@ -46,6 +46,12 @@ These names are transferable SQLite and vector-search concepts. They are not saf
 
 KoPy does not rewrite text inside SQL strings. SQL therefore remains exactly the SQL that upstream sqlite-vec expects.
 
+## macOS note
+
+Python's standard `sqlite3` module is not built with loadable-extension support on every platform. This is especially common on macOS, where `sqlite3.Connection` may not expose `enable_load_extension()` at all. That is a Python/SQLite build limitation rather than a KoPy or sqlite-vec translation issue.
+
+For macOS, sqlite-vec upstream recommends a Homebrew Python linked against a SQLite build that permits extensions. KoPy CI therefore keeps the normal Python 3.12.10 matrix, skips only the unsupported extension-loading runtime on that interpreter, and separately executes the real `vec0` KNN test with Homebrew `python@3.12`.
+
 ## Local KNN example
 
 ```kopy
@@ -72,6 +78,13 @@ The full runnable example is `examples/sqlite_vec_local_search.kpy`.
 
 ```powershell
 python -m pip install sqlite-vec==0.1.9
+```
+
+On macOS, if the interpreter has no `enable_load_extension()`, use Homebrew Python 3.12 instead of changing KoPy's translation rules:
+
+```bash
+brew install python@3.12
+$(brew --prefix python@3.12)/bin/python3.12 -m pip install sqlite-vec==0.1.9
 ```
 
 The Python wheel bundles the native extension for the supported platform. KoPy itself keeps no runtime dependency on sqlite-vec; the pack is only activated when the library is imported.
