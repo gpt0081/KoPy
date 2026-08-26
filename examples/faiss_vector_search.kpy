@@ -1,18 +1,17 @@
 임포트 넘파이 애즈 np
 임포트 파이스 애즈 faiss
 
-embeddings = np.어레이([
+임베딩즈 = np.어레이([
     [0.0, 0.0],
     [1.0, 1.0],
     [2.0, 2.0],
 ], dtype=np.플로트32)
 
-query = np.어레이([[1.1, 1.0]], dtype=np.플로트32)
+쿼리 = np.어레이([[1.1, 1.0]], dtype=np.플로트32)
 
-index = faiss.인덱스플랫엘투(embeddings.shape[1])
-index.add(embeddings)
+인덱스 = faiss.인덱스플랫엘2(임베딩즈.shape[1])
+인덱스.애드(임베딩즈)
+디스턴시즈, 인디시즈 = 인덱스.서치(쿼리, 2)
 
-distances, indices = index.search(query, 2)
-
-프린트("nearest indices:", indices)
-프린트("distances:", distances)
+프린트(인디시즈)
+프린트(디스턴시즈)
