@@ -1,0 +1,30 @@
+프롬 랭체인코어.documents 임포트 도큐먼트
+프롬 랭체인코어.embeddings 임포트 임베딩즈
+프롬 랭체인코어.vectorstores 임포트 인메모리벡터스토어
+
+
+class DemoEmbeddings(임베딩즈):
+    def embed_documents(self, texts):
+        return [self.embed_query(text) for text in texts]
+
+    def embed_query(self, text):
+        lowered = text.lower()
+        if "python" in lowered or "kopy" in lowered:
+            return [1.0, 0.0]
+        return [0.0, 1.0]
+
+
+documents = [
+    도큐먼트(page_content="KoPy teaches Python syntax and AI libraries."),
+    도큐먼트(page_content="Rubber chemistry uses sulfur vulcanization."),
+]
+
+vector_store = 인메모리벡터스토어(
+    embedding=DemoEmbeddings(),
+)
+vector_store.add_documents(documents=documents)
+
+query = "Python KoPy"
+results = vector_store.similarity_search(query, k=1)
+
+프린트(results[0].page_content)
