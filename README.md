@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.37**  
+현재 Core 버전: **0.5.38**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **38개**입니다.
+현재 공식 Library Pack은 **39개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -60,6 +60,7 @@ CPython + 실제 Python 라이브러리
 | ranx | dense·lexical run fusion·rank fusion·IR evaluation |
 | ir-measures | nDCG·Precision·Recall·RR·AP 등 표준 retrieval metric 평가 |
 | Ragas | RAG sample/dataset·context/faithfulness/factuality 계열 평가 API |
+| LlamaIndex Core | Document·Node·ingestion·VectorStoreIndex·retriever 등 RAG pipeline 구성 |
 | Datasets | 데이터 로딩·전처리·분할 |
 | Tokenizers | 고속 토큰화·Encoding·어휘 모델 |
 | Accelerate | 장치·분산 학습 준비와 실행 |
@@ -96,7 +97,7 @@ predictions = model.프리딕트(X_test)
 
 ## 검색/RAG 흐름
 
-현재 KoPy의 검색 스택은 dense retrieval, lexical retrieval, hybrid fusion, reranking, retrieval evaluation, end-to-end RAG evaluation까지 이어집니다.
+현재 KoPy의 검색 스택은 dense retrieval, lexical retrieval, hybrid fusion, reranking, retrieval evaluation, end-to-end RAG evaluation에 더해 core RAG pipeline orchestration까지 이어집니다.
 
 ```text
 Sentence Transformers / FastEmbed
@@ -117,6 +118,9 @@ FAISS / Qdrant / Chroma
              ↓
            Ragas
   end-to-end RAG evaluation
+             ↑
+      LlamaIndex Core
+Document / ingestion / index / retriever orchestration
 ```
 
 ### FAISS 벡터 검색
@@ -203,6 +207,27 @@ result = metric.score(reference=reference, response=response)
 
 `query`, `response`, `reference`, `contexts`, `user_input`, `retrieved_contexts`, `score()`, `ascore()`, `evaluate()` 같은 RAG 공통 표현은 Python 원형을 유지합니다. `ragas.metrics.collections` 같은 실제 dotted package 구조도 그대로 노출합니다. 자세한 범위는 [`docs/RAGAS_PACK.md`](docs/RAGAS_PACK.md)를 참고하세요.
 
+### LlamaIndex Core RAG orchestration
+
+```kopy
+프롬 라마인덱스.core 임포트 도큐먼트, 벡터스토어인덱스, 목임베딩
+
+documents = [
+    도큐먼트(text="KoPy teaches Python through transliteration."),
+    도큐먼트(text="LlamaIndex composes retrieval augmented generation pipelines."),
+]
+
+index = 벡터스토어인덱스.from_documents(
+    documents,
+    embed_model=목임베딩(embed_dim=8),
+    show_progress=False,
+)
+retriever = index.as_retriever(similarity_top_k=2)
+nodes = retriever.retrieve(query)
+```
+
+`documents`, `nodes`, `query`, `index`, `retriever`, `from_documents()`, `as_retriever()`, `retrieve()` 같은 RAG 공통 표현은 Python 원형을 유지합니다. `llama_index.core.node_parser` 같은 실제 dotted package 구조도 그대로 노출합니다. 자세한 범위는 [`docs/LLAMA_INDEX_CORE_PACK.md`](docs/LLAMA_INDEX_CORE_PACK.md)를 참고하세요.
+
 ## 충돌 방지 원칙
 
 외부 라이브러리 API는 Core 전역 단어표에 섞지 않습니다. 해당 라이브러리를 import한 파일에서만 관련 규칙이 활성화됩니다. 여러 활성 팩이 같은 KoPy 철자를 서로 다른 Python API로 정의하면 KoPy는 임의로 추측하지 않고 모호한 표현을 번역하지 않습니다.
@@ -215,10 +240,12 @@ axis= dtype= batch_size= top_k= limit= name= ids= embeddings=
 query_embeddings= n_results= collection_name= vectors_config=
 show_progress= stopwords= stemmer= method= backend= norm= metric=
 model_name= user_input= response= reference= retrieved_contexts=
+similarity_top_k= embed_model= storage_context= transformations=
 
 add() search() train() reset() update() compute() get() query()
 upsert() retrieve() delete() count() index() save() load()
 evaluate() compare() embed() rerank() score() ascore()
+from_documents() as_retriever() insert() refresh()
 ```
 
 이 원칙은 Python 원문 학습을 돕고, 서로 다른 Library Pack 사이의 모호한 전역 번역을 막기 위한 것입니다.
@@ -230,7 +257,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터/검색 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu qdrant-client chromadb bm25s ranx ir-measures ragas datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu qdrant-client chromadb bm25s ranx ir-measures ragas llama-index-core datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -274,6 +301,7 @@ kopy packs bm25s
 kopy packs ranx
 kopy packs ir-measures
 kopy packs ragas
+kopy packs llama-index-core
 kopy version
 ```
 
@@ -293,6 +321,7 @@ kopy packs bm25s --json
 kopy packs ranx --json
 kopy packs ir-measures --json
 kopy packs ragas --json
+kopy packs llama-index-core --json
 ```
 
 ## Core 예시
@@ -322,6 +351,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/RANX_PACK.md`](docs/RANX_PACK.md)
 - [`docs/IR_MEASURES_PACK.md`](docs/IR_MEASURES_PACK.md)
 - [`docs/RAGAS_PACK.md`](docs/RAGAS_PACK.md)
+- [`docs/LLAMA_INDEX_CORE_PACK.md`](docs/LLAMA_INDEX_CORE_PACK.md)
 
 그 밖의 Library Pack 문서도 `docs/`에 있습니다.
 
@@ -364,6 +394,7 @@ src/kopy
    │   ├─ ranx.py
    │   ├─ ir_measures.py
    │   ├─ ragas.py
+   │   ├─ llama_index.py
    │   ├─ datasets.py
    │   ├─ tokenizers.py
    │   ├─ accelerate.py
@@ -387,10 +418,11 @@ src/kopy
 
 검색/RAG 방향을 우선합니다.
 
-- RAG pipeline/orchestration 계층
-- retrieval + generation을 함께 다루는 통합 예제와 평가 흐름
+- LlamaIndex vector-store/embedding/LLM integrations와 KoPy 기존 팩 연결
+- retrieval + generation을 함께 다루는 완전 로컬 end-to-end RAG 예제
+- RAG pipeline observability/tracing 계층
 
-현재 검색 스택은 dense vector search(FAISS/Qdrant/Chroma) + sparse lexical search(BM25S) + ranx rank fusion + FastEmbed cross-encoder reranking + ir-measures 표준 retrieval evaluation + Ragas end-to-end RAG evaluation까지 이어집니다. 다음 단계는 이 구성요소들을 실제 RAG pipeline으로 연결하되, 특정 프레임워크의 과도하게 일반적인 메서드를 전역 음역하지 않는 것입니다.
+현재 검색 스택은 dense vector search(FAISS/Qdrant/Chroma) + sparse lexical search(BM25S) + ranx rank fusion + FastEmbed cross-encoder reranking + ir-measures 표준 retrieval evaluation + Ragas end-to-end RAG evaluation + LlamaIndex Core orchestration까지 이어집니다. 다음 단계에서도 특정 프레임워크의 과도하게 일반적인 메서드를 전역 음역하지 않는 원칙을 유지합니다.
 
 ## 버전 정책
 
