@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.33**  
+현재 Core 버전: **0.5.34**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **34개**입니다.
+현재 공식 Library Pack은 **35개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -56,6 +56,7 @@ CPython + 실제 Python 라이브러리
 | Qdrant Client | 벡터DB collection·point 저장·nearest-neighbor query·payload filter |
 | Chroma | 로컬·서버 vector DB client·collection 관리·embedding query |
 | BM25S | BM25 sparse lexical retrieval·tokenization·ranked document search |
+| ranx | dense·lexical run fusion·rank fusion·IR evaluation |
 | Datasets | 데이터 로딩·전처리·분할 |
 | Tokenizers | 고속 토큰화·Encoding·어휘 모델 |
 | Accelerate | 장치·분산 학습 준비와 실행 |
@@ -171,6 +172,35 @@ results = retriever.retrieve(query_tokens, k=2, show_progress=False)
 
 `corpus`, `query`, `retriever`, `results`, `documents`, `scores`, `k`와 `index()`, `retrieve()`, `save()`, `load()`는 정보검색 전반에서 재사용되는 핵심 용어이므로 Python 원형을 유지합니다. BM25S 고유 진입점만 namespace-scoped 방식으로 음역합니다. 자세한 범위는 [`docs/BM25S_PACK.md`](docs/BM25S_PACK.md)를 참고하세요.
 
+### ranx hybrid retrieval fusion
+
+```kopy
+프롬 랜엑스 임포트 큐렐즈, 런, 퓨즈, evaluate
+
+qrels = 큐렐즈({
+    "q1": {"doc_b": 1},
+})
+
+dense_run = 런({
+    "q1": {"doc_a": 0.91, "doc_b": 0.82}
+}, name="dense")
+
+lexical_run = 런({
+    "q1": {"doc_b": 3.0, "doc_a": 2.0}
+}, name="bm25")
+
+hybrid_run = 퓨즈(
+    runs=[dense_run, lexical_run],
+    norm="min-max",
+    method="sum",
+)
+
+ndcg = evaluate(qrels, hybrid_run, "ndcg@2")
+프린트(ndcg)
+```
+
+ranx는 새로운 retriever를 만드는 팩이 아니라 dense·lexical 검색의 ranking을 합치고 평가하는 층입니다. `runs`, `qrels`, `method`, `norm`, `metric`, `evaluate`, `compare`와 `dense_run`, `lexical_run`, `hybrid_run` 같은 IR 관례는 Python 원형을 유지합니다. 자세한 범위는 [`docs/RANX_PACK.md`](docs/RANX_PACK.md)를 참고하세요.
+
 ## 충돌 방지 원칙
 
 외부 라이브러리 API는 Core 전역 단어표에 섞지 않습니다. 해당 라이브러리를 import한 파일에서만 관련 규칙이 활성화됩니다. 여러 활성 팩이 같은 KoPy 철자를 서로 다른 Python API로 정의하면 KoPy는 임의로 추측하지 않고 모호한 표현을 번역하지 않습니다.
@@ -181,10 +211,11 @@ results = retriever.retrieve(query_tokens, k=2, show_progress=False)
 device= providers= test_size= return_tensors= target_modules=
 axis= dtype= batch_size= top_k= limit= name= ids= embeddings=
 query_embeddings= n_results= collection_name= vectors_config=
-show_progress= stopwords= stemmer= method= backend=
+show_progress= stopwords= stemmer= method= backend= norm= metric=
 
 add() search() train() reset() update() compute() get() query()
 upsert() retrieve() delete() count() index() save() load()
+evaluate() compare()
 ```
 
 이 원칙은 Python 원문 학습을 돕고, 서로 다른 Library Pack 사이의 모호한 전역 번역을 막기 위한 것입니다.
@@ -196,7 +227,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터/검색 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers faiss-cpu qdrant-client chromadb bm25s datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers faiss-cpu qdrant-client chromadb bm25s ranx datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -250,6 +281,7 @@ kopy packs faiss
 kopy packs qdrant
 kopy packs chroma
 kopy packs bm25s
+kopy packs ranx
 kopy packs optuna
 kopy packs matplotlib
 kopy version
@@ -267,6 +299,7 @@ kopy packs faiss --json
 kopy packs qdrant --json
 kopy packs chroma --json
 kopy packs bm25s --json
+kopy packs ranx --json
 kopy packs optuna --json
 ```
 
@@ -308,6 +341,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/QDRANT_PACK.md`](docs/QDRANT_PACK.md)
 - [`docs/CHROMA_PACK.md`](docs/CHROMA_PACK.md)
 - [`docs/BM25S_PACK.md`](docs/BM25S_PACK.md)
+- [`docs/RANX_PACK.md`](docs/RANX_PACK.md)
 - [`docs/OPTUNA_PACK.md`](docs/OPTUNA_PACK.md)
 - [`docs/MLFLOW_PACK.md`](docs/MLFLOW_PACK.md)
 - [`docs/MATPLOTLIB_PACK.md`](docs/MATPLOTLIB_PACK.md)
@@ -347,6 +381,7 @@ src/kopy
    │   ├─ qdrant.py
    │   ├─ chroma.py
    │   ├─ bm25s.py
+   │   ├─ ranx.py
    │   ├─ datasets.py
    │   ├─ tokenizers.py
    │   ├─ accelerate.py
@@ -370,11 +405,10 @@ src/kopy
 
 검색/RAG 방향을 우선합니다.
 
-- Hybrid retrieval
 - Reranking
 - Retrieval evaluation
 
-dense vector search(FAISS/Qdrant/Chroma)와 sparse lexical search(BM25S)가 모두 들어왔으므로 다음 단계는 두 검색 결과를 함께 쓰는 hybrid retrieval입니다. 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
+현재 검색 스택은 dense vector search(FAISS/Qdrant/Chroma) + sparse lexical search(BM25S) + ranx rank fusion/evaluation까지 이어집니다. 다음 단계는 후보 문서를 더 정교하게 재정렬하는 reranking과 retrieval 품질 평가를 확장하는 것입니다. 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
 
 ## 버전 정책
 
