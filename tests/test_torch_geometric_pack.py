@@ -15,7 +15,7 @@ class TorchGeometricPackTests(unittest.TestCase):
         source = (
             "프롬 토치지오메트릭.data 임포트 데이터\n"
             "프롬 토치지오메트릭.nn 임포트 지씨엔컨브\n"
-            "graph = 데이터(x=x, edge_index=edge_index)\n"
+            "graph = 데이터(x=x, 엣지_인덱스=엣지_인덱스)\n"
             "conv = 지씨엔컨브(in_channels=8, out_channels=16)\n"
         )
         python_source = translate(source).python
@@ -46,7 +46,7 @@ class TorchGeometricPackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("프롬 토치지오메트릭.data 임포트 데이터", kopy)
         self.assertIn("프롬 토치지오메트릭.nn 임포트 지씨엔컨브", kopy)
-        self.assertIn("graph = 데이터(x=x, edge_index=edge_index)", kopy)
+        self.assertIn("graph = 데이터(x=x, 엣지_인덱스=엣지_인덱스)", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("토치지오메트릭.지씨엔컨브")
