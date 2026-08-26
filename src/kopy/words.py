@@ -87,8 +87,66 @@ WORDS: dict[str, str] = {
     "라이선스": "license", "퀴트": "quit",
 }
 
+# Canonical educational identifiers shared across AI/ML/search examples.
+#
+# These are deliberately separate from WORDS and LibraryPack.members. KoPy first
+# resolves imported library namespaces, then applies this vocabulary to remaining
+# NAME tokens. That lets a learner write `인덱스 = 탄티비.인덱스(...)` without
+# confusing the variable `index` with Tantivy's `Index` class.
+#
+# Numeric fragments stay as digits: `F1` -> `에프1`, `BM25` -> `비엠25`.
+# Stable upstream conventions that are useful to learn verbatim, such as `top_k`,
+# may intentionally remain English and therefore are not listed here.
+COMMON_IDENTIFIERS: dict[str, str] = {
+    "엑스": "X",
+    "와이": "y",
+    "엑스_트레인": "X_train",
+    "엑스_테스트": "X_test",
+    "와이_트레인": "y_train",
+    "와이_테스트": "y_test",
+    "디에프": "df",
+    "피처스": "features",
+    "스케일러": "scaler",
+    "모델": "model",
+    "핏": "fit",
+    "프리딕트": "predict",
+    "프레즈": "preds",
+    "프레딕션즈": "predictions",
+    "타깃": "target",
+    "엣지_인덱스": "edge_index",
+    "임베딩즈": "embeddings",
+    "쿼리": "query",
+    "인덱스": "index",
+    "코퍼스": "corpus",
+    "리트리버": "retriever",
+    "리스폰스": "response",
+    "레퍼런스": "reference",
+    "다큐먼트": "document",
+    "다큐먼츠": "documents",
+    "다큐먼트_스토어": "document_store",
+    "벡터_스토어": "vector_store",
+    "리절트": "result",
+    "리절츠": "results",
+    "디스턴시즈": "distances",
+    "인디시즈": "indices",
+    "코퍼스_토큰즈": "corpus_tokens",
+    "쿼리_토큰즈": "query_tokens",
+    "리더": "reader",
+    "라이터": "writer",
+    "페이지즈": "pages",
+    "텍스트": "text",
+    "메타데이터": "metadata",
+    "초이시즈": "choices",
+    "베스트": "best",
+    "스코어즈": "scores",
+    "에프1": "f1",
+}
+
 ENGLISH_TARGETS: frozenset[str] = frozenset(WORDS.values())
 PY_TO_KO: dict[str, str] = {python_name: korean for korean, python_name in WORDS.items()}
+COMMON_PY_TO_KO: dict[str, str] = {
+    python_name: korean for korean, python_name in COMMON_IDENTIFIERS.items()
+}
 
 _KEYWORDS = frozenset(keyword.kwlist) | frozenset(getattr(keyword, "softkwlist", ()))
 _BUILTINS = frozenset(name for name in dir(builtins) if not name.startswith("_") and name.isidentifier())
@@ -140,6 +198,8 @@ _EXAMPLES: dict[str, tuple[str, str]] = {
 
 
 def category_for(python_name: str) -> str:
+    if python_name in COMMON_PY_TO_KO:
+        return "identifier"
     if python_name in _CONSTANTS:
         return "constant"
     if python_name in _KEYWORDS:
@@ -155,13 +215,18 @@ def category_for(python_name: str) -> str:
 def info_for(kopy_word: str) -> WordInfo | None:
     python_name = WORDS.get(kopy_word)
     if python_name is None:
+        python_name = COMMON_IDENTIFIERS.get(kopy_word)
+    if python_name is None:
         return None
     examples = _EXAMPLES.get(python_name)
+    description = _DESCRIPTIONS.get(python_name)
+    if description is None and python_name in COMMON_PY_TO_KO:
+        description = f"AI/Python 학습에서 자주 쓰는 식별자 `{python_name}`의 KoPy 음역입니다."
     return WordInfo(
         kopy=kopy_word,
         python=python_name,
         category=category_for(python_name),
-        description=_DESCRIPTIONS.get(python_name, f"Python의 {python_name} 표현을 KoPy 음역으로 사용할 수 있습니다."),
+        description=description or f"Python의 {python_name} 표현을 KoPy 음역으로 사용할 수 있습니다.",
         kopy_example=examples[0] if examples else None,
         python_example=examples[1] if examples else None,
     )
@@ -169,7 +234,7 @@ def info_for(kopy_word: str) -> WordInfo | None:
 
 def all_word_info() -> tuple[WordInfo, ...]:
     items: list[WordInfo] = []
-    for word in WORDS:
+    for word in (*WORDS, *COMMON_IDENTIFIERS):
         info = info_for(word)
         if info is not None:
             items.append(info)

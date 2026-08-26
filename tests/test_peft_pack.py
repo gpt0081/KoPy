@@ -14,8 +14,8 @@ class PeftPackTests(unittest.TestCase):
         result = translate(source).python
         self.assertIn("from peft import LoraConfig, get_peft_model", result)
         self.assertIn("설정 = LoraConfig", result)
-        self.assertIn("모델 = get_peft_model(모델, 설정)", result)
-        self.assertIn("모델.merge_and_unload()", result)
+        self.assertIn("model = get_peft_model(model, 설정)", result)
+        self.assertIn("model.merge_and_unload()", result)
 
     def test_reverse_translate_peft_api(self):
         source = (
@@ -26,7 +26,7 @@ class PeftPackTests(unittest.TestCase):
         result = to_kopy(source).kopy
         self.assertIn("프롬 페프트 임포트 페프트모델, 로라컨피그", result)
         self.assertIn("로라컨피그(r=4)", result)
-        self.assertIn(".셋어댑터('default')", result)
+        self.assertIn("모델 = 모델.셋어댑터('default')", result)
 
 
 if __name__ == "__main__":

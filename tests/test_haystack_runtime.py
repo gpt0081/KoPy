@@ -10,16 +10,16 @@ class HaystackRuntimeTests(unittest.TestCase):
         source = (
             "프롬 헤이스택 임포트 도큐먼트, 파이프라인\n"
             "프롬 헤이스택.document_stores.in_memory 임포트 인메모리도큐먼트스토어\n"
-            "프롬 헤이스택.components.retrievers.in_memory 임포트 인메모리비엠이십오리트리버\n"
-            "document_store = 인메모리도큐먼트스토어()\n"
-            "document_store.write_documents([\n"
+            "프롬 헤이스택.components.retrievers.in_memory 임포트 인메모리비엠25리트리버\n"
+            "다큐먼트_스토어 = 인메모리도큐먼트스토어()\n"
+            "다큐먼트_스토어.write_documents([\n"
             "    도큐먼트(content='KoPy teaches Python syntax and AI libraries.'),\n"
             "    도큐먼트(content='Rubber chemistry uses sulfur vulcanization.'),\n"
             "])\n"
-            "retriever = 인메모리비엠이십오리트리버(document_store=document_store, top_k=2)\n"
+            "리트리버 = 인메모리비엠25리트리버(다큐먼트_스토어=다큐먼트_스토어, top_k=2)\n"
             "pipeline = 파이프라인()\n"
-            "pipeline.add_component('retriever', retriever)\n"
-            "result = pipeline.run({'retriever': {'query': 'Python KoPy'}})\n"
+            "pipeline.add_component('retriever', 리트리버)\n"
+            "리절트 = pipeline.run({'retriever': {'query': 'Python KoPy'}})\n"
         )
         namespace = {}
         exec(translate(source).python, namespace)

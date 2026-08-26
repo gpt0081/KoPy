@@ -2,8 +2,7 @@
 
 Covers high-value PyTorch metric classes while deliberately preserving generic
 lifecycle methods such as update(), compute(), reset(), clone(), and plot() in
-upstream Python form. Those names are broadly used outside TorchMetrics and are
-better learned as standard framework API than translated as ambiguous members.
+upstream Python form. Numeric fragments stay as digits, so F1Score is 에프1스코어.
 """
 
 from __future__ import annotations
@@ -23,7 +22,7 @@ TORCHMETRICS_PACK = LibraryPack(
         "애큐러시": "Accuracy",
         "프리시전": "Precision",
         "리콜": "Recall",
-        "에프원스코어": "F1Score",
+        "에프1스코어": "F1Score",
         "에이유알오씨": "AUROC",
         "애버리지프리시전": "AveragePrecision",
         "컨퓨전매트릭스": "ConfusionMatrix",
@@ -51,7 +50,7 @@ TORCHMETRICS_PACK = LibraryPack(
             "import torchmetrics as tm\naccuracy = tm.Accuracy(task='binary')",
         ),
         "F1Score": (
-            "임포트 토치메트릭스 애즈 tm\nf1 = tm.에프원스코어(task='multiclass', num_classes=3)",
+            "임포트 토치메트릭스 애즈 tm\n에프1 = tm.에프1스코어(task='multiclass', num_classes=3)",
             "import torchmetrics as tm\nf1 = tm.F1Score(task='multiclass', num_classes=3)",
         ),
         "MeanMetric": (

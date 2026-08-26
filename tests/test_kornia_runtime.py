@@ -12,7 +12,7 @@ class KorniaRuntimeTests(unittest.TestCase):
             "임포트 코르니아 애즈 K\n"
             "image = 토치.에이레인지(0, 48, dtype=토치.플로트32).리셰이프(1, 3, 4, 4) / 47.0\n"
             "gray = K.컬러.알지비투그레이스케일(image)\n"
-            "blurred = K.필터즈.가우시안블러투디(gray, (3, 3), (1.0, 1.0))\n"
+            "blurred = K.필터즈.가우시안블러2디(gray, (3, 3), (1.0, 1.0))\n"
             "resized = K.지오메트리.트랜스폼.리사이즈(blurred, (8, 8))\n"
             "aug = K.어그멘테이션.어그멘테이션시퀀셜(K.어그멘테이션.랜덤호리즌털플립(p=1.0))\n"
             "flipped = aug(resized)\n"

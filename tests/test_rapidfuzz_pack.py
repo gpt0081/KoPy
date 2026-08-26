@@ -14,15 +14,15 @@ class RapidFuzzPackTests(unittest.TestCase):
     def test_scorers_and_extractors_translate(self):
         source = (
             "프롬 래피드퍼즈 임포트 fuzz, process\n"
-            "score = fuzz.더블유레이쇼(query, candidate)\n"
-            "best = process.익스트랙트원(query, choices, scorer=fuzz.더블유레이쇼)\n"
+            "score = fuzz.더블유레이쇼(쿼리, candidate)\n"
+            "베스트 = process.익스트랙트원(쿼리, 초이시즈, scorer=fuzz.더블유레이쇼)\n"
         )
         python_source = translate(source).python
         self.assertIn("from rapidfuzz import fuzz, process", python_source)
         self.assertIn("fuzz.WRatio(query, candidate)", python_source)
-        self.assertIn("process.extractOne(query, choices, scorer=fuzz.WRatio)", python_source)
+        self.assertIn("best = process.extractOne(query, choices, scorer=fuzz.WRatio)", python_source)
 
-    def test_transferable_search_vocabulary_stays_python(self):
+    def test_python_spellings_remain_accepted(self):
         source = (
             "프롬 래피드퍼즈 임포트 fuzz, process\n"
             "query = 'kopy python'\n"
@@ -39,7 +39,7 @@ class RapidFuzzPackTests(unittest.TestCase):
         source = "score = fuzz.더블유레이쇼(query, candidate)\n"
         self.assertEqual(translate(source).python, source)
 
-    def test_python_to_kopy_preserves_real_submodules(self):
+    def test_python_to_kopy_transliterates_common_search_identifiers(self):
         source = (
             "from rapidfuzz import fuzz, process\n"
             "score = fuzz.token_set_ratio(query, candidate)\n"
@@ -47,8 +47,8 @@ class RapidFuzzPackTests(unittest.TestCase):
         )
         kopy = to_kopy(source).kopy
         self.assertIn("프롬 래피드퍼즈 임포트 fuzz, process", kopy)
-        self.assertIn("fuzz.토큰셋레이쇼(query, candidate)", kopy)
-        self.assertIn("process.익스트랙트원(query, choices, scorer=fuzz.더블유레이쇼)", kopy)
+        self.assertIn("fuzz.토큰셋레이쇼(쿼리, candidate)", kopy)
+        self.assertIn("베스트 = process.익스트랙트원(쿼리, 초이시즈, scorer=fuzz.더블유레이쇼)", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("래피드퍼즈.익스트랙트원")

@@ -15,29 +15,30 @@ class TimmPackTests(unittest.TestCase):
         source = (
             "임포트 팀엠\n"
             "model_names = 팀엠.리스트모델즈('resnet*')\n"
-            "model = 팀엠.크리에이트모델('resnet18', pretrained=False, num_classes=10)\n"
-            "features = model.포워드피처스(x)\n"
+            "모델 = 팀엠.크리에이트모델('resnet18', pretrained=False, num_classes=10)\n"
+            "피처스 = 모델.포워드피처스(x)\n"
         )
         python_source = translate(source).python
         self.assertIn("import timm", python_source)
         self.assertIn("timm.list_models('resnet*')", python_source)
-        self.assertIn("timm.create_model('resnet18', pretrained=False, num_classes=10)", python_source)
-        self.assertIn("model.forward_features(x)", python_source)
+        self.assertIn("model = timm.create_model('resnet18', pretrained=False, num_classes=10)", python_source)
+        self.assertIn("features = model.forward_features(x)", python_source)
 
     def test_alias_translation(self):
         source = (
             "임포트 팀엠 애즈 tm\n"
-            "model = tm.크리에이트모델('resnet18', pretrained=False)\n"
-            "config = tm.데이터.리졸브데이터컨피그(model.pretrained_cfg, model=model)\n"
+            "모델 = tm.크리에이트모델('resnet18', pretrained=False)\n"
+            "config = tm.데이터.리졸브데이터컨피그(모델.pretrained_cfg, model=모델)\n"
         )
         python_source = translate(source).python
         self.assertIn("import timm as tm", python_source)
-        self.assertIn("tm.create_model('resnet18', pretrained=False)", python_source)
+        self.assertIn("model = tm.create_model('resnet18', pretrained=False)", python_source)
         self.assertIn("tm.data.resolve_data_config", python_source)
+        self.assertIn("model=model", python_source)
 
-    def test_unimported_words_are_not_global(self):
-        source = "model = 크리에이트모델('resnet18')\n"
-        self.assertEqual(translate(source).python, source)
+    def test_unimported_pack_word_is_not_global(self):
+        source = "모델 = 크리에이트모델('resnet18')\n"
+        self.assertEqual(translate(source).python, "model = 크리에이트모델('resnet18')\n")
 
     def test_python_to_kopy(self):
         source = (
@@ -49,8 +50,8 @@ class TimmPackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 팀엠", kopy)
         self.assertIn("팀엠.리스트모델즈", kopy)
-        self.assertIn("팀엠.크리에이트모델", kopy)
-        self.assertIn("model.포워드피처스", kopy)
+        self.assertIn("모델 = 팀엠.크리에이트모델", kopy)
+        self.assertIn("피처스 = 모델.포워드피처스", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("팀엠.크리에이트모델")
@@ -61,7 +62,7 @@ class TimmPackTests(unittest.TestCase):
     def test_keyword_arguments_remain_python_spelling(self):
         source = (
             "임포트 팀엠\n"
-            "model = 팀엠.크리에이트모델('resnet18', pretrained=False, num_classes=10, "
+            "모델 = 팀엠.크리에이트모델('resnet18', pretrained=False, num_classes=10, "
             "in_chans=3, features_only=False)\n"
         )
         python_source = translate(source).python

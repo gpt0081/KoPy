@@ -1,15 +1,16 @@
 import unittest
 
 from kopy.editor import diagnose_source, info_payload, word_entries, words_payload
-from kopy.words import WORDS
+from kopy.words import COMMON_IDENTIFIERS, WORDS
 
 
 class EditorApiTests(unittest.TestCase):
     def test_word_entries_are_derived_from_canonical_words(self):
         entries = word_entries()
         mapping = {entry["kopy"]: entry["python"] for entry in entries}
-        self.assertEqual(mapping, WORDS)
-        self.assertEqual(len(entries), len(WORDS))
+        expected = {**WORDS, **COMMON_IDENTIFIERS}
+        self.assertEqual(mapping, expected)
+        self.assertEqual(len(entries), len(expected))
         self.assertTrue(all("description" in entry for entry in entries))
 
     def test_words_payload_contains_registry_metadata(self):

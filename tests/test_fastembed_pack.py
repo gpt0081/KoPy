@@ -35,7 +35,7 @@ class FastEmbedPackTests(unittest.TestCase):
         self.assertIn("TextCrossEncoder(model_name='Xenova/ms-marco-MiniLM-L-6-v2')", python_source)
         self.assertIn("reranker.rerank(query, documents)", python_source)
 
-    def test_transferable_retrieval_vocabulary_remains_python(self):
+    def test_python_source_remains_accepted_for_transferable_vocabulary(self):
         source = (
             "프롬 패스트임베드.rerank.cross_encoder 임포트 텍스트크로스인코더\n"
             "reranker = 텍스트크로스인코더(model_name=model_name)\n"
@@ -58,7 +58,7 @@ class FastEmbedPackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("프롬 패스트임베드.rerank.cross_encoder 임포트 텍스트크로스인코더", kopy)
         self.assertIn("텍스트크로스인코더(model_name='Xenova/ms-marco-MiniLM-L-6-v2')", kopy)
-        self.assertIn("reranker.rerank(query, documents)", kopy)
+        self.assertIn("스코어즈 = 리스트(reranker.rerank(쿼리, 다큐먼츠))", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("패스트임베드.텍스트크로스인코더")

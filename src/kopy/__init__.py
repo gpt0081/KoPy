@@ -1,4 +1,4 @@
 """KoPy package."""
 
-__version__ = "0.5.13"
+__version__ = "0.5.47"
 PYTHON_BASELINE = "3.12.10"

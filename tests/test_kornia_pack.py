@@ -15,7 +15,7 @@ class KorniaPackTests(unittest.TestCase):
         source = (
             "임포트 코르니아\n"
             "gray = 코르니아.컬러.알지비투그레이스케일(image)\n"
-            "blurred = 코르니아.필터즈.가우시안블러투디(gray, (3, 3), (1.5, 1.5))\n"
+            "blurred = 코르니아.필터즈.가우시안블러2디(gray, (3, 3), (1.5, 1.5))\n"
         )
         python_source = translate(source).python
         self.assertIn("import kornia", python_source)
@@ -42,15 +42,15 @@ class KorniaPackTests(unittest.TestCase):
         source = (
             "import kornia\n"
             "gray = kornia.color.rgb_to_grayscale(image)\n"
-            "edges = kornia.filters.sobel(gray)\n"
+            "blurred = kornia.filters.gaussian_blur2d(gray, (3, 3), (1.5, 1.5))\n"
         )
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 코르니아", kopy)
         self.assertIn("코르니아.컬러.알지비투그레이스케일", kopy)
-        self.assertIn("코르니아.필터즈.소벨", kopy)
+        self.assertIn("코르니아.필터즈.가우시안블러2디", kopy)
 
     def test_help_resolution(self):
-        resolved = resolve_pack_member("코르니아.가우시안블러투디")
+        resolved = resolve_pack_member("코르니아.가우시안블러2디")
         self.assertIsNotNone(resolved)
         _, info = resolved
         self.assertEqual(info.python, "gaussian_blur2d")

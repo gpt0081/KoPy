@@ -14,11 +14,11 @@ class FaissRuntimeTests(unittest.TestCase):
             "임포트 넘파이 애즈 np\n"
             "임포트 파이스 애즈 faiss\n"
             "vectors = np.어레이([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0]], dtype=np.플로트32)\n"
-            "query = np.어레이([[1.1, 1.0]], dtype=np.플로트32)\n"
-            "index = faiss.인덱스플랫엘투(2)\n"
-            "index.add(vectors)\n"
-            "distances, indices = index.search(query, 2)\n"
-            "count = index.ntotal\n"
+            "쿼리 = np.어레이([[1.1, 1.0]], dtype=np.플로트32)\n"
+            "인덱스 = faiss.인덱스플랫엘2(2)\n"
+            "인덱스.add(vectors)\n"
+            "디스턴시즈, 인디시즈 = 인덱스.search(쿼리, 2)\n"
+            "count = 인덱스.ntotal\n"
         )
         python_source = translate(source).python + (
             "\nassert count == 3\n"

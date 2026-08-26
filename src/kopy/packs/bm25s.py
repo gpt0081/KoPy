@@ -1,8 +1,8 @@
 """Official BM25S lexical-search library pack for KoPy.
 
-The pack translates BM25S-specific entry points while preserving transferable
-information-retrieval vocabulary such as ``index``, ``retrieve``, ``corpus``,
-``query``, ``k``, ``documents``, and ``scores`` in upstream Python form.
+The pack transliterates BM25S-specific entry points. Shared retrieval identifiers
+such as corpus/query/retriever can also use KoPy's common educational identifier
+vocabulary. Numeric fragments remain digits: BM25S -> 비엠25에스, BM25 -> 비엠25.
 """
 
 from __future__ import annotations
@@ -13,11 +13,11 @@ from .base import LibraryPack
 BM25S_PACK = LibraryPack(
     name="bm25s",
     module="bm25s",
-    kopy_module="비엠이십오에스",
+    kopy_module="비엠25에스",
     preferred_aliases=("bm25s", "bm25"),
     description="BM25 lexical search를 위한 토큰화·BM25 retriever API 팩",
     members={
-        "비엠이십오": "BM25",
+        "비엠25": "BM25",
         "토크나이즈": "tokenize",
         "리절츠": "Results",
         "겟유니크토큰즈": "get_unique_tokens",
@@ -30,11 +30,11 @@ BM25S_PACK = LibraryPack(
     },
     examples={
         "BM25": (
-            "임포트 비엠이십오에스 애즈 bm25s\nretriever = bm25s.비엠이십오(corpus=corpus)",
+            "임포트 비엠25에스 애즈 bm25s\n리트리버 = bm25s.비엠25(코퍼스=코퍼스)",
             "import bm25s\nretriever = bm25s.BM25(corpus=corpus)",
         ),
         "tokenize": (
-            "corpus_tokens = bm25s.토크나이즈(corpus, show_progress=False)",
+            "코퍼스_토큰즈 = bm25s.토크나이즈(코퍼스, show_progress=False)",
             "corpus_tokens = bm25s.tokenize(corpus, show_progress=False)",
         ),
     },

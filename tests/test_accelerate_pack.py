@@ -14,7 +14,7 @@ class AcceleratePackTests(unittest.TestCase):
         result = translate(source).python
         self.assertIn("from accelerate import Accelerator", result)
         self.assertIn("가속기 = Accelerator()", result)
-        self.assertIn("가속기.prepare(모델, 옵티마이저)", result)
+        self.assertIn("model, 옵티마이저 = 가속기.prepare(model, 옵티마이저)", result)
         self.assertIn("가속기.backward(손실)", result)
 
     def test_reverse_translate_accelerate_api(self):
@@ -25,7 +25,7 @@ class AcceleratePackTests(unittest.TestCase):
         )
         result = to_kopy(source).kopy
         self.assertIn("프롬 액셀러레이트 임포트 액셀러레이터", result)
-        self.assertIn(".언랩모델(model)", result)
+        self.assertIn("모델 = accelerator.언랩모델(모델)", result)
 
 
 if __name__ == "__main__":
