@@ -123,6 +123,36 @@ jobs:
       - name: Verify Matplotlib pack details
         run: kopy packs matplotlib
 
+  ragas-compat:
+    name: Ragas 0.4.3 compatibility runtime / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.10"
+
+      - name: Install Ragas compatibility environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "ragas==0.4.3" "langchain-community==0.3.31" "rapidfuzz>=3,<4"
+
+      - name: Run Ragas pack tests
+        env:
+          RAGAS_DO_NOT_TRACK: "true"
+        run: python -m unittest tests.test_ragas_pack tests.test_ragas_runtime -v
+
+      - name: Verify Ragas pack details
+        run: kopy packs ragas
+
   mlflow-full:
     name: Full MLflow 3.15 runtime / ${{ matrix.os }}
     strategy:
