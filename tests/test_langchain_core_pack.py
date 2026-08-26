@@ -13,8 +13,8 @@ class LangChainCorePackTests(unittest.TestCase):
 
     def test_vector_store_api_translates(self):
         source = (
-            "프롬 랭체인코어.다큐먼츠 임포트 도큐먼트\n"
-            "프롬 랭체인코어.임베딩즈 임포트 임베딩즈\n"
+            "프롬 랭체인코어.documents 임포트 도큐먼트\n"
+            "프롬 랭체인코어.embeddings 임포트 임베딩즈\n"
             "프롬 랭체인코어.vectorstores 임포트 인메모리벡터스토어\n"
             "벡터_스토어 = 인메모리벡터스토어(embedding=embedding_model)\n"
             "벡터_스토어.add_documents(다큐먼츠=다큐먼츠)\n"
@@ -56,14 +56,14 @@ class LangChainCorePackTests(unittest.TestCase):
         source = "x = lib.인메모리벡터스토어(embedding=model)\n"
         self.assertEqual(translate(source).python, source)
 
-    def test_python_to_kopy_transliterates_known_dotted_segments_and_identifiers(self):
+    def test_python_to_kopy_preserves_dotted_paths_and_transliterates_identifiers(self):
         source = (
             "from langchain_core.documents import Document\n"
             "from langchain_core.vectorstores import InMemoryVectorStore\n"
             "vector_store = InMemoryVectorStore(embedding=embedding_model)\n"
         )
         kopy = to_kopy(source).kopy
-        self.assertIn("프롬 랭체인코어.다큐먼츠 임포트 도큐먼트", kopy)
+        self.assertIn("프롬 랭체인코어.documents 임포트 도큐먼트", kopy)
         self.assertIn("프롬 랭체인코어.vectorstores 임포트 인메모리벡터스토어", kopy)
         self.assertIn("벡터_스토어 = 인메모리벡터스토어", kopy)
 
