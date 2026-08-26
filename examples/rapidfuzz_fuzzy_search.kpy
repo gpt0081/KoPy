@@ -1,0 +1,16 @@
+프롬 래피드퍼즈 임포트 fuzz, process
+
+query = "KoPy Python"
+choices = [
+    "KoPy Python learning",
+    "Rubber chemistry",
+    "Python machine learning",
+]
+
+best = process.익스트랙트원(
+    query,
+    choices,
+    scorer=fuzz.더블유레이쇼,
+)
+
+프린트("best:", best)
