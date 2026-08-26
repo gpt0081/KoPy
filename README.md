@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.43**  
+현재 Core 버전: **0.5.44**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **44개**입니다.
+현재 공식 Library Pack은 **45개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -60,6 +60,7 @@ CPython + 실제 Python 라이브러리
 | Chroma | 로컬·서버 vector DB client·collection 관리·embedding query |
 | LanceDB | 로컬·원격 vector DB·vector search·FTS·hybrid retrieval·reranker |
 | BM25S | BM25 sparse lexical retrieval·tokenization·ranked document search |
+| Tantivy | Rust 기반 로컬 full-text index·schema·query parser·ranked search |
 | ranx | dense·lexical run fusion·rank fusion·IR evaluation |
 | ir-measures | nDCG·Precision·Recall·RR·AP 등 표준 retrieval metric 평가 |
 | Ragas | RAG sample/dataset·context/faithfulness/factuality 계열 평가 API |
@@ -108,7 +109,7 @@ Sentence Transformers / FastEmbed
           embeddings
              ↓
 FAISS / USearch / sqlite-vec / Qdrant / Chroma / LanceDB
-        + BM25S
+        + BM25S / Tantivy
              ↓
             ranx
       hybrid rank fusion
@@ -194,6 +195,29 @@ query_tokens = bm25s.토크나이즈([query], show_progress=False)
 results = retriever.retrieve(query_tokens, k=5, show_progress=False)
 ```
 
+### Tantivy full-text search
+
+```kopy
+임포트 탄티비
+
+builder = 탄티비.스키마빌더()
+builder.add_text_field("title", stored=True)
+builder.add_text_field("body", stored=True)
+schema = builder.build()
+
+index = 탄티비.인덱스(schema)
+writer = index.writer(heap_size=15_000_000, num_threads=1)
+doc = 탄티비.도큐먼트()
+doc.add_text("title", "KoPy Python learning")
+doc.add_text("body", "KoPy teaches Python syntax and AI libraries")
+writer.add_document(doc)
+writer.commit()
+
+index.reload()
+query = index.parse_query("Python KoPy", ["title", "body"])
+results = index.searcher().search(query, 5)
+```
+
 ## 충돌 방지 원칙
 
 외부 라이브러리 API는 Core 전역 단어표에 섞지 않습니다. 해당 라이브러리를 import한 파일에서만 관련 규칙이 활성화됩니다. 여러 활성 팩이 같은 KoPy 철자를 서로 다른 Python API로 정의하면 KoPy는 임의로 추측하지 않고 모호한 표현을 번역하지 않습니다.
@@ -212,7 +236,7 @@ embed_documents() embed_query()
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu usearch sqlite-vec qdrant-client chromadb lancedb bm25s ranx ir-measures ragas llama-index-core haystack-ai langchain-core datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu usearch sqlite-vec qdrant-client chromadb lancedb bm25s tantivy ranx ir-measures ragas llama-index-core haystack-ai langchain-core datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다.
@@ -242,6 +266,7 @@ kopy packs qdrant
 kopy packs chroma
 kopy packs lancedb
 kopy packs bm25s
+kopy packs tantivy
 kopy packs ranx
 kopy packs ir-measures
 kopy packs ragas
@@ -269,6 +294,7 @@ kopy packs langchain-core --json
 - [`docs/CHROMA_PACK.md`](docs/CHROMA_PACK.md)
 - [`docs/LANCEDB_PACK.md`](docs/LANCEDB_PACK.md)
 - [`docs/BM25S_PACK.md`](docs/BM25S_PACK.md)
+- [`docs/TANTIVY_PACK.md`](docs/TANTIVY_PACK.md)
 - [`docs/RANX_PACK.md`](docs/RANX_PACK.md)
 - [`docs/IR_MEASURES_PACK.md`](docs/IR_MEASURES_PACK.md)
 - [`docs/RAGAS_PACK.md`](docs/RAGAS_PACK.md)
