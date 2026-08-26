@@ -13,7 +13,7 @@ class RapidFuzzRuntimeTests(unittest.TestCase):
             "choices = ['KoPy Python learning', 'Rubber chemistry', 'Python machine learning']\n"
             "direct_score = fuzz.더블유레이쇼(query, choices[0])\n"
             "best = process.익스트랙트원(query, choices, scorer=fuzz.더블유레이쇼)\n"
-            "token_score = fuzz.토큰셋레이쇼('python kopy', 'KoPy Python')\n"
+            "token_score = fuzz.토큰셋레이쇼('python kopy', 'kopy python')\n"
         )
         namespace = {}
         exec(translate(source).python, namespace)
@@ -26,7 +26,7 @@ class RapidFuzzRuntimeTests(unittest.TestCase):
         self.assertEqual(best[0], "KoPy Python learning")
         self.assertGreater(float(best[1]), 80.0)
         self.assertEqual(best[2], 0)
-        self.assertGreater(token_score, 90.0)
+        self.assertEqual(token_score, 100.0)
 
 
 if __name__ == "__main__":
