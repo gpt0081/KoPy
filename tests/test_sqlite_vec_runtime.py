@@ -5,12 +5,17 @@ import unittest
 from kopy.translator import translate
 
 
-@unittest.skipUnless(importlib.util.find_spec("sqlite_vec"), "sqlite-vec is not installed")
+HAS_SQLITE_VEC = importlib.util.find_spec("sqlite_vec") is not None
+HAS_LOADABLE_SQLITE_EXTENSIONS = hasattr(sqlite3.Connection, "enable_load_extension")
+
+
+@unittest.skipUnless(HAS_SQLITE_VEC, "sqlite-vec is not installed")
+@unittest.skipUnless(
+    HAS_LOADABLE_SQLITE_EXTENSIONS,
+    "this Python sqlite3 build does not support loadable SQLite extensions",
+)
 class SQLiteVecRuntimeTests(unittest.TestCase):
     def test_real_sqlite_vector_search(self):
-        if not hasattr(sqlite3.Connection, "enable_load_extension"):
-            self.skipTest("this Python sqlite3 build does not support loadable SQLite extensions")
-
         source = (
             "임포트 sqlite3\n"
             "임포트 에스큐엘라이트벡 애즈 sv\n"
