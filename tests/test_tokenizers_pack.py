@@ -16,7 +16,8 @@ class TokenizersPackTests(unittest.TestCase):
         python_source = translate(source).python
         self.assertIn("from tokenizers import Tokenizer", python_source)
         self.assertIn("from tokenizers.models import WordPiece", python_source)
-        self.assertIn("Tokenizer(모델)", python_source)
+        self.assertIn("model = WordPiece", python_source)
+        self.assertIn("Tokenizer(model)", python_source)
         self.assertIn("토크.encode('hello')", python_source)
         self.assertIn("결과.ids", python_source)
 
@@ -35,7 +36,8 @@ class TokenizersPackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("프롬 토크나이저스 임포트 토크나이저", kopy)
         self.assertIn("프롬 토크나이저스.models 임포트 워드피스", kopy)
-        self.assertIn("tokenizer.엔코드('hello')", kopy)
+        self.assertIn("모델 = 워드피스", kopy)
+        self.assertIn("리절트 = tokenizer.엔코드('hello')", kopy)
         self.assertEqual(source, translate(kopy).python)
 
 
