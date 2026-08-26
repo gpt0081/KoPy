@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.41**  
+현재 Core 버전: **0.5.42**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **42개**입니다.
+현재 공식 Library Pack은 **43개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -55,6 +55,7 @@ CPython + 실제 Python 라이브러리
 | FastEmbed | ONNX 기반 dense/sparse embedding·late interaction·cross-encoder reranking |
 | FAISS | 벡터 인덱스·nearest-neighbor 검색·L2/IP·IVF·HNSW |
 | USearch | 경량 로컬 ANN index·cosine/L2/IP 검색·벡터 양자화 |
+| sqlite-vec | SQLite 내부 vec0 virtual table·로컬 KNN vector search |
 | Qdrant Client | 벡터DB collection·point 저장·nearest-neighbor query·payload filter |
 | Chroma | 로컬·서버 vector DB client·collection 관리·embedding query |
 | LanceDB | 로컬·원격 vector DB·vector search·FTS·hybrid retrieval·reranker |
@@ -78,7 +79,7 @@ CPython + 실제 Python 라이브러리
 
 ## 기계학습 예시
 
-KoPy는 영문 ML 관례를 지우지 않습니다. 변수명은 실제 Python 교재와 코드에서 흔한 형태를 남기면서 API만 KoPy 표현으로 익힐 수 있습니다.
+KoPy는 영문 ML 관례를 지우지 않습니다.
 
 ```kopy
 프롬 사이킷런.model_selection 임포트 트레인테스트스플릿
@@ -100,14 +101,12 @@ predictions = model.프리딕트(X_test)
 
 ## 검색/RAG 흐름
 
-현재 KoPy의 검색 스택은 dense retrieval, lexical retrieval, hybrid fusion, reranking, retrieval evaluation, end-to-end RAG evaluation, pipeline orchestration까지 이어집니다.
-
 ```text
 Sentence Transformers / FastEmbed
              ↓
           embeddings
              ↓
-FAISS / USearch / Qdrant / Chroma / LanceDB
+FAISS / USearch / sqlite-vec / Qdrant / Chroma / LanceDB
         + BM25S
              ↓
             ranx
@@ -126,6 +125,35 @@ LlamaIndex Core / Haystack
 Document / ingestion / retrieval / pipeline orchestration
 ```
 
+### sqlite-vec 로컬 SQLite vector search
+
+```kopy
+임포트 sqlite3
+임포트 에스큐엘라이트벡 애즈 sv
+
+connection = sqlite3.connect(":memory:")
+connection.enable_load_extension(True)
+sv.로드(connection)
+connection.enable_load_extension(False)
+
+connection.execute(
+    "CREATE VIRTUAL TABLE vec_items USING vec0(embedding float[3])"
+)
+connection.execute(
+    "INSERT INTO vec_items(rowid, embedding) VALUES (?, ?)",
+    [1, sv.시리얼라이즈플로트32([1.0, 0.0, 0.0])],
+)
+
+query = [0.95, 0.05, 0.0]
+rows = connection.execute(
+    "SELECT rowid, distance FROM vec_items "
+    "WHERE embedding MATCH ? ORDER BY distance LIMIT 2",
+    [sv.시리얼라이즈플로트32(query)],
+).fetchall()
+```
+
+`connection`, `query`, `embedding`, `rowid`, `distance`, `execute()`, `fetchall()`과 SQL 문법은 실제 SQLite/vector-search 학습을 위해 원형을 유지합니다. KoPy는 SQL 문자열을 번역하지 않습니다. 일부 macOS Python 빌드는 SQLite loadable extension을 지원하지 않으므로 자세한 플랫폼 설명은 [`docs/SQLITE_VEC_PACK.md`](docs/SQLITE_VEC_PACK.md)를 참고하세요.
+
 ### Haystack 로컬 BM25 pipeline
 
 ```kopy
@@ -140,19 +168,11 @@ documents = [
 
 document_store = 인메모리도큐먼트스토어()
 document_store.write_documents(documents)
-
-retriever = 인메모리비엠이십오리트리버(
-    document_store=document_store,
-    top_k=2,
-)
-
+retriever = 인메모리비엠이십오리트리버(document_store=document_store, top_k=2)
 pipeline = 파이프라인()
 pipeline.add_component("retriever", retriever)
-query = "KoPy Python"
 result = pipeline.run({"retriever": {"query": query}})
 ```
-
-`documents`, `query`, `pipeline`, `retriever`, `document_store`, `add_component()`, `run()`, `write_documents()`, `top_k=`는 RAG·Python 프레임워크 전반에서 반복되는 표현이므로 Python 원형을 유지합니다. `haystack.document_stores.in_memory`, `haystack.components.retrievers.in_memory` 같은 실제 dotted package 구조도 그대로 노출합니다. 자세한 범위는 [`docs/HAYSTACK_PACK.md`](docs/HAYSTACK_PACK.md)를 참고하세요.
 
 ### FAISS 벡터 검색
 
@@ -160,71 +180,11 @@ result = pipeline.run({"retriever": {"query": query}})
 임포트 넘파이 애즈 np
 임포트 파이스 애즈 faiss
 
-embeddings = np.어레이([
-    [0.0, 0.0],
-    [1.0, 1.0],
-    [2.0, 2.0],
-], dtype=np.플로트32)
-
+embeddings = np.어레이([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0]], dtype=np.플로트32)
 query = np.어레이([[1.1, 1.0]], dtype=np.플로트32)
 index = faiss.인덱스플랫엘투(embeddings.shape[1])
 index.add(embeddings)
 distances, indices = index.search(query, 2)
-```
-
-`embeddings`, `query`, `index`, `distances`, `indices`, `add()`, `search()`는 실제 vector search/RAG 코드에서 반복적으로 등장하므로 Python 원형을 유지합니다.
-
-### USearch 로컬 ANN 검색
-
-```kopy
-임포트 넘파이 애즈 np
-프롬 유서치.index 임포트 인덱스
-
-vectors = np.어레이([
-    [1.0, 0.0, 0.0],
-    [0.0, 1.0, 0.0],
-    [0.0, 0.0, 1.0],
-], dtype=np.플로트32)
-keys = np.어레이([10, 20, 30], dtype=np.인트64)
-query = np.어레이([0.95, 0.05, 0.0], dtype=np.플로트32)
-
-index = 인덱스(ndim=3, metric="cos", dtype="f32")
-index.add(keys, vectors)
-matches = index.search(query, 2)
-```
-
-`vectors`, `keys`, `query`, `matches`, `add()`, `search()`, `ndim=`, `metric=`, `dtype=`는 실제 ANN/vector-search 코드 학습을 위해 Python 원형을 유지합니다. 실제 `usearch.index` dotted path도 그대로 노출합니다. 자세한 범위는 [`docs/USEARCH_PACK.md`](docs/USEARCH_PACK.md)를 참고하세요.
-
-### BM25S lexical search
-
-```kopy
-임포트 비엠이십오에스 애즈 bm25s
-
-corpus_tokens = bm25s.토크나이즈(corpus, show_progress=False)
-retriever = bm25s.비엠이십오(corpus=corpus)
-retriever.index(corpus_tokens, show_progress=False)
-query_tokens = bm25s.토크나이즈([query], show_progress=False)
-results = retriever.retrieve(query_tokens, k=5, show_progress=False)
-```
-
-### Ragas end-to-end RAG evaluation
-
-```kopy
-프롬 라가스 임포트 이밸류에이션데이터셋, 싱글턴샘플
-프롬 라가스.metrics.collections 임포트 논엘엘엠스트링시밀래리티, 디스턴스메저
-
-sample = 싱글턴샘플(
-    user_input=query,
-    response=response,
-    reference=reference,
-    retrieved_contexts=contexts,
-)
-
-dataset = 이밸류에이션데이터셋(samples=[sample])
-metric = 논엘엘엠스트링시밀래리티(
-    distance_measure=디스턴스메저.LEVENSHTEIN,
-)
-result = metric.score(reference=reference, response=response)
 ```
 
 ## 충돌 방지 원칙
@@ -248,6 +208,7 @@ evaluate() compare() embed() rerank() score() ascore()
 from_documents() as_retriever() insert() refresh()
 connect() create_table() open_table() limit() to_list()
 add_component() run() write_documents()
+execute() fetchone() fetchall()
 ```
 
 ## 실제 라이브러리 설치
@@ -255,12 +216,10 @@ add_component() run() write_documents()
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu usearch qdrant-client chromadb lancedb bm25s ranx ir-measures ragas llama-index-core haystack-ai datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu usearch sqlite-vec qdrant-client chromadb lancedb bm25s ranx ir-measures ragas llama-index-core haystack-ai datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
-
-Ragas 0.4.3은 일부 최신 LangChain 조합과 import 호환 문제가 있어 KoPy CI에서는 Ragas 전용 격리 호환성 job을 사용합니다. 실제 프로젝트에서도 충돌이 생기면 Ragas를 별도 가상환경 또는 명시적으로 고정한 의존성 조합에서 사용하는 편이 안전합니다.
 
 ## 개발용 설치
 
@@ -286,6 +245,7 @@ kopy packs sentence-transformers
 kopy packs fastembed
 kopy packs faiss
 kopy packs usearch
+kopy packs sqlite-vec
 kopy packs qdrant
 kopy packs chroma
 kopy packs lancedb
@@ -302,7 +262,7 @@ kopy version
 
 ```powershell
 kopy packs --json
-kopy packs usearch --json
+kopy packs sqlite-vec --json
 kopy packs haystack-ai --json
 ```
 
@@ -318,14 +278,13 @@ kopy packs haystack-ai --json
     프린트(이름, "미성년자입니다.")
 ```
 
-KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 뒤 CPython에서 실행합니다.
-
 ## 검색/RAG 문서
 
 - [`docs/SENTENCE_TRANSFORMERS_PACK.md`](docs/SENTENCE_TRANSFORMERS_PACK.md)
 - [`docs/FASTEMBED_PACK.md`](docs/FASTEMBED_PACK.md)
 - [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)
 - [`docs/USEARCH_PACK.md`](docs/USEARCH_PACK.md)
+- [`docs/SQLITE_VEC_PACK.md`](docs/SQLITE_VEC_PACK.md)
 - [`docs/QDRANT_PACK.md`](docs/QDRANT_PACK.md)
 - [`docs/CHROMA_PACK.md`](docs/CHROMA_PACK.md)
 - [`docs/LANCEDB_PACK.md`](docs/LANCEDB_PACK.md)
@@ -342,11 +301,13 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 
 Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 GitHub Actions에서 Windows, Linux, macOS에 실제 라이브러리를 설치해 번역 테스트와 runtime smoke test를 수행합니다. 가능한 한 외부 모델·데이터·서버 다운로드 없이 메모리, 임시 파일, SQLite 또는 로컬 저장소에서 실제 라이브러리 코드를 실행합니다.
 
+`sqlite-vec`는 Python의 SQLite 빌드가 loadable extension을 지원해야 실제 runtime test를 실행할 수 있습니다. 일반 matrix에서는 capability를 검사하고, macOS에서는 별도 Homebrew Python 3.12 환경에서도 실제 `vec0` KNN 검색을 검증합니다.
+
 ## 다음 AI 확장 후보
 
 검색/RAG 방향을 우선합니다.
 
-- LlamaIndex/Haystack과 Qdrant·Chroma·LanceDB를 실제로 연결하는 integration 예제
+- LlamaIndex/Haystack과 Qdrant·Chroma·LanceDB·sqlite-vec를 실제로 연결하는 integration 예제
 - embedding → retrieval → reranking → generation을 함께 다루는 완전 로컬 end-to-end RAG 예제
 - RAG pipeline observability/tracing 계층
 
