@@ -26,7 +26,7 @@ The real dotted package path `usearch.index` is intentionally preserved.
 
 ## Translation policy
 
-USearch-specific public types are transliterated, including `Index`, `Matches`, `BatchMatches`, `IndexMetadata`, and `kmeans`.
+USearch-specific public types are transliterated, including `Index`, `Indexes`, `IndexedKeys`, `Match`, `Matches`, `BatchMatches`, `CompiledMetric`, `Clustering`, and `kmeans`.
 
 Transferable vector-search vocabulary remains upstream Python:
 
