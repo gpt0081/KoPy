@@ -19,6 +19,8 @@ KoPy는 LanceDB를 다시 구현하지 않습니다. `랜스디비` 같은 모�
 
 이 이름들은 LanceDB만의 표현이 아니라 Python database·vector search·RAG 코드 전반에서 재사용되므로 전역 번역하지 않습니다.
 
+예제에서는 명시적 alias `ldb`를 사용합니다. 원 모듈명과 동일한 alias보다 KoPy↔Python 왕복에서 namespace 경계가 명확하고, 실제 Python에서도 흔히 쓰는 짧은 alias 패턴을 학습할 수 있습니다.
+
 ## 지원하는 고유 타입
 
 | KoPy | Python |
@@ -36,9 +38,9 @@ KoPy는 LanceDB를 다시 구현하지 않습니다. `랜스디비` 같은 모�
 ## 로컬 vector search
 
 ```kopy
-임포트 랜스디비 애즈 lancedb
+임포트 랜스디비 애즈 ldb
 
-db = lancedb.connect("./lancedb-data")
+db = ldb.connect("./lancedb-data")
 
 documents = [
     {"id": "alpha", "vector": [1.0, 0.0], "text": "alpha document"},
@@ -58,9 +60,9 @@ results = table.search(query).limit(2).to_list()
 KoPy 변환 후 핵심 구조는 그대로 표준 LanceDB Python이다.
 
 ```python
-import lancedb as lancedb
+import lancedb as ldb
 
-db = lancedb.connect("./lancedb-data")
+db = ldb.connect("./lancedb-data")
 table = db.create_table("docs", data=documents, mode="overwrite")
 results = table.search(query).limit(2).to_list()
 ```
