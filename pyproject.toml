@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kopy-lang"
-version = "0.5.46"
+version = "0.5.47"
 description = "KoPy: Korean-transliterated Python compatibility and learning layer"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
