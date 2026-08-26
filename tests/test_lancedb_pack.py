@@ -22,16 +22,16 @@ class LanceDBPackTests(unittest.TestCase):
 
     def test_transferable_database_and_retrieval_vocabulary_stays_python(self):
         source = (
-            "임포트 랜스디비 애즈 lancedb\n"
-            "db = lancedb.connect(path)\n"
+            "임포트 랜스디비 애즈 ldb\n"
+            "db = ldb.connect(path)\n"
             "table = db.create_table('docs', data=documents, mode='overwrite')\n"
             "results = table.search(query).limit(5).to_list()\n"
             "table.add(documents)\n"
         )
         python_source = translate(source).python
-        self.assertIn("import lancedb as lancedb", python_source)
+        self.assertIn("import lancedb as ldb", python_source)
         for token in (
-            "lancedb.connect(",
+            "ldb.connect(",
             "db.create_table(",
             "table.search(",
             ".limit(5)",
@@ -48,15 +48,15 @@ class LanceDBPackTests(unittest.TestCase):
 
     def test_python_to_kopy_preserves_generic_vocabulary(self):
         source = (
-            "import lancedb as lancedb\n"
+            "import lancedb as ldb\n"
             "from lancedb.rerankers import RRFReranker\n"
-            "db = lancedb.connect(path)\n"
+            "db = ldb.connect(path)\n"
             "results = table.search(query).limit(5).to_list()\n"
         )
         kopy = to_kopy(source).kopy
-        self.assertIn("임포트 랜스디비 애즈 lancedb", kopy)
+        self.assertIn("임포트 랜스디비 애즈 ldb", kopy)
         self.assertIn("프롬 랜스디비.rerankers 임포트 알알에프리랭커", kopy)
-        self.assertIn("lancedb.connect(path)", kopy)
+        self.assertIn("ldb.connect(path)", kopy)
         self.assertIn("table.search(query).limit(5).to_list()", kopy)
 
     def test_help_resolution(self):
