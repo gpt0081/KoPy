@@ -130,7 +130,7 @@ def _replace_common_names(
     tokens = list(tokenize.generate_tokens(reader))
     protected = _common_import_path_indices(tokens)
     output_tokens: list[tokenize.TokenInfo] = []
-    replacements: list[tuple[str, str, int, int]] = []
+    replacements: list[tuple[str, str, int, int], ...] = []
 
     for index, token in enumerate(tokens):
         if index not in protected and token.type == tokenize.NAME and token.string in mapping:
@@ -183,6 +183,38 @@ def _previous_significant(tokens: list[tokenize.TokenInfo], index: int) -> int |
         if tokens[candidate].type not in _IGNORED:
             return candidate
     return None
+
+
+def _direct_name_rebindings(
+    tokens: list[tokenize.TokenInfo],
+    direct_names: dict[str, str],
+    common_source_names: set[str],
+) -> dict[int, int]:
+    """Find simple assignments that shadow a directly imported pack symbol.
+
+    A transliteration can legitimately name both a pack class and a learner's
+    variable. For example ``from usearch.index import Index`` becomes an import
+    of ``인덱스``, while the conventional variable ``index`` is also ``인덱스``.
+    In ``인덱스 = 인덱스(...)`` the left side is the common variable and the
+    right side is still the imported class. The rebinding takes effect only
+    after that statement, matching Python's name-shadowing behaviour.
+    """
+
+    targets: dict[int, int] = {}
+    for index, token in enumerate(tokens):
+        if (
+            token.type != tokenize.NAME
+            or token.string not in direct_names
+            or token.string not in common_source_names
+        ):
+            continue
+        previous = _previous_significant(tokens, index)
+        if previous is not None and tokens[previous].string == ".":
+            continue
+        following = _next_significant(tokens, index)
+        if following is not None and tokens[following].string == "=":
+            targets[index] = _statement_end(tokens, index)
+    return targets
 
 
 def _unique_active_mapping(name: str, active_packs: set[str], reverse: bool) -> str | None:
@@ -316,6 +348,14 @@ def _translate_library_packs(
 
     significant = _significant_indices(tokens)
     sig_position = {token_index: pos for pos, token_index in enumerate(significant)}
+    common_source_names = set(COMMON_PY_TO_KO if reverse else COMMON_IDENTIFIERS)
+    rebinding_targets = _direct_name_rebindings(tokens, direct_names, common_source_names)
+    shadow_after: dict[str, int] = {}
+    for target_index, statement_end in rebinding_targets.items():
+        name = tokens[target_index].string
+        current = shadow_after.get(name)
+        if current is None or statement_end < current:
+            shadow_after[name] = statement_end
 
     # Pass 2: translate attributes and direct names using only active packs.
     for index, token in enumerate(tokens):
@@ -327,10 +367,20 @@ def _translate_library_packs(
         previous = tokens[significant[pos - 1]] if pos > 0 else None
         following = tokens[significant[pos + 1]] if pos + 1 < len(significant) else None
 
-        # Bare symbol imported via `from package import symbol`.
+        # Bare symbol imported via `from package import symbol`. A common learner
+        # identifier that rebinds the same transliteration takes precedence on
+        # the assignment target and from the following statement onward.
         if previous is None or previous.string != ".":
             direct = direct_names.get(token.string)
-            if direct is not None and token.string != direct:
+            shadow_end = shadow_after.get(token.string)
+            is_rebinding_target = index in rebinding_targets
+            is_shadowed = shadow_end is not None and index >= shadow_end
+            if (
+                direct is not None
+                and token.string != direct
+                and not is_rebinding_target
+                and not is_shadowed
+            ):
                 replacements.setdefault(index, direct)
 
         # Module name used as an attribute-chain root without an alias.
