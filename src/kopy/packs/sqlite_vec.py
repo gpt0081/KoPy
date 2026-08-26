@@ -21,13 +21,11 @@ SQLITE_VEC_PACK = LibraryPack(
         "로드": "load",
         "시리얼라이즈플로트32": "serialize_float32",
         "시리얼라이즈인트8": "serialize_int8",
-        "시리얼라이즈비트": "serialize_bit",
     },
     member_descriptions={
         "load": "sqlite-vec 확장을 기존 sqlite3 Connection에 로드합니다.",
         "serialize_float32": "Python float vector를 sqlite-vec float32 BLOB 형식으로 직렬화합니다.",
         "serialize_int8": "Python int8 vector를 sqlite-vec BLOB 형식으로 직렬화합니다.",
-        "serialize_bit": "binary vector를 sqlite-vec bit-vector BLOB 형식으로 직렬화합니다.",
     },
     examples={
         "load": (
