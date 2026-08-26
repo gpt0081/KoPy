@@ -2,8 +2,8 @@
 
 The pack transliterates Tantivy-specific types and schema helpers while
 preserving transferable search vocabulary such as ``query``, ``search``,
-``index``, ``writer``, ``searcher``, ``limit``, and field names in upstream
-Python form.
+``parse_query``, ``index``, ``writer``, ``searcher``, ``limit``, and field
+names in upstream Python form.
 """
 
 from __future__ import annotations
@@ -29,8 +29,6 @@ TANTIVY_PACK = LibraryPack(
         "쿼리": "Query",
         "오더": "Order",
         "오커": "Occur",
-        "파스쿼리": "parse_query",
-        "파스쿼리리니언트": "parse_query_lenient",
     },
     member_descriptions={
         "SchemaBuilder": "검색 index의 field schema를 정의합니다.",
@@ -44,8 +42,6 @@ TANTIVY_PACK = LibraryPack(
         "Query": "Tantivy query 타입입니다.",
         "Order": "정렬 방향 enum입니다.",
         "Occur": "Boolean query clause occurrence enum입니다.",
-        "parse_query": "Tantivy query 문자열을 AST로 파싱합니다.",
-        "parse_query_lenient": "오류를 복구하며 query 문자열을 파싱합니다.",
     },
     examples={
         "SchemaBuilder": (
