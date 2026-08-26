@@ -36,7 +36,7 @@ jobs:
       - name: Install KoPy and LangChain Core
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . "langchain-core>=1.6,<1.7"
+          python -m pip install -e . "numpy>=2.5,<2.6" "langchain-core>=1.6,<1.7"
       - name: Run LangChain Core pack tests
         run: python -m unittest tests.test_langchain_core_pack tests.test_langchain_core_runtime -v
       - name: Verify LangChain Core pack details
