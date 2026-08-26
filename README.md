@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.45**  
+현재 Core 버전: **0.5.46**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **46개**입니다.
+현재 공식 Library Pack은 **47개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -68,6 +68,7 @@ CPython + 실제 Python 라이브러리
 | LlamaIndex Core | Document·Node·ingestion·VectorStoreIndex·retriever 등 RAG pipeline 구성 |
 | Haystack | Document·Pipeline·in-memory document store·BM25 retriever 등 RAG orchestration |
 | LangChain Core | Document·Embeddings·InMemoryVectorStore·Runnable·prompt 등 provider-neutral RAG/LLM 추상화 |
+| pypdf | PDF 읽기·페이지 접근·텍스트 추출·RAG document ingestion |
 | Datasets | 데이터 로딩·전처리·분할 |
 | Tokenizers | 고속 토큰화·Encoding·어휘 모델 |
 | Accelerate | 장치·분산 학습 준비와 실행 |
@@ -105,6 +106,12 @@ predictions = model.프리딕트(X_test)
 ## 검색/RAG 흐름
 
 ```text
+PDF
+ ↓
+pypdf document ingestion
+ ↓
+page text / chunking
+ ↓
 Sentence Transformers / FastEmbed
              ↓
           embeddings
@@ -128,6 +135,17 @@ FAISS / USearch / sqlite-vec / Qdrant / Chroma / LanceDB
 LlamaIndex Core / Haystack / LangChain Core
 Document / retrieval / pipeline / runnable abstractions
 ```
+
+### pypdf PDF ingestion
+
+```kopy
+프롬 파이피디에프 임포트 피디에프리더
+
+reader = 피디에프리더("document.pdf")
+text = "\n".join(page.익스트랙트텍스트() or "" 포 page 인 reader.pages)
+```
+
+`reader`, `pages`, `text`, `metadata`, 파일 경로와 `write()` 같은 일반 문서 처리 표현은 원문 Python으로 유지합니다. 이미지로만 구성된 스캔 PDF는 pypdf의 텍스트 추출 대상이 아니므로 별도의 OCR 단계가 필요합니다.
 
 ### LangChain Core 로컬 vector search
 
@@ -240,9 +258,10 @@ best = process.익스트랙트원(query, choices, scorer=fuzz.더블유레이쇼
 
 ```text
 documents query results retriever vector_store embeddings
+reader writer pages text metadata
 add() search() get() query() retrieve() evaluate()
 invoke() batch() stream() add_documents() similarity_search()
-embed_documents() embed_query()
+embed_documents() embed_query() write()
 ```
 
 ## 실제 라이브러리 설치
@@ -250,7 +269,7 @@ embed_documents() embed_query()
 KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 동일하게 별도 설치해야 합니다.
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu usearch sqlite-vec qdrant-client chromadb lancedb bm25s tantivy rapidfuzz ranx ir-measures ragas llama-index-core haystack-ai langchain-core datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu usearch sqlite-vec qdrant-client chromadb lancedb bm25s tantivy rapidfuzz ranx ir-measures ragas llama-index-core haystack-ai langchain-core pypdf datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다.
@@ -288,6 +307,7 @@ kopy packs ragas
 kopy packs llama-index-core
 kopy packs haystack-ai
 kopy packs langchain-core
+kopy packs pypdf
 kopy version
 ```
 
@@ -295,7 +315,7 @@ kopy version
 
 ```powershell
 kopy packs --json
-kopy packs langchain-core --json
+kopy packs pypdf --json
 ```
 
 ## 검색/RAG 문서
@@ -317,6 +337,7 @@ kopy packs langchain-core --json
 - [`docs/LLAMA_INDEX_CORE_PACK.md`](docs/LLAMA_INDEX_CORE_PACK.md)
 - [`docs/HAYSTACK_PACK.md`](docs/HAYSTACK_PACK.md)
 - [`docs/LANGCHAIN_CORE_PACK.md`](docs/LANGCHAIN_CORE_PACK.md)
+- [`docs/PYPDF_PACK.md`](docs/PYPDF_PACK.md)
 
 그 밖의 Library Pack 문서도 `docs/`에 있습니다.
 
@@ -328,6 +349,7 @@ Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 
 
 검색/RAG 방향을 우선합니다.
 
+- PDF/HTML/Office 문서 ingestion을 실제 chunking·embedding과 연결하는 integration 예제
 - LangChain Core/LlamaIndex/Haystack과 Qdrant·Chroma·LanceDB·sqlite-vec를 실제로 연결하는 integration 예제
 - embedding → retrieval → reranking → generation을 함께 다루는 완전 로컬 end-to-end RAG 예제
 - RAG pipeline observability/tracing 계층
