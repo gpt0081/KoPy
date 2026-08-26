@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.35**  
+현재 Core 버전: **0.5.36**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **36개**입니다.
+현재 공식 Library Pack은 **37개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -52,6 +52,7 @@ CPython + 실제 Python 라이브러리
 | OpenCV | 이미지·영상 전처리·엣지·윤곽선·DNN·비디오 I/O |
 | Transformers | 사전학습 모델·생성·Trainer |
 | Sentence Transformers | 임베딩·유사도·semantic search·reranking 모델 API |
+| FastEmbed | ONNX 기반 dense/sparse embedding·late interaction·cross-encoder reranking |
 | FAISS | 벡터 인덱스·nearest-neighbor 검색·L2/IP·IVF·HNSW |
 | Qdrant Client | 벡터DB collection·point 저장·nearest-neighbor query·payload filter |
 | Chroma | 로컬·서버 vector DB client·collection 관리·embedding query |
@@ -202,6 +203,25 @@ ndcg = evaluate(qrels, hybrid_run, "ndcg@2")
 
 ranx는 새로운 retriever를 만드는 팩이 아니라 dense·lexical 검색의 ranking을 합치고 평가하는 층입니다. `runs`, `qrels`, `method`, `norm`, `metric`, `evaluate`, `compare`와 `dense_run`, `lexical_run`, `hybrid_run` 같은 IR 관례는 Python 원형을 유지합니다. 자세한 범위는 [`docs/RANX_PACK.md`](docs/RANX_PACK.md)를 참고하세요.
 
+### FastEmbed cross-encoder reranking
+
+```kopy
+프롬 패스트임베드.rerank.cross_encoder 임포트 텍스트크로스인코더
+
+query = "Who maintains FastEmbed?"
+documents = [
+    "This document is unrelated.",
+    "FastEmbed is supported by and maintained by Qdrant.",
+]
+
+reranker = 텍스트크로스인코더(
+    model_name="Xenova/ms-marco-MiniLM-L-6-v2",
+)
+scores = list(reranker.rerank(query, documents))
+```
+
+`query`, `documents`, `scores`, `model_name`, `embed()`, `rerank()`는 검색/RAG 원문 코드 전반에서 반복되는 표현이므로 Python 원형을 유지합니다. `fastembed.rerank.cross_encoder` 같은 실제 dotted package 구조도 그대로 노출합니다. 자세한 범위는 [`docs/FASTEMBED_PACK.md`](docs/FASTEMBED_PACK.md)를 참고하세요.
+
 ### ir-measures retrieval evaluation
 
 ```kopy
@@ -235,10 +255,11 @@ device= providers= test_size= return_tensors= target_modules=
 axis= dtype= batch_size= top_k= limit= name= ids= embeddings=
 query_embeddings= n_results= collection_name= vectors_config=
 show_progress= stopwords= stemmer= method= backend= norm= metric=
+model_name=
 
 add() search() train() reset() update() compute() get() query()
 upsert() retrieve() delete() count() index() save() load()
-evaluate() compare()
+evaluate() compare() embed() rerank()
 ```
 
 이 원칙은 Python 원문 학습을 돕고, 서로 다른 Library Pack 사이의 모호한 전역 번역을 막기 위한 것입니다.
@@ -250,7 +271,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터/검색 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers faiss-cpu qdrant-client chromadb bm25s ranx ir-measures datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu qdrant-client chromadb bm25s ranx ir-measures datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -300,6 +321,7 @@ kopy packs opencv
 kopy packs lightning
 kopy packs torchmetrics
 kopy packs sentence-transformers
+kopy packs fastembed
 kopy packs faiss
 kopy packs qdrant
 kopy packs chroma
@@ -319,6 +341,7 @@ kopy info --json
 kopy diagnose examples\hello.kpy --json
 kopy packs --json
 kopy packs sentence-transformers --json
+kopy packs fastembed --json
 kopy packs faiss --json
 kopy packs qdrant --json
 kopy packs chroma --json
@@ -362,6 +385,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/OPENCV_PACK.md`](docs/OPENCV_PACK.md)
 - [`docs/TRANSFORMERS_PACK.md`](docs/TRANSFORMERS_PACK.md)
 - [`docs/SENTENCE_TRANSFORMERS_PACK.md`](docs/SENTENCE_TRANSFORMERS_PACK.md)
+- [`docs/FASTEMBED_PACK.md`](docs/FASTEMBED_PACK.md)
 - [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)
 - [`docs/QDRANT_PACK.md`](docs/QDRANT_PACK.md)
 - [`docs/CHROMA_PACK.md`](docs/CHROMA_PACK.md)
@@ -374,7 +398,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 
 ## 테스트 철학
 
-Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 GitHub Actions에서 Windows, Linux, macOS에 실제 라이브러리를 설치해 번역 테스트와 runtime smoke test를 수행합니다. 가능한 한 외부 모델·데이터·서버 다운로드 없이 메모리, 임시 파일, SQLite 또는 로컬 저장소에서 실제 라이브러리 코드를 실행합니다.
+Python 호환성을 가장 중요한 기준으로 둡니다. AI Library Pack은 GitHub Actions에서 Windows, Linux, macOS에 실제 라이브러리를 설치해 번역 테스트와 runtime smoke test를 수행합니다. 가능한 한 외부 모델·데이터·서버 다운로드 없이 메모리, 임시 파일, SQLite 또는 로컬 저장소에서 실제 라이브러리 코드를 실행합니다. 외부 모델이 필요한 팩은 버전과 모델을 고정하고 결과의 핵심 성질을 검증합니다.
 
 ## 구조
 
@@ -403,6 +427,7 @@ src/kopy
    │   ├─ opencv.py
    │   ├─ transformers.py
    │   ├─ sentence_transformers.py
+   │   ├─ fastembed.py
    │   ├─ faiss.py
    │   ├─ qdrant.py
    │   ├─ chroma.py
@@ -432,10 +457,10 @@ src/kopy
 
 검색/RAG 방향을 우선합니다.
 
-- Reranking
 - End-to-end RAG evaluation
+- RAG pipeline/orchestration 계층
 
-현재 검색 스택은 dense vector search(FAISS/Qdrant/Chroma) + sparse lexical search(BM25S) + ranx rank fusion + ir-measures 표준 retrieval evaluation까지 이어집니다. 다음 단계는 후보 문서를 더 정교하게 재정렬하는 reranking과 검색 결과가 최종 RAG 응답 품질에 미치는 영향을 평가하는 계층입니다. 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
+현재 검색 스택은 dense vector search(FAISS/Qdrant/Chroma) + sparse lexical search(BM25S) + ranx rank fusion + FastEmbed cross-encoder reranking + ir-measures 표준 retrieval evaluation까지 이어집니다. 다음 단계는 검색 결과가 최종 RAG 응답의 정확성·근거성에 미치는 영향을 end-to-end로 평가하는 계층입니다. 새 팩은 단순 인기보다 KoPy의 교육 가치, Python 3.12.10 호환성, namespace-scoped 번역 가능성, 실제 cross-platform 테스트 가능성을 함께 보고 선택합니다.
 
 ## 버전 정책
 
