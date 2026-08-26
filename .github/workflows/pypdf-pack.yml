@@ -1,0 +1,43 @@
+name: pypdf Pack
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/kopy/packs/pypdf.py"
+      - "src/kopy/packs/registry.py"
+      - "tests/test_pypdf_*.py"
+      - ".github/workflows/pypdf-pack.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/kopy/packs/pypdf.py"
+      - "src/kopy/packs/registry.py"
+      - "tests/test_pypdf_*.py"
+      - ".github/workflows/pypdf-pack.yml"
+
+jobs:
+  pypdf:
+    name: pypdf 6.16.1 / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.10"
+      - name: Install KoPy and pypdf
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "pypdf==6.16.1"
+      - name: Run pypdf pack tests
+        run: python -m unittest tests.test_pypdf_pack tests.test_pypdf_runtime -v
+      - name: Verify pypdf pack details
+        run: kopy packs pypdf
