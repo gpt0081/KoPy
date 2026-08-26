@@ -2,7 +2,7 @@
 
 Covers common differentiable computer-vision, filtering, color, geometry,
 augmentation, morphology, and metrics APIs. Actual computation remains
-upstream Kornia/PyTorch.
+upstream Kornia/PyTorch. Numeric fragments remain digits, so 2d -> 2디.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ KORNIA_PACK = LibraryPack(
         "그레이스케일투알지비": "grayscale_to_rgb",
         "알지비투에이치에스브이": "rgb_to_hsv",
         "에이치에스브이투알지비": "hsv_to_rgb",
-        "가우시안블러투디": "gaussian_blur2d",
+        "가우시안블러2디": "gaussian_blur2d",
         "소벨": "sobel",
         "캐니": "canny",
         "라플라시안": "laplacian",
@@ -78,7 +78,7 @@ KORNIA_PACK = LibraryPack(
             "import kornia\ngray = kornia.color.rgb_to_grayscale(image)",
         ),
         "gaussian_blur2d": (
-            "임포트 코르니아\nblurred = 코르니아.필터즈.가우시안블러투디(image, (3, 3), (1.5, 1.5))",
+            "임포트 코르니아\nblurred = 코르니아.필터즈.가우시안블러2디(image, (3, 3), (1.5, 1.5))",
             "import kornia\nblurred = kornia.filters.gaussian_blur2d(image, (3, 3), (1.5, 1.5))",
         ),
         "AugmentationSequential": (
