@@ -10,8 +10,8 @@ class LanceDBRuntimeTests(unittest.TestCase):
     def test_real_local_vector_search(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             source = (
-                "임포트 랜스디비 애즈 lancedb\n"
-                "db = lancedb.connect(path)\n"
+                "임포트 랜스디비 애즈 ldb\n"
+                "db = ldb.connect(path)\n"
                 "table = db.create_table(\n"
                 "    'docs',\n"
                 "    data=[\n"
