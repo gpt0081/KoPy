@@ -16,25 +16,25 @@ class TantivyPackTests(unittest.TestCase):
             "임포트 탄티비\n"
             "builder = 탄티비.스키마빌더()\n"
             "schema = builder.build()\n"
-            "index = 탄티비.인덱스(schema)\n"
+            "인덱스 = 탄티비.인덱스(schema)\n"
             "doc = 탄티비.도큐먼트()\n"
         )
         python_source = translate(source).python
         self.assertIn("import tantivy", python_source)
         self.assertIn("tantivy.SchemaBuilder()", python_source)
-        self.assertIn("tantivy.Index(schema)", python_source)
+        self.assertIn("index = tantivy.Index(schema)", python_source)
         self.assertIn("tantivy.Document()", python_source)
 
-    def test_generic_search_vocabulary_stays_python(self):
+    def test_search_pipeline_accepts_transliterated_common_identifiers(self):
         source = (
             "임포트 탄티비\n"
-            "index = 탄티비.인덱스(schema)\n"
-            "writer = index.writer()\n"
-            "writer.add_document(doc)\n"
-            "writer.commit()\n"
-            "searcher = index.searcher()\n"
-            "query = index.parse_query('python', ['body'])\n"
-            "results = searcher.search(query, 5)\n"
+            "인덱스 = 탄티비.인덱스(schema)\n"
+            "라이터 = 인덱스.writer()\n"
+            "라이터.add_document(doc)\n"
+            "라이터.commit()\n"
+            "searcher = 인덱스.searcher()\n"
+            "쿼리 = 인덱스.parse_query('python', ['body'])\n"
+            "리절츠 = searcher.search(쿼리, 5)\n"
         )
         python_source = translate(source).python
         self.assertIn("writer = index.writer()", python_source)
@@ -43,11 +43,11 @@ class TantivyPackTests(unittest.TestCase):
         self.assertIn("query = index.parse_query('python', ['body'])", python_source)
         self.assertIn("results = searcher.search(query, 5)", python_source)
 
-    def test_unimported_words_are_not_global(self):
-        source = "index = 탄티비.인덱스(schema)\n"
-        self.assertEqual(translate(source).python, source)
+    def test_unimported_pack_member_is_not_global(self):
+        source = "인덱스 = 탄티비.인덱스(schema)\n"
+        self.assertEqual(translate(source).python, "index = 탄티비.index(schema)\n")
 
-    def test_python_to_kopy_preserves_search_methods(self):
+    def test_python_to_kopy_transliterates_search_identifiers(self):
         source = (
             "import tantivy\n"
             "builder = tantivy.SchemaBuilder()\n"
@@ -57,8 +57,8 @@ class TantivyPackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 탄티비", kopy)
         self.assertIn("탄티비.스키마빌더()", kopy)
-        self.assertIn("탄티비.인덱스(schema)", kopy)
-        self.assertIn(".search(query, 3)", kopy)
+        self.assertIn("인덱스 = 탄티비.인덱스(schema)", kopy)
+        self.assertIn("리절츠 = 인덱스.searcher().search(쿼리, 3)", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("탄티비.스키마빌더")
