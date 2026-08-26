@@ -2,7 +2,7 @@
 
 KoPy는 Python 문법을 그대로 배우면서 영어 예약어와 주요 API를 한글 음역으로도 사용할 수 있게 하는 Python 호환 학습 레이어입니다.
 
-현재 Core 버전: **0.5.38**  
+현재 Core 버전: **0.5.39**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -29,7 +29,7 @@ KoPy Core + 활성 Library Pack
 CPython + 실제 Python 라이브러리
 ```
 
-현재 공식 Library Pack은 **39개**입니다.
+현재 공식 Library Pack은 **40개**입니다.
 
 | 팩 | 주요 범위 |
 | --- | --- |
@@ -56,6 +56,7 @@ CPython + 실제 Python 라이브러리
 | FAISS | 벡터 인덱스·nearest-neighbor 검색·L2/IP·IVF·HNSW |
 | Qdrant Client | 벡터DB collection·point 저장·nearest-neighbor query·payload filter |
 | Chroma | 로컬·서버 vector DB client·collection 관리·embedding query |
+| LanceDB | 로컬·원격 vector DB·vector search·FTS·hybrid retrieval·reranker |
 | BM25S | BM25 sparse lexical retrieval·tokenization·ranked document search |
 | ranx | dense·lexical run fusion·rank fusion·IR evaluation |
 | ir-measures | nDCG·Precision·Recall·RR·AP 등 표준 retrieval metric 평가 |
@@ -104,7 +105,7 @@ Sentence Transformers / FastEmbed
              ↓
           embeddings
              ↓
-FAISS / Qdrant / Chroma
+FAISS / Qdrant / Chroma / LanceDB
         + BM25S
              ↓
             ranx
@@ -142,6 +143,30 @@ distances, indices = index.search(query, 2)
 ```
 
 `embeddings`, `query`, `index`, `distances`, `indices`와 `add()`, `search()`는 실제 vector search/RAG 코드에서 반복적으로 등장하므로 Python 원형을 유지합니다. 자세한 범위는 [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)를 참고하세요.
+
+### LanceDB 로컬 vector search
+
+```kopy
+임포트 랜스디비 애즈 ldb
+
+db = ldb.connect("./lancedb-data")
+
+documents = [
+    {"id": "alpha", "vector": [1.0, 0.0], "text": "alpha document"},
+    {"id": "beta", "vector": [0.0, 1.0], "text": "beta document"},
+]
+
+table = db.create_table(
+    "docs",
+    data=documents,
+    mode="overwrite",
+)
+
+query = [0.99, 0.01]
+results = table.search(query).limit(2).to_list()
+```
+
+`connect()`, `create_table()`, `search()`, `limit()`, `to_list()`, `query`, `documents`, `table`, `results`는 database·vector search·RAG 코드 전반에서 재사용되는 표현이므로 Python 원형을 유지합니다. `lancedb.pydantic`, `lancedb.rerankers` 같은 실제 dotted package 구조도 그대로 노출합니다. 자세한 범위는 [`docs/LANCEDB_PACK.md`](docs/LANCEDB_PACK.md)를 참고하세요.
 
 ### BM25S lexical search
 
@@ -241,11 +266,14 @@ query_embeddings= n_results= collection_name= vectors_config=
 show_progress= stopwords= stemmer= method= backend= norm= metric=
 model_name= user_input= response= reference= retrieved_contexts=
 similarity_top_k= embed_model= storage_context= transformations=
+data= mode= query_type= vector_column_name=
 
 add() search() train() reset() update() compute() get() query()
 upsert() retrieve() delete() count() index() save() load()
 evaluate() compare() embed() rerank() score() ascore()
 from_documents() as_retriever() insert() refresh()
+connect() connect_async() create_table() open_table() limit() to_list()
+create_index() create_fts_index()
 ```
 
 이 원칙은 Python 원문 학습을 돕고, 서로 다른 Library Pack 사이의 모호한 전역 번역을 막기 위한 것입니다.
@@ -257,7 +285,7 @@ KoPy는 번역 팩을 제공하며 실제 라이브러리는 일반 Python과 �
 기본 AI/데이터/검색 스택 예시:
 
 ```powershell
-python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu qdrant-client chromadb bm25s ranx ir-measures ragas llama-index-core datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
+python -m pip install numpy pandas polars scipy scikit-learn xgboost lightgbm torch torchvision torch-geometric timm kornia einops jax opencv-python lightning torchmetrics transformers sentence-transformers fastembed faiss-cpu qdrant-client chromadb lancedb bm25s ranx ir-measures ragas llama-index-core datasets tokenizers accelerate peft onnxruntime safetensors optimum sentencepiece optuna matplotlib
 ```
 
 GUI가 필요 없는 서버·CI에서는 `opencv-python-headless`를 권장합니다. OpenCV 패키지 변형들은 모두 같은 `cv2` namespace를 사용하므로 한 환경에 여러 변형을 동시에 설치하지 마세요.
@@ -297,6 +325,7 @@ kopy packs fastembed
 kopy packs faiss
 kopy packs qdrant
 kopy packs chroma
+kopy packs lancedb
 kopy packs bm25s
 kopy packs ranx
 kopy packs ir-measures
@@ -317,6 +346,7 @@ kopy packs fastembed --json
 kopy packs faiss --json
 kopy packs qdrant --json
 kopy packs chroma --json
+kopy packs lancedb --json
 kopy packs bm25s --json
 kopy packs ranx --json
 kopy packs ir-measures --json
@@ -347,6 +377,7 @@ KoPy는 Python 문법 자체를 바꾸지 않고 표준 Python으로 변환한 �
 - [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)
 - [`docs/QDRANT_PACK.md`](docs/QDRANT_PACK.md)
 - [`docs/CHROMA_PACK.md`](docs/CHROMA_PACK.md)
+- [`docs/LANCEDB_PACK.md`](docs/LANCEDB_PACK.md)
 - [`docs/BM25S_PACK.md`](docs/BM25S_PACK.md)
 - [`docs/RANX_PACK.md`](docs/RANX_PACK.md)
 - [`docs/IR_MEASURES_PACK.md`](docs/IR_MEASURES_PACK.md)
@@ -390,6 +421,7 @@ src/kopy
    │   ├─ faiss.py
    │   ├─ qdrant.py
    │   ├─ chroma.py
+   │   ├─ lancedb.py
    │   ├─ bm25s.py
    │   ├─ ranx.py
    │   ├─ ir_measures.py
@@ -422,7 +454,7 @@ src/kopy
 - retrieval + generation을 함께 다루는 완전 로컬 end-to-end RAG 예제
 - RAG pipeline observability/tracing 계층
 
-현재 검색 스택은 dense vector search(FAISS/Qdrant/Chroma) + sparse lexical search(BM25S) + ranx rank fusion + FastEmbed cross-encoder reranking + ir-measures 표준 retrieval evaluation + Ragas end-to-end RAG evaluation + LlamaIndex Core orchestration까지 이어집니다. 다음 단계에서도 특정 프레임워크의 과도하게 일반적인 메서드를 전역 음역하지 않는 원칙을 유지합니다.
+현재 검색 스택은 dense vector search(FAISS/Qdrant/Chroma/LanceDB) + sparse lexical search(BM25S) + ranx rank fusion + FastEmbed cross-encoder reranking + ir-measures 표준 retrieval evaluation + Ragas end-to-end RAG evaluation + LlamaIndex Core orchestration까지 이어집니다. 다음 단계에서도 특정 프레임워크의 과도하게 일반적인 메서드를 전역 음역하지 않는 원칙을 유지합니다.
 
 ## 버전 정책
 
