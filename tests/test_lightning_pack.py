@@ -15,7 +15,7 @@ class LightningPackTests(unittest.TestCase):
         source = (
             "임포트 라이트닝 애즈 L\n"
             "trainer = L.트레이너(max_epochs=1, accelerator='cpu')\n"
-            "trainer.핏(model, train_loader)\n"
+            "trainer.핏(모델, train_loader)\n"
         )
         python_source = translate(source).python
         self.assertIn("import lightning as L", python_source)
@@ -25,9 +25,9 @@ class LightningPackTests(unittest.TestCase):
     def test_lightning_module_runtime_methods_translate_after_import(self):
         source = (
             "임포트 라이트닝 애즈 L\n"
-            "model.로그('train_loss', loss)\n"
-            "model.세이브하이퍼파라미터스()\n"
-            "model.매뉴얼백워드(loss)\n"
+            "모델.로그('train_loss', loss)\n"
+            "모델.세이브하이퍼파라미터스()\n"
+            "모델.매뉴얼백워드(loss)\n"
         )
         python_source = translate(source).python
         self.assertIn("model.log('train_loss', loss)", python_source)
@@ -47,9 +47,9 @@ class LightningPackTests(unittest.TestCase):
         self.assertIn("def training_step(self, batch, batch_idx):", python_source)
         self.assertIn("def configure_optimizers(self):", python_source)
 
-    def test_unimported_words_are_not_global(self):
-        source = "trainer.핏(model, train_loader)\n"
-        self.assertEqual(translate(source).python, source)
+    def test_common_fit_is_global_but_pack_member_remains_scoped(self):
+        source = "trainer.핏(모델, train_loader)\n"
+        self.assertEqual(translate(source).python, "trainer.fit(model, train_loader)\n")
 
     def test_python_to_kopy(self):
         source = (
@@ -60,7 +60,7 @@ class LightningPackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 라이트닝 애즈 L", kopy)
         self.assertIn("L.트레이너(max_epochs=1)", kopy)
-        self.assertIn("trainer.핏(model, train_loader)", kopy)
+        self.assertIn("trainer.핏(모델, train_loader)", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("라이트닝.트레이너")
