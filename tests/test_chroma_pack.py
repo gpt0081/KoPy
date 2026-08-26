@@ -26,7 +26,7 @@ class ChromaPackTests(unittest.TestCase):
         self.assertIn("client.get_or_create_collection(name='docs', embedding_function=None)", python_source)
         self.assertIn("client.list_collections()", python_source)
 
-    def test_generic_retrieval_methods_remain_python(self):
+    def test_generic_retrieval_methods_accept_python_spelling(self):
         source = (
             "임포트 크로마 애즈 chroma\n"
             "client = chroma.클라이언트()\n"
@@ -46,7 +46,7 @@ class ChromaPackTests(unittest.TestCase):
         source = "client.크리에이트컬렉션(name='docs')\n"
         self.assertEqual(translate(source).python, source)
 
-    def test_python_to_kopy_preserves_retrieval_vocabulary(self):
+    def test_python_to_kopy_transliterates_common_retrieval_vocabulary(self):
         source = (
             "import chromadb as chroma\n"
             "client = chroma.Client()\n"
@@ -59,8 +59,11 @@ class ChromaPackTests(unittest.TestCase):
         self.assertIn("client = chroma.클라이언트()", kopy)
         self.assertIn("client.크리에이트컬렉션(", kopy)
         self.assertIn("collection.add(", kopy)
-        self.assertIn("collection.query(", kopy)
-        for token in ("ids=", "embeddings=", "documents=", "query_embeddings=", "n_results="):
+        self.assertIn("collection.쿼리(", kopy)
+        self.assertIn("리절트 =", kopy)
+        self.assertIn("임베딩즈=임베딩즈", kopy)
+        self.assertIn("다큐먼츠=다큐먼츠", kopy)
+        for token in ("ids=", "query_embeddings=", "n_results="):
             self.assertIn(token, kopy)
 
     def test_help_resolution(self):
