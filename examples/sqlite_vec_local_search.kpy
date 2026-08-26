@@ -1,0 +1,32 @@
+임포트 sqlite3
+임포트 에스큐엘라이트벡 애즈 sv
+
+connection = sqlite3.connect(":memory:")
+connection.enable_load_extension(True)
+sv.로드(connection)
+connection.enable_load_extension(False)
+
+connection.execute(
+    "CREATE VIRTUAL TABLE vec_items USING vec0(embedding float[3])"
+)
+
+items = [
+    (1, [1.0, 0.0, 0.0]),
+    (2, [0.0, 1.0, 0.0]),
+    (3, [0.0, 0.0, 1.0]),
+]
+
+포 item_id, embedding 인 items:
+    connection.execute(
+        "INSERT INTO vec_items(rowid, embedding) VALUES (?, ?)",
+        [item_id, sv.시리얼라이즈플로트32(embedding)],
+    )
+
+query = [0.95, 0.05, 0.0]
+rows = connection.execute(
+    "SELECT rowid, distance FROM vec_items "
+    "WHERE embedding MATCH ? ORDER BY distance LIMIT 2",
+    [sv.시리얼라이즈플로트32(query)],
+).fetchall()
+
+프린트(rows)
