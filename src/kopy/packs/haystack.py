@@ -1,9 +1,9 @@
 """Haystack RAG/search orchestration pack for KoPy.
 
-Only Haystack-specific type/component names are transliterated. Transferable
-pipeline/search vocabulary such as documents, query, pipeline, retriever,
-add_component(), connect(), run(), and write_documents() stays Python-native.
-Dotted upstream paths remain unchanged.
+Haystack-specific type/component names are namespace-scoped. Shared learning
+identifiers such as document_store, retriever, pipeline, result, and query may be
+written with KoPy's common identifier transliterations. Dotted upstream package
+paths remain unchanged. Numeric fragments remain digits, so BM25 -> 비엠25.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ HAYSTACK_PACK = LibraryPack(
         "파이프라인": "Pipeline",
         "어싱크파이프라인": "AsyncPipeline",
         "인메모리도큐먼트스토어": "InMemoryDocumentStore",
-        "인메모리비엠이십오리트리버": "InMemoryBM25Retriever",
+        "인메모리비엠25리트리버": "InMemoryBM25Retriever",
         "인메모리임베딩리트리버": "InMemoryEmbeddingRetriever",
         "도큐먼트라이터": "DocumentWriter",
         "도큐먼트스플리터": "DocumentSplitter",
@@ -47,7 +47,7 @@ HAYSTACK_PACK = LibraryPack(
     },
     examples={
         "Pipeline": (
-            "프롬 헤이스택 임포트 도큐먼트, 파이프라인\n프롬 헤이스택.document_stores.in_memory 임포트 인메모리도큐먼트스토어\n프롬 헤이스택.components.retrievers.in_memory 임포트 인메모리비엠이십오리트리버\ndocument_store = 인메모리도큐먼트스토어()\ndocument_store.write_documents([도큐먼트(content='KoPy teaches Python.')])\nretriever = 인메모리비엠이십오리트리버(document_store=document_store)\npipeline = 파이프라인()\npipeline.add_component('retriever', retriever)\nresult = pipeline.run({'retriever': {'query': query}})",
+            "프롬 헤이스택 임포트 도큐먼트, 파이프라인\n프롬 헤이스택.document_stores.in_memory 임포트 인메모리도큐먼트스토어\n프롬 헤이스택.components.retrievers.in_memory 임포트 인메모리비엠25리트리버\n다큐먼트_스토어 = 인메모리도큐먼트스토어()\n다큐먼트_스토어.write_documents([도큐먼트(content='KoPy teaches Python.')])\n리트리버 = 인메모리비엠25리트리버(다큐먼트_스토어=다큐먼트_스토어)\npipeline = 파이프라인()\npipeline.add_component('retriever', 리트리버)\n리절트 = pipeline.run({'retriever': {'query': 쿼리}})",
             "from haystack import Document, Pipeline\nfrom haystack.document_stores.in_memory import InMemoryDocumentStore\nfrom haystack.components.retrievers.in_memory import InMemoryBM25Retriever\ndocument_store = InMemoryDocumentStore()\ndocument_store.write_documents([Document(content='KoPy teaches Python.')])\nretriever = InMemoryBM25Retriever(document_store=document_store)\npipeline = Pipeline()\npipeline.add_component('retriever', retriever)\nresult = pipeline.run({'retriever': {'query': query}})",
         ),
     },
