@@ -16,7 +16,7 @@ class BM25SPackTests(unittest.TestCase):
             "임포트 비엠25에스 애즈 bm25s\n"
             "코퍼스_토큰즈 = bm25s.토크나이즈(코퍼스, show_progress=False)\n"
             "리트리버 = bm25s.비엠25(코퍼스=코퍼스)\n"
-            "리트리버.index(코퍼스_토큰즈, show_progress=False)\n"
+            "리트리버.인덱스(코퍼스_토큰즈, show_progress=False)\n"
             "쿼리_토큰즈 = bm25s.토크나이즈([쿼리], show_progress=False)\n"
             "리절츠 = 리트리버.retrieve(쿼리_토큰즈, k=2, show_progress=False)\n"
         )
@@ -31,7 +31,7 @@ class BM25SPackTests(unittest.TestCase):
         source = (
             "임포트 비엠25에스 애즈 bm25s\n"
             "리트리버 = bm25s.비엠25(코퍼스=코퍼스)\n"
-            "리트리버.index(코퍼스_토큰즈)\n"
+            "리트리버.인덱스(코퍼스_토큰즈)\n"
             "리절츠 = 리트리버.retrieve(쿼리_토큰즈, k=3)\n"
         )
         python_source = translate(source).python
@@ -55,7 +55,7 @@ class BM25SPackTests(unittest.TestCase):
         self.assertIn("임포트 비엠25에스", kopy)
         self.assertIn("비엠25에스.토크나이즈(코퍼스, show_progress=펄스)", kopy)
         self.assertIn("리트리버 = 비엠25에스.비엠25(코퍼스=코퍼스)", kopy)
-        self.assertIn("리트리버.index(", kopy)
+        self.assertIn("리트리버.인덱스(", kopy)
         self.assertIn("리트리버.retrieve(", kopy)
         self.assertIn("k=2", kopy)
         self.assertIn("show_progress=펄스", kopy)
