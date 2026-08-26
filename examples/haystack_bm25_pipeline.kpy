@@ -1,0 +1,25 @@
+프롬 헤이스택 임포트 도큐먼트, 파이프라인
+프롬 헤이스택.document_stores.in_memory 임포트 인메모리도큐먼트스토어
+프롬 헤이스택.components.retrievers.in_memory 임포트 인메모리비엠이십오리트리버
+
+documents = [
+    도큐먼트(content="KoPy teaches Python syntax and AI libraries."),
+    도큐먼트(content="Haystack composes retrieval and RAG pipelines."),
+]
+
+document_store = 인메모리도큐먼트스토어()
+document_store.write_documents(documents)
+
+retriever = 인메모리비엠이십오리트리버(
+    document_store=document_store,
+    top_k=2,
+)
+
+pipeline = 파이프라인()
+pipeline.add_component("retriever", retriever)
+
+query = "KoPy Python"
+result = pipeline.run({"retriever": {"query": query}})
+
+포 doc 인 result["retriever"]["documents"]:
+    프린트(doc.content, doc.score)
