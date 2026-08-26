@@ -1,0 +1,24 @@
+임포트 탄티비
+
+builder = 탄티비.스키마빌더()
+builder.add_text_field("title", stored=True)
+builder.add_text_field("body", stored=True)
+schema = builder.build()
+
+index = 탄티비.인덱스(schema)
+writer = index.writer(heap_size=15_000_000, num_threads=1)
+
+doc = 탄티비.도큐먼트()
+doc.add_text("title", "KoPy Python learning")
+doc.add_text("body", "KoPy teaches Python syntax and machine learning libraries")
+writer.add_document(doc)
+writer.commit()
+
+index.reload()
+searcher = index.searcher()
+query = index.parse_query("Python KoPy", ["title", "body"])
+results = searcher.search(query, 5)
+
+포 score, address 인 results.hits:
+    document = searcher.doc(address)
+    프린트(score, document.get_first("title"))
