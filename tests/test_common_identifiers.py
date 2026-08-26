@@ -49,6 +49,22 @@ class CommonIdentifierTests(unittest.TestCase):
         self.assertIn("엣지_인덱스 = graph.엣지_인덱스", kopy)
         self.assertIn("임베딩즈 = encoder(쿼리)", kopy)
 
+    def test_import_paths_are_protected_from_common_identifier_rewrites(self):
+        source = (
+            "from usearch.index import Index\n"
+            "index = Index(ndim=3)\n"
+        )
+        kopy = to_kopy(source).kopy
+        self.assertIn("프롬 유서치.index 임포트 인덱스", kopy)
+        self.assertIn("인덱스 = 인덱스(ndim=3)", kopy)
+        self.assertEqual(translate(kopy).python, source)
+
+        source = "from langchain_core.documents import Document\ndocuments = []\n"
+        kopy = to_kopy(source).kopy
+        self.assertIn("프롬 랭체인코어.documents 임포트 도큐먼트", kopy)
+        self.assertIn("다큐먼츠 = []", kopy)
+        self.assertEqual(translate(kopy).python, source)
+
     def test_strings_comments_and_numeric_literals_are_untouched(self):
         source = (
             "쿼리 = 'query BM25 F1 L2 top_k=2'  # query BM25 F1 L2\n"
