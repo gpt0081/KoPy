@@ -15,11 +15,11 @@
     top_k=2,
 )
 
-파이프라인 = 파이프라인()
-파이프라인.애드컴포넌트("retriever", 리트리버)
+pipeline = 파이프라인()
+pipeline.애드컴포넌트("retriever", 리트리버)
 
 쿼리 = "KoPy Python"
-리절트 = 파이프라인.런({"retriever": {"query": 쿼리}})
+리절트 = pipeline.런({"retriever": {"query": 쿼리}})
 
 포 다큐먼트 인 리절트["retriever"]["documents"]:
     프린트(다큐먼트.content, 다큐먼트.score)
