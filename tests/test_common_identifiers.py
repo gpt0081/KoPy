@@ -150,6 +150,43 @@ class CommonIdentifierTests(unittest.TestCase):
         self.assertIn("다큐먼츠 = []", kopy)
         self.assertEqual(translate(kopy).python, source)
 
+    def test_direct_pack_class_collision_respects_function_parameter_scope(self):
+        source = (
+            "프롬 랜엑스 임포트 큐렐즈\n"
+            "데프 load(큐렐즈):\n"
+            "    리턴 큐렐즈\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from ranx import Qrels", python_source)
+        self.assertIn("def load(qrels):", python_source)
+        self.assertIn("return qrels", python_source)
+        self.assertNotIn("def load(Qrels):", python_source)
+
+    def test_direct_pack_class_collision_respects_other_function_bindings(self):
+        source = (
+            "프롬 랜엑스 임포트 큐렐즈\n"
+            "데프 collect(items):\n"
+            "    포 큐렐즈 인 items:\n"
+            "        current = 큐렐즈\n"
+            "    리턴 큐렐즈\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from ranx import Qrels", python_source)
+        self.assertIn("for qrels in items:", python_source)
+        self.assertIn("current = qrels", python_source)
+        self.assertIn("return qrels", python_source)
+
+    def test_direct_metric_class_collision_respects_function_parameter_scope(self):
+        source = (
+            "프롬 토치메트릭스 임포트 메트릭\n"
+            "데프 use_metric(메트릭):\n"
+            "    리턴 메트릭\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from torchmetrics import Metric", python_source)
+        self.assertIn("def use_metric(metric):", python_source)
+        self.assertIn("return metric", python_source)
+
     def test_strings_comments_and_numeric_literals_are_untouched(self):
         source = (
             "쿼리 = 'query BM25 F1 L2 top_k=2'  # query BM25 F1 L2\n"
