@@ -31,7 +31,7 @@ class QdrantPackTests(unittest.TestCase):
             "프롬 큐드란트 임포트 큐드란트클라이언트\n"
             "클라이언트 = 큐드란트클라이언트(':memory:')\n"
             "클라이언트.크리에이트컬렉션(collection_name='docs', vectors_config=config)\n"
-            "리절트 = 클라이언트.쿼리포인츠(collection_name='docs', 쿼리=쿼리, limit=3)\n"
+            "리절트 = 클라이언트.쿼리포인츠(collection_name='docs', 쿼리=쿼리, 리밋=3)\n"
         )
         python_source = translate(source).python
         self.assertIn("client.create_collection(collection_name='docs', vectors_config=config)", python_source)
@@ -42,12 +42,14 @@ class QdrantPackTests(unittest.TestCase):
             "프롬 큐드란트 임포트 큐드란트클라이언트\n"
             "클라이언트 = 큐드란트클라이언트(':memory:')\n"
             "클라이언트.upsert(collection_name='docs', points=points)\n"
-            "클라이언트.scroll(collection_name='docs', limit=10)\n"
-            "클라이언트.retrieve(collection_name='docs', ids=[1])\n"
+            "클라이언트.scroll(collection_name='docs', 리밋=10)\n"
+            "클라이언트.retrieve(collection_name='docs', 아이디즈=[1])\n"
         )
         python_source = translate(source).python
         for token in ("client.upsert(", "client.scroll(", "client.retrieve("):
             self.assertIn(token, python_source)
+        self.assertIn("limit=10", python_source)
+        self.assertIn("ids=[1]", python_source)
 
     def test_unimported_qdrant_words_are_not_global(self):
         source = "client.쿼리포인츠(collection_name='docs', 쿼리=쿼리)\n"
@@ -69,7 +71,8 @@ class QdrantPackTests(unittest.TestCase):
         self.assertIn("클라이언트.upsert(", kopy)
         self.assertIn("리절트 = 클라이언트.쿼리포인츠(", kopy)
         self.assertIn("쿼리=쿼리", kopy)
-        for token in ("collection_name=", "vectors_config=", "limit="):
+        self.assertIn("리밋=3", kopy)
+        for token in ("collection_name=", "vectors_config="):
             self.assertIn(token, kopy)
 
     def test_help_resolution(self):
