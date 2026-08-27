@@ -84,8 +84,8 @@ TIMM_PACK = LibraryPack(
             "import timm\nmodel = timm.create_model('resnet18', pretrained=False, num_classes=10)",
         ),
         "list_models": (
-            "임포트 팀엠\n모델_네임즈 = 팀엠.리스트_모델즈('resnet*')",
-            "import timm\nmodel_names = timm.list_models('resnet*')",
+            "임포트 팀엠\n리절츠 = 팀엠.리스트_모델즈('resnet*')",
+            "import timm\nresults = timm.list_models('resnet*')",
         ),
         "forward_features": (
             "임포트 팀엠\n피처스 = 모델.포워드_피처스(엑스)",
