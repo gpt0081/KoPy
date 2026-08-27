@@ -46,7 +46,7 @@ class SentencePiecePackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 센텐스피스 애즈 spm", kopy)
         self.assertIn("spm.센텐스피스프로세서", kopy)
-        self.assertIn("processor.엔코드", kopy)
+        self.assertIn("프로세서.엔코드", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("센텐스피스.센텐스피스프로세서")
