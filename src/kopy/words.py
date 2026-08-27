@@ -88,15 +88,8 @@ WORDS: dict[str, str] = {
 }
 
 # Canonical educational identifiers shared across AI/ML/search examples.
-#
-# These are deliberately separate from WORDS and LibraryPack.members. KoPy first
-# resolves imported library namespaces, then applies this vocabulary to remaining
-# NAME tokens. That lets a learner write `인덱스 = 탄티비.인덱스(...)` without
-# confusing the variable `index` with Tantivy's `Index` class.
-#
-# Numeric fragments stay as digits: `F1` -> `에프1`, `BM25` -> `비엠25`.
-# Stable upstream conventions that are useful to learn verbatim, such as `top_k`,
-# may intentionally remain English and therefore are not listed here.
+# Library namespaces resolve first, then this vocabulary applies to remaining NAME
+# tokens. Digits stay digits, and stable exceptions such as top_k stay upstream.
 COMMON_IDENTIFIERS: dict[str, str] = {
     "엑스": "X",
     "와이": "y",
@@ -140,6 +133,14 @@ COMMON_IDENTIFIERS: dict[str, str] = {
     "베스트": "best",
     "스코어즈": "scores",
     "에프1": "f1",
+    "클라이언트": "client",
+    "컬렉션": "collection",
+    "파이프라인": "pipeline",
+    "쿼리_임베딩즈": "query_embeddings",
+    "아이디즈": "ids",
+    "레코즈": "records",
+    "벡터즈": "vectors",
+    "팩토리": "factory",
 }
 
 ENGLISH_TARGETS: frozenset[str] = frozenset(WORDS.values())
