@@ -6,7 +6,7 @@
 클라이언트 = chroma.클라이언트()
 컬렉션 = 클라이언트.크리에이트컬렉션(
     name="docs",
-    embedding_function=None,
+    embedding_function=논,
 )
 
 아이디즈 = ["a", "b"]
