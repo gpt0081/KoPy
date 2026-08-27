@@ -21,8 +21,8 @@ class SentencePiecePackTests(unittest.TestCase):
         python_source = translate(source).python
         self.assertIn("import sentencepiece as spm", python_source)
         self.assertIn("spm.SentencePieceProcessor(model_file='m.model')", python_source)
-        self.assertIn("토크나이저.encode('hello world', out_type=str)", python_source)
-        self.assertIn("토크나이저.decode(피시들)", python_source)
+        self.assertIn("tokenizer.encode('hello world', out_type=str)", python_source)
+        self.assertIn("tokenizer.decode(피시들)", python_source)
 
     def test_trainer_translation(self):
         source = (
@@ -33,9 +33,9 @@ class SentencePiecePackTests(unittest.TestCase):
         self.assertIn("spm.SentencePieceTrainer.train(", python_source)
         self.assertIn("vocab_size=32", python_source)
 
-    def test_unimported_sentencepiece_word_is_not_global(self):
+    def test_common_tokenizer_identifier_translates_without_pack_import(self):
         source = "피시들 = 토크나이저.엔코드('hello')\n"
-        self.assertEqual(translate(source).python, source)
+        self.assertEqual("피시들 = tokenizer.엔코드('hello')\n", translate(source).python)
 
     def test_python_to_kopy(self):
         source = (
