@@ -187,6 +187,31 @@ class CommonIdentifierTests(unittest.TestCase):
         self.assertIn("def use_metric(metric):", python_source)
         self.assertIn("return metric", python_source)
 
+    def test_keyword_label_does_not_shadow_direct_pack_class(self):
+        source = (
+            "프롬 토치메트릭스 임포트 메트릭\n"
+            "리절트 = fn(메트릭=1)\n"
+            "instance = 메트릭()\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from torchmetrics import Metric", python_source)
+        self.assertIn("result = fn(metric=1)", python_source)
+        self.assertIn("instance = Metric()", python_source)
+        self.assertNotIn("fn(Metric=1)", python_source)
+
+    def test_function_default_does_not_shadow_direct_pack_class_after_scope(self):
+        source = (
+            "프롬 토치메트릭스 임포트 메트릭\n"
+            "데프 build(메트릭=논):\n"
+            "    리턴 메트릭\n"
+            "instance = 메트릭()\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from torchmetrics import Metric", python_source)
+        self.assertIn("def build(metric=None):", python_source)
+        self.assertIn("return metric", python_source)
+        self.assertIn("instance = Metric()", python_source)
+
     def test_strings_comments_and_numeric_literals_are_untouched(self):
         source = (
             "쿼리 = 'query BM25 F1 L2 top_k=2'  # query BM25 F1 L2\n"
