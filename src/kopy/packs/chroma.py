@@ -1,8 +1,8 @@
 """Official Chroma library pack for KoPy.
 
-The pack translates Chroma-specific client and collection-management API while
-leaving transferable retrieval vocabulary such as ``add``, ``query``,
-``upsert``, ``get``, and their keyword arguments in upstream Python form.
+Chroma client, collection-management, and collection data operations are
+transliterated only while the Chroma namespace is active. This avoids ambiguous
+global translations while keeping KoPy's default transliteration principle.
 """
 
 from __future__ import annotations
@@ -29,6 +29,13 @@ CHROMA_PACK = LibraryPack(
         "카운트컬렉션즈": "count_collections",
         "하트비트": "heartbeat",
         "겟버전": "get_version",
+        "애드": "add",
+        "쿼리": "query",
+        "업서트": "upsert",
+        "겟": "get",
+        "업데이트": "update",
+        "딜리트": "delete",
+        "카운트": "count",
     },
     member_descriptions={
         "Client": "별도 서버 없이 메모리에서 실행하는 Chroma client를 생성합니다.",
@@ -38,6 +45,9 @@ CHROMA_PACK = LibraryPack(
         "create_collection": "새 Chroma collection을 생성합니다.",
         "get_or_create_collection": "collection이 있으면 가져오고 없으면 생성합니다.",
         "list_collections": "현재 database의 collection 목록을 반환합니다.",
+        "add": "문서, ID, 임베딩을 collection에 추가합니다.",
+        "query": "query embedding으로 collection을 검색합니다.",
+        "upsert": "ID 기준으로 데이터를 추가하거나 갱신합니다.",
     },
     examples={
         "Client": (
@@ -48,9 +58,9 @@ CHROMA_PACK = LibraryPack(
             "collection = client.크리에이트컬렉션(name='docs', embedding_function=None)",
             "collection = client.create_collection(name='docs', embedding_function=None)",
         ),
-        "PersistentClient": (
-            "client = chroma.퍼시스턴트클라이언트(path='./chroma-data')",
-            "client = chroma.PersistentClient(path='./chroma-data')",
+        "query": (
+            "collection.애드(ids=ids, embeddings=임베딩즈, documents=다큐먼츠)\n리절트 = collection.쿼리(query_embeddings=query_embeddings, n_results=2)",
+            "collection.add(ids=ids, embeddings=embeddings, documents=documents)\nresult = collection.query(query_embeddings=query_embeddings, n_results=2)",
         ),
     },
 )

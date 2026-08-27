@@ -6,27 +6,27 @@ collection = client.크리에이트컬렉션(
     embedding_function=None,
 )
 
-embeddings = [
+임베딩즈 = [
     [1.0, 0.0],
     [0.0, 1.0],
 ]
 
-documents = [
+다큐먼츠 = [
     "alpha document",
     "beta document",
 ]
 
-collection.add(
+collection.애드(
     ids=["alpha", "beta"],
-    embeddings=embeddings,
-    documents=documents,
+    embeddings=임베딩즈,
+    documents=다큐먼츠,
 )
 
 query_embeddings = [[0.99, 0.01]]
-result = collection.query(
+리절트 = collection.쿼리(
     query_embeddings=query_embeddings,
     n_results=2,
 )
 
-프린트(result["ids"])
-프린트(result["documents"])
+프린트(리절트["ids"])
+프린트(리절트["documents"])

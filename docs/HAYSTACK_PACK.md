@@ -1,51 +1,50 @@
 # Haystack Library Pack
 
-KoPy 0.5.40의 `haystack-ai` 팩은 Haystack의 검색/RAG pipeline 구성 요소를 한글 음역으로 익히되 실제 Python 패키지 구조와 공통 RAG 어휘를 유지합니다.
+Haystack 팩은 검색/RAG pipeline 구성 요소와 핵심 workflow 메서드를 한글 음역으로 익히되 실제 Python package 구조를 유지합니다. 숫자는 그대로 보존하므로 `BM25 → 비엠25`가 표준입니다.
 
-기준: `haystack-ai 3.0.x`, Python 3.12.10.
-
-## 지원 namespace
-
-- Python: `haystack`
-- KoPy: `헤이스택`
-- dotted paths는 원문 유지: `haystack.document_stores.in_memory`, `haystack.components.retrievers.in_memory` 등
+기준: `haystack-ai 3.0.x`, Python 3.12.x.
 
 ## 주요 음역
 
 - `Document` → `도큐먼트`
 - `Pipeline` → `파이프라인`
-- `AsyncPipeline` → `어싱크파이프라인`
 - `InMemoryDocumentStore` → `인메모리도큐먼트스토어`
-- `InMemoryBM25Retriever` → `인메모리비엠이십오리트리버`
-- `InMemoryEmbeddingRetriever` → `인메모리임베딩리트리버`
+- `InMemoryBM25Retriever` → `인메모리비엠25리트리버`
 - `DocumentWriter` → `도큐먼트라이터`
 - `DocumentSplitter` → `도큐먼트스플리터`
-- `DocumentCleaner` → `도큐먼트클리너`
-- `PromptBuilder` → `프롬프트빌더`
-- `AnswerBuilder` → `앤서빌더`
-- `DuplicatePolicy` → `듀플리케이트폴리시`
+- `write_documents()` → `라이트도큐먼츠()`
+- `add_component()` → `애드컴포넌트()`
+- `connect()` → `커넥트()`
+- `run()` → `런()`
 
-## 원문으로 남기는 표현
+`write_documents`, `add_component`, `connect`, `run`은 다른 프레임워크에서도 나타날 수 있으므로 전역 번역하지 않고 Haystack pack이 활성화됐을 때만 음역합니다.
 
-`documents`, `query`, `pipeline`, `retriever`, `document_store`, `add_component()`, `connect()`, `run()`, `write_documents()`, `top_k=` 등은 검색/RAG와 Python 프레임워크 전반에서 재사용되는 표현이므로 번역하지 않습니다. KoPy 학습자가 Haystack 원문 코드와 다른 RAG 프레임워크로 자연스럽게 넘어가기 위한 의도적인 선택입니다.
+실제 dotted import 경로인 `haystack.document_stores.in_memory`, `haystack.components.retrievers.in_memory`는 Python package 구조 학습을 위해 그대로 유지합니다.
 
 ## 예제
 
 ```kopy
 프롬 헤이스택 임포트 도큐먼트, 파이프라인
 프롬 헤이스택.document_stores.in_memory 임포트 인메모리도큐먼트스토어
-프롬 헤이스택.components.retrievers.in_memory 임포트 인메모리비엠이십오리트리버
+프롬 헤이스택.components.retrievers.in_memory 임포트 인메모리비엠25리트리버
 
-document_store = 인메모리도큐먼트스토어()
-document_store.write_documents([
-    도큐먼트(content="KoPy teaches Python."),
-    도큐먼트(content="Haystack builds RAG pipelines."),
-])
+다큐먼트_스토어 = 인메모리도큐먼트스토어()
+다큐먼트_스토어.라이트도큐먼츠(다큐먼츠)
 
-retriever = 인메모리비엠이십오리트리버(document_store=document_store, top_k=2)
+리트리버 = 인메모리비엠25리트리버(
+    다큐먼트_스토어=다큐먼트_스토어,
+    top_k=2,
+)
+
 pipeline = 파이프라인()
-pipeline.add_component("retriever", retriever)
-result = pipeline.run({"retriever": {"query": query}})
+pipeline.애드컴포넌트("retriever", 리트리버)
+리절트 = pipeline.런({"retriever": {"query": 쿼리}})
 ```
 
-실제 runtime test는 외부 API나 모델 다운로드 없이 `InMemoryDocumentStore + InMemoryBM25Retriever + Pipeline`을 실행해 BM25 검색 결과를 검증합니다.
+`document_store → 다큐먼트_스토어`, `retriever → 리트리버`, `query → 쿼리`, `result → 리절트`는 공통 식별자 음역으로 지원합니다. 일반 변수 `pipeline`은 클래스 `Pipeline → 파이프라인`과 같은 음역을 공유해 shadowing 범위를 더 넓게 감사해야 하므로 이번 단계에서는 원문 변수명을 유지합니다.
+
+## `top_k` 예외
+
+`top_k`는 검색·추천·머신러닝 논문과 여러 Python 라이브러리에서 거의 동일한 형태로 반복되는 표준 인자입니다. 원문 학습 가치가 높아 현재 KoPy에서는 의도적으로 유지합니다. 이것은 예외이며 기본 원칙은 영어 식별자와 API의 한글 음역입니다.
+
+실제 runtime test는 외부 API나 모델 다운로드 없이 `InMemoryDocumentStore + InMemoryBM25Retriever + Pipeline`을 실행해 검색 결과를 검증합니다.

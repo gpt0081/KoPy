@@ -1,57 +1,42 @@
 # BM25S Library Pack
 
-KoPy 0.5.33 adds a namespace-scoped pack for `bm25s`, a sparse lexical-search implementation of BM25.
+BM25S 팩은 sparse lexical retrieval 흐름을 namespace-scoped 방식으로 음역합니다. 숫자는 읽어 쓰지 않고 그대로 유지하므로 `BM25S → 비엠25에스`, `BM25 → 비엠25`가 표준입니다.
 
-## Scope
+## 주요 음역
 
-The KoPy module name is `비엠이십오에스`.
-
-| KoPy | Python |
+| Python | KoPy |
 | --- | --- |
-| `비엠이십오에스` | `bm25s` |
-| `비엠이십오` | `BM25` |
-| `토크나이즈` | `tokenize` |
-| `리절츠` | `Results` |
-| `겟유니크토큰즈` | `get_unique_tokens` |
+| `bm25s` | `비엠25에스` |
+| `BM25` | `비엠25` |
+| `tokenize` | `토크나이즈` |
+| `index()` | `인덱스()` |
+| `retrieve()` | `리트리브()` |
+| `Results` | `리절츠` |
+| `save()` | `세이브()` |
+| `load()` | `로드()` |
 
-BM25S-specific entry points are transliterated only when the pack namespace is active.
+`index`, `retrieve`, `save`, `load`는 다른 라이브러리에서도 흔하므로 전역 번역하지 않고 BM25S가 import된 코드에서만 위 음역을 활성화합니다.
 
-## Retrieval vocabulary deliberately kept in Python
-
-KoPy intentionally keeps the following names in upstream Python form:
-
-- `corpus`, `query`, `corpus_tokens`, `query_tokens`, `retriever`, `results`
-- `documents`, `scores`, `k`
-- `index()`, `retrieve()`, `save()`, `load()`
-- keyword arguments such as `show_progress=`, `stopwords=`, `stemmer=`, `method=`, `backend=`
-
-These are transferable information-retrieval concepts or generic method names. Translating them globally would both hide useful original terminology and create ambiguity with other search, vector database, and indexing libraries.
-
-## Example
+## 예제
 
 ```kopy
-임포트 비엠이십오에스 애즈 bm25s
+임포트 비엠25에스 애즈 bm25s
 
-corpus = [
-    "machine learning uses data",
-    "rubber chemistry uses vulcanization additives",
-    "vector search retrieves documents",
-]
+코퍼스_토큰즈 = bm25s.토크나이즈(코퍼스, show_progress=False)
+리트리버 = bm25s.비엠25(코퍼스=코퍼스)
+리트리버.인덱스(코퍼스_토큰즈, show_progress=False)
 
-corpus_tokens = bm25s.토크나이즈(corpus, show_progress=False)
-retriever = bm25s.비엠이십오(corpus=corpus)
-retriever.index(corpus_tokens, show_progress=False)
+쿼리_토큰즈 = bm25s.토크나이즈([쿼리], show_progress=False)
+리절츠 = 리트리버.리트리브(쿼리_토큰즈, k=2, show_progress=False)
 
-query = "rubber vulcanization"
-query_tokens = bm25s.토크나이즈([query], show_progress=False)
-results = retriever.retrieve(query_tokens, k=2, show_progress=False)
-
-프린트(results.documents)
-프린트(results.scores)
+프린트(리절츠.다큐먼츠)
+프린트(리절츠.스코어즈)
 ```
 
-This translates to the same BM25S workflow used in ordinary Python: tokenize the corpus, build the sparse BM25 index, tokenize the query, then retrieve ranked documents and scores.
+대응 원문은 `corpus`, `retriever`, `query`, `results`, `documents`, `scores`, `index()`, `retrieve()`입니다. KoPy는 이를 음역과 1:1로 연결해 원문 코드 학습을 돕습니다.
 
-## Compatibility and testing
+`show_progress`, `k`처럼 라이브러리의 세부 키워드 인자는 아직 원문을 허용합니다. 이들은 향후 전체 keyword-argument 감사에서 충돌 가능성과 교육 가치를 따로 검토합니다.
 
-The pack targets KoPy's existing Python 3.12.10 compatibility range. CI installs `bm25s>=0.3.10,<0.4` and runs the real library on Windows, Ubuntu, and macOS. The runtime test builds an actual BM25 index and checks that a lexical query ranks the expected document first.
+## 호환성
+
+KoPy는 Python 3.12.x를 대상으로 하며 CI에서 실제 BM25S 인덱스를 만들고 lexical query의 순위를 검증합니다.
