@@ -37,7 +37,7 @@ class KorniaPackTests(unittest.TestCase):
     def test_unimported_words_are_not_global(self):
         source = "피처스 = 알지비_투_그레이스케일(엑스)\n"
         python_source = translate(source).python
-        self.assertIn("rgb_to_grayscale", python_source) is False
+        self.assertNotIn("rgb_to_grayscale", python_source)
         self.assertIn("알지비_투_그레이스케일", python_source)
 
     def test_python_to_kopy_prefers_canonical_underscores_and_digits(self):
