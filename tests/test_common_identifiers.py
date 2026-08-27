@@ -88,12 +88,12 @@ class CommonIdentifierTests(unittest.TestCase):
     def test_ir_and_fuzzy_keywords_translate_both_directions(self):
         source = (
             "하이브리드_런 = fuse(런즈=[덴스_런, 렉시컬_런], 노름='min-max', 메서드='sum')\n"
-            "스코어 = evaluate(큐렐즈, 하이브리드_런, 메트릭='ndcg@3')\n"
+            "리절트 = evaluate(큐렐즈, 하이브리드_런, 메트릭='ndcg@3')\n"
             "베스트 = extract(쿼리, 초이시즈, 스코어러=fn, 프로세서=논, 스코어_컷오프=50, 리밋=3)\n"
         )
         python_source = translate(source).python
         self.assertIn("hybrid_run = fuse(runs=[dense_run, lexical_run], norm='min-max', method='sum')", python_source)
-        self.assertIn("score = evaluate(qrels, hybrid_run, metric='ndcg@3')", python_source)
+        self.assertIn("result = evaluate(qrels, hybrid_run, metric='ndcg@3')", python_source)
         self.assertIn("scorer=fn", python_source)
         self.assertIn("processor=None", python_source)
         self.assertIn("score_cutoff=50", python_source)
@@ -102,7 +102,7 @@ class CommonIdentifierTests(unittest.TestCase):
         kopy = to_kopy(python_source).kopy
         for expected in (
             "하이브리드_런 = fuse(런즈=[덴스_런, 렉시컬_런], 노름='min-max', 메서드='sum')",
-            "스코어 = evaluate(큐렐즈, 하이브리드_런, 메트릭='ndcg@3')",
+            "리절트 = evaluate(큐렐즈, 하이브리드_런, 메트릭='ndcg@3')",
             "스코어러=fn",
             "프로세서=논",
             "스코어_컷오프=50",
@@ -163,6 +163,10 @@ class CommonIdentifierTests(unittest.TestCase):
     def test_top_k_is_intentionally_not_a_common_transliteration(self):
         self.assertNotIn("top_k", COMMON_IDENTIFIERS.values())
         self.assertIn("top_k=2", to_kopy("result = fn(top_k=2)\n").kopy)
+
+    def test_ambiguous_score_is_not_global(self):
+        self.assertNotIn("score", COMMON_IDENTIFIERS.values())
+        self.assertIn("metric.score(", to_kopy("metric.score(reference=reference)\n").kopy)
 
     def test_common_identifiers_are_exposed_to_editor_metadata(self):
         info = info_for("엑스_트레인")
