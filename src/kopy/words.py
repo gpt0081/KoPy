@@ -178,6 +178,22 @@ COMMON_IDENTIFIERS: dict[str, str] = {
     "레이블": "label",
     "넘_부스트_라운드": "num_boost_round",
     "프로바": "proba",
+    "토크나이저": "tokenizer",
+    "제너레이터": "generator",
+    "리턴_텐서즈": "return_tensors",
+    "인풋_아이디즈": "input_ids",
+    "아웃풋_아이디즈": "output_ids",
+    "어텐션_마스크": "attention_mask",
+    "토큰_타입_아이디즈": "token_type_ids",
+    "맥스_렝스": "max_length",
+    "패딩": "padding",
+    "트렁케이션": "truncation",
+    "배치_사이즈": "batch_size",
+    "보캡_사이즈": "vocab_size",
+    "히든_사이즈": "hidden_size",
+    "넘_히든_레이어즈": "num_hidden_layers",
+    "넘_어텐션_헤즈": "num_attention_heads",
+    "인터미디어트_사이즈": "intermediate_size",
 }
 
 ENGLISH_TARGETS: frozenset[str] = frozenset(WORDS.values())
