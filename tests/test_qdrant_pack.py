@@ -15,7 +15,7 @@ class QdrantPackTests(unittest.TestCase):
         source = (
             "프롬 큐드란트 임포트 큐드란트클라이언트\n"
             "프롬 큐드란트.models 임포트 벡터파람스, 디스턴스, 포인트스트럭트\n"
-            "client = 큐드란트클라이언트(':memory:')\n"
+            "클라이언트 = 큐드란트클라이언트(':memory:')\n"
             "config = 벡터파람스(size=4, distance=디스턴스.COSINE)\n"
             "point = 포인트스트럭트(id=1, vector=[1.0, 0.0, 0.0, 0.0])\n"
         )
@@ -29,9 +29,9 @@ class QdrantPackTests(unittest.TestCase):
     def test_qdrant_specific_client_methods_translate(self):
         source = (
             "프롬 큐드란트 임포트 큐드란트클라이언트\n"
-            "client = 큐드란트클라이언트(':memory:')\n"
-            "client.크리에이트컬렉션(collection_name='docs', vectors_config=config)\n"
-            "리절트 = client.쿼리포인츠(collection_name='docs', 쿼리=쿼리, limit=3)\n"
+            "클라이언트 = 큐드란트클라이언트(':memory:')\n"
+            "클라이언트.크리에이트컬렉션(collection_name='docs', vectors_config=config)\n"
+            "리절트 = 클라이언트.쿼리포인츠(collection_name='docs', 쿼리=쿼리, limit=3)\n"
         )
         python_source = translate(source).python
         self.assertIn("client.create_collection(collection_name='docs', vectors_config=config)", python_source)
@@ -40,10 +40,10 @@ class QdrantPackTests(unittest.TestCase):
     def test_generic_database_search_methods_remain_python(self):
         source = (
             "프롬 큐드란트 임포트 큐드란트클라이언트\n"
-            "client = 큐드란트클라이언트(':memory:')\n"
-            "client.upsert(collection_name='docs', points=points)\n"
-            "client.scroll(collection_name='docs', limit=10)\n"
-            "client.retrieve(collection_name='docs', ids=[1])\n"
+            "클라이언트 = 큐드란트클라이언트(':memory:')\n"
+            "클라이언트.upsert(collection_name='docs', points=points)\n"
+            "클라이언트.scroll(collection_name='docs', limit=10)\n"
+            "클라이언트.retrieve(collection_name='docs', ids=[1])\n"
         )
         python_source = translate(source).python
         for token in ("client.upsert(", "client.scroll(", "client.retrieve("):
@@ -65,9 +65,9 @@ class QdrantPackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("프롬 큐드란트 임포트 큐드란트클라이언트", kopy)
         self.assertIn("프롬 큐드란트.models 임포트 벡터파람스, 디스턴스", kopy)
-        self.assertIn("client.크리에이트컬렉션(", kopy)
-        self.assertIn("client.upsert(", kopy)
-        self.assertIn("리절트 = client.쿼리포인츠(", kopy)
+        self.assertIn("클라이언트.크리에이트컬렉션(", kopy)
+        self.assertIn("클라이언트.upsert(", kopy)
+        self.assertIn("리절트 = 클라이언트.쿼리포인츠(", kopy)
         self.assertIn("쿼리=쿼리", kopy)
         for token in ("collection_name=", "vectors_config=", "limit="):
             self.assertIn(token, kopy)

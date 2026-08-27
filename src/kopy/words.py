@@ -140,6 +140,13 @@ COMMON_IDENTIFIERS: dict[str, str] = {
     "베스트": "best",
     "스코어즈": "scores",
     "에프1": "f1",
+    "클라이언트": "client",
+    "컬렉션": "collection",
+    "파이프라인": "pipeline",
+    "쿼리_임베딩즈": "query_embeddings",
+    "아이디즈": "ids",
+    "쇼_프로그레스": "show_progress",
+    "엔_리절츠": "n_results",
 }
 
 ENGLISH_TARGETS: frozenset[str] = frozenset(WORDS.values())
