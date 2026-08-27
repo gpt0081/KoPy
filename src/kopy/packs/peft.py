@@ -94,16 +94,16 @@ PEFT_PACK = LibraryPack(
     },
     examples={
         "LoraConfig": (
-            "프롬 페프트 임포트 로라컨피그\n컨피그 = 로라컨피그(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
-            "from peft import LoraConfig\nconfig = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
+            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
+            "from peft import LoraConfig\nresult = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
         ),
         "get_peft_model": (
-            "프롬 페프트 임포트 겟_페프트_모델\n모델 = 겟_페프트_모델(모델, 컨피그)",
-            "from peft import get_peft_model\nmodel = get_peft_model(model, config)",
+            "프롬 페프트 임포트 겟_페프트_모델\n모델 = 겟_페프트_모델(모델, 리절트)",
+            "from peft import get_peft_model\nmodel = get_peft_model(model, result)",
         ),
         "merge_and_unload": (
-            "머지드_모델 = 모델.머지_앤드_언로드()",
-            "merged_model = model.merge_and_unload()",
+            "모델 = 모델.머지_앤드_언로드()",
+            "model = model.merge_and_unload()",
         ),
     },
 )
