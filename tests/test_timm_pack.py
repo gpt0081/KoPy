@@ -14,13 +14,13 @@ class TimmPackTests(unittest.TestCase):
     def test_module_translation_is_namespace_scoped(self):
         source = (
             "임포트 팀엠\n"
-            "모델_네임즈 = 팀엠.리스트_모델즈('resnet*')\n"
+            "리절츠 = 팀엠.리스트_모델즈('resnet*')\n"
             "모델 = 팀엠.크리에이트_모델('resnet18', pretrained=False, num_classes=10)\n"
             "피처스 = 모델.포워드_피처스(엑스)\n"
         )
         python_source = translate(source).python
         self.assertIn("import timm", python_source)
-        self.assertIn("timm.list_models('resnet*')", python_source)
+        self.assertIn("results = timm.list_models('resnet*')", python_source)
         self.assertIn("model = timm.create_model('resnet18', pretrained=False, num_classes=10)", python_source)
         self.assertIn("features = model.forward_features(X)", python_source)
 
