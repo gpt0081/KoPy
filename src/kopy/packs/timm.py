@@ -17,42 +17,57 @@ TIMM_PACK = LibraryPack(
     preferred_aliases=("timm",),
     description="PyTorch Image Models의 모델 탐색·생성·특징 추출·학습 유틸리티 API 팩",
     members={
-        # Top-level model discovery / construction
+        # Legacy aliases retained for KoPy source compatibility. Canonical forms
+        # below preserve Python underscores and numeric fragments.
         "크리에이트모델": "create_model",
         "리스트모델즈": "list_models",
         "리스트프리트레인드": "list_pretrained",
         "이즈모델": "is_model",
         "모델엔트리포인트": "model_entrypoint",
         "겟프리트레인드컨피그": "get_pretrained_cfg",
+        "포워드피처스": "forward_features",
+        "포워드헤드": "forward_head",
+        "리셋클래시파이어": "reset_classifier",
+        "겟클래시파이어": "get_classifier",
+        "피처인포": "feature_info",
+        "리졸브데이터컨피그": "resolve_data_config",
+        "크리에이트트랜스폼": "create_transform",
+        "크리에이트데이터셋": "create_dataset",
+        "크리에이트로더": "create_loader",
+        "크리에이트옵티마이저브이투": "create_optimizer_v2",
+        "옵티마이저콰그스": "optimizer_kwargs",
+        "크리에이트스케줄러브이투": "create_scheduler_v2",
 
-        # Common namespaces
+        # Common namespaces / classes.
         "데이터": "data",
         "옵팀": "optim",
         "스케줄러": "scheduler",
         "로스": "loss",
         "모델즈": "models",
         "레이어즈": "layers",
-
-        # Model instance helpers
-        "포워드피처스": "forward_features",
-        "포워드헤드": "forward_head",
-        "리셋클래시파이어": "reset_classifier",
-        "겟클래시파이어": "get_classifier",
-        "피처인포": "feature_info",
-
-        # Data helpers
-        "리졸브데이터컨피그": "resolve_data_config",
-        "크리에이트트랜스폼": "create_transform",
-        "크리에이트데이터셋": "create_dataset",
-        "크리에이트로더": "create_loader",
         "믹스업": "Mixup",
-
-        # Training helpers
-        "크리에이트옵티마이저브이투": "create_optimizer_v2",
-        "옵티마이저콰그스": "optimizer_kwargs",
-        "크리에이트스케줄러브이투": "create_scheduler_v2",
         "소프트타깃크로스엔트로피": "SoftTargetCrossEntropy",
         "라벨스무딩크로스엔트로피": "LabelSmoothingCrossEntropy",
+
+        # Canonical KoPy spellings. Keep '_' structure and digits unchanged.
+        "크리에이트_모델": "create_model",
+        "리스트_모델즈": "list_models",
+        "리스트_프리트레인드": "list_pretrained",
+        "이즈_모델": "is_model",
+        "모델_엔트리포인트": "model_entrypoint",
+        "겟_프리트레인드_컨피그": "get_pretrained_cfg",
+        "포워드_피처스": "forward_features",
+        "포워드_헤드": "forward_head",
+        "리셋_클래시파이어": "reset_classifier",
+        "겟_클래시파이어": "get_classifier",
+        "피처_인포": "feature_info",
+        "리졸브_데이터_컨피그": "resolve_data_config",
+        "크리에이트_트랜스폼": "create_transform",
+        "크리에이트_데이터셋": "create_dataset",
+        "크리에이트_로더": "create_loader",
+        "크리에이트_옵티마이저_브이2": "create_optimizer_v2",
+        "옵티마이저_콰그스": "optimizer_kwargs",
+        "크리에이트_스케줄러_브이2": "create_scheduler_v2",
     },
     member_descriptions={
         "create_model": "이름으로 timm 모델을 생성합니다.",
@@ -65,16 +80,16 @@ TIMM_PACK = LibraryPack(
     },
     examples={
         "create_model": (
-            "임포트 팀엠\nmodel = 팀엠.크리에이트모델('resnet18', pretrained=False, num_classes=10)",
+            "임포트 팀엠\n모델 = 팀엠.크리에이트_모델('resnet18', pretrained=False, num_classes=10)",
             "import timm\nmodel = timm.create_model('resnet18', pretrained=False, num_classes=10)",
         ),
         "list_models": (
-            "임포트 팀엠\nmodel_names = 팀엠.리스트모델즈('resnet*')",
-            "import timm\nmodel_names = timm.list_models('resnet*')",
+            "임포트 팀엠\n리절츠 = 팀엠.리스트_모델즈('resnet*')",
+            "import timm\nresults = timm.list_models('resnet*')",
         ),
         "forward_features": (
-            "임포트 팀엠\nfeatures = model.포워드피처스(x)",
-            "import timm\nfeatures = model.forward_features(x)",
+            "임포트 팀엠\n피처스 = 모델.포워드_피처스(엑스)",
+            "import timm\nfeatures = model.forward_features(X)",
         ),
     },
 )
