@@ -2,15 +2,15 @@
 
 
 def objective(trial):
-    learning_rate = trial.서제스트플로트("learning_rate", 1e-4, 1e-1, log=True)
-    max_depth = trial.서제스트인트("max_depth", 2, 8)
+    러닝_레이트 = trial.서제스트_플로트("learning_rate", 1e-4, 1e-1, log=True)
+    맥스_뎁스 = trial.서제스트_인트("max_depth", 2, 8)
 
-    # 실제 모델 학습 코드에서는 이 값들로 model을 만들고 validation loss를 반환합니다.
-    return (learning_rate - 0.01) ** 2 + (max_depth - 4) ** 2
+    # 실제 모델 학습 코드에서는 이 값들로 모델을 만들고 validation loss를 반환합니다.
+    return (러닝_레이트 - 0.01) ** 2 + (맥스_뎁스 - 4) ** 2
 
 
-study = 옵튜나.크리에이트스터디(direction="minimize")
+study = 옵튜나.크리에이트_스터디(direction="minimize")
 study.옵티마이즈(objective, n_trials=20)
 
-프린트("best value:", study.베스트밸류)
-프린트("best params:", study.베스트파람스)
+프린트("best value:", study.베스트_밸류)
+프린트("best params:", study.베스트_패럼즈)
