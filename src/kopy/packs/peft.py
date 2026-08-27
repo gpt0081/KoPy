@@ -21,16 +21,24 @@ PEFT_PACK = LibraryPack(
         "프롬프트튜닝컨피그": "PromptTuningConfig",
         "프롬프트인코더컨피그": "PromptEncoderConfig",
         "프리픽스튜닝컨피그": "PrefixTuningConfig",
+        # Legacy spelling kept as an input alias; canonical output preserves digit 3.
         "아이에이쓰리컨피그": "IA3Config",
+        "아이에이3컨피그": "IA3Config",
         "에이다로라컨피그": "AdaLoraConfig",
 
-        # Construction / loading
+        # Construction / loading. Compact legacy spellings stay as input aliases.
         "겟페프트모델": "get_peft_model",
         "겟페프트모델스테이트딕트": "get_peft_model_state_dict",
         "셋페프트모델스테이트딕트": "set_peft_model_state_dict",
         "프리페어모델포케이비트트레이닝": "prepare_model_for_kbit_training",
         "프롬프리트레인드": "from_pretrained",
         "세이브프리트레인드": "save_pretrained",
+        "겟_페프트_모델": "get_peft_model",
+        "겟_페프트_모델_스테이트_딕트": "get_peft_model_state_dict",
+        "셋_페프트_모델_스테이트_딕트": "set_peft_model_state_dict",
+        "프리페어_모델_포_케이비트_트레이닝": "prepare_model_for_kbit_training",
+        "프롬_프리트레인드": "from_pretrained",
+        "세이브_프리트레인드": "save_pretrained",
 
         # Adapter lifecycle
         "애드어댑터": "add_adapter",
@@ -44,6 +52,16 @@ PEFT_PACK = LibraryPack(
         "머지앤언로드": "merge_and_unload",
         "언로드": "unload",
         "애드웨이티드어댑터": "add_weighted_adapter",
+        "애드_어댑터": "add_adapter",
+        "셋_어댑터": "set_adapter",
+        "로드_어댑터": "load_adapter",
+        "딜리트_어댑터": "delete_adapter",
+        "인에이블_어댑터_레이어스": "enable_adapter_layers",
+        "디스에이블_어댑터_레이어스": "disable_adapter_layers",
+        "머지_어댑터": "merge_adapter",
+        "언머지_어댑터": "unmerge_adapter",
+        "머지_앤드_언로드": "merge_and_unload",
+        "애드_웨이티드_어댑터": "add_weighted_adapter",
 
         # Inspection / helpers
         "프린트트레이너블파라미터스": "print_trainable_parameters",
@@ -55,6 +73,15 @@ PEFT_PACK = LibraryPack(
         "페프트컨피그맵": "peft_config",
         "베이스모델": "base_model",
         "푸시투허브": "push_to_hub",
+        "프린트_트레이너블_파라미터스": "print_trainable_parameters",
+        "겟_모델_스테이터스": "get_model_status",
+        "겟_레이어_스테이터스": "get_layer_status",
+        "겟_베이스_모델": "get_base_model",
+        "액티브_어댑터": "active_adapter",
+        "액티브_어댑터스": "active_adapters",
+        "페프트_컨피그": "peft_config",
+        "베이스_모델": "base_model",
+        "푸시_투_허브": "push_to_hub",
     },
     member_descriptions={
         "LoraConfig": "LoRA rank, target module, dropout 등 어댑터 학습 설정을 정의합니다.",
@@ -67,16 +94,16 @@ PEFT_PACK = LibraryPack(
     },
     examples={
         "LoraConfig": (
-            "프롬 페프트 임포트 로라컨피그\n설정 = 로라컨피그(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
-            "from peft import LoraConfig\nconfig = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
+            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
+            "from peft import LoraConfig\nresult = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
         ),
         "get_peft_model": (
-            "프롬 페프트 임포트 겟페프트모델\n모델 = 겟페프트모델(모델, 설정)",
-            "from peft import get_peft_model\nmodel = get_peft_model(model, config)",
+            "프롬 페프트 임포트 겟_페프트_모델\n모델 = 겟_페프트_모델(모델, 리절트)",
+            "from peft import get_peft_model\nmodel = get_peft_model(model, result)",
         ),
         "merge_and_unload": (
-            "병합모델 = 모델.머지앤언로드()",
-            "merged_model = model.merge_and_unload()",
+            "모델 = 모델.머지_앤드_언로드()",
+            "model = model.merge_and_unload()",
         ),
     },
 )
