@@ -63,6 +63,39 @@ class CommonIdentifierTests(unittest.TestCase):
         ):
             self.assertIn(expected, kopy)
 
+    def test_signature_keywords_translate_both_directions(self):
+        source = (
+            "설정 = build(네임='docs', 임베딩_펑션=논)\n"
+            "분할 = split(테스트_사이즈=0.2, 랜덤_스테이트=42)\n"
+            "모델 = train(맥스_이터=200, 디타입='float32')\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("build(name='docs', embedding_function=None)", python_source)
+        self.assertIn("split(test_size=0.2, random_state=42)", python_source)
+        self.assertIn("train(max_iter=200, dtype='float32')", python_source)
+
+        kopy = to_kopy(python_source).kopy
+        for expected in (
+            "네임='docs'",
+            "임베딩_펑션=논",
+            "테스트_사이즈=0.2",
+            "랜덤_스테이트=42",
+            "맥스_이터=200",
+            "디타입='float32'",
+        ):
+            self.assertIn(expected, kopy)
+
+    def test_signature_keyword_values_and_strings_are_untouched(self):
+        source = (
+            "설정 = fn(테스트_사이즈=0.25, 랜덤_스테이트=7, 디타입='float32')\n"
+            "텍스트 = 'name embedding_function test_size random_state max_iter dtype'\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("test_size=0.25", python_source)
+        self.assertIn("random_state=7", python_source)
+        self.assertIn("dtype='float32'", python_source)
+        self.assertIn("'name embedding_function test_size random_state max_iter dtype'", python_source)
+
     def test_python_to_kopy_common_identifiers(self):
         source = (
             "X_train = scaler.fit(X_train)\n"
@@ -115,6 +148,11 @@ class CommonIdentifierTests(unittest.TestCase):
         info = info_for("쿼리_임베딩즈")
         self.assertIsNotNone(info)
         self.assertEqual(info.python, "query_embeddings")
+        self.assertEqual(info.category, "identifier")
+
+        info = info_for("테스트_사이즈")
+        self.assertIsNotNone(info)
+        self.assertEqual(info.python, "test_size")
         self.assertEqual(info.category, "identifier")
 
 
