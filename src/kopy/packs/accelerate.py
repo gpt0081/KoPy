@@ -22,7 +22,7 @@ ACCELERATE_PACK = LibraryPack(
         "딥스피드플러그인": "DeepSpeedPlugin",
         "풀리샤디드데이터패럴렐플러그인": "FullyShardedDataParallelPlugin",
 
-        # Accelerator methods / properties
+        # Legacy compact spellings retained for KoPy source compatibility.
         "프리페어": "prepare",
         "프리페어모델": "prepare_model",
         "프리페어옵티마이저": "prepare_optimizer",
@@ -54,12 +54,39 @@ ACCELERATE_PACK = LibraryPack(
         "이즈로컬메인프로세스": "is_local_main_process",
         "믹스트프리시전": "mixed_precision",
         "싱크그래디언츠": "sync_gradients",
-
-        # Common top-level helpers
         "셋시드": "set_seed",
         "이니트엠프티웨이츠": "init_empty_weights",
         "인퍼오토디바이스맵": "infer_auto_device_map",
         "로드체크포인트앤디스패치": "load_checkpoint_and_dispatch",
+
+        # Canonical spellings preserve the underscore structure of Python APIs.
+        # Entries without Python underscores keep their existing spellings.
+        "프리페어_모델": "prepare_model",
+        "프리페어_옵티마이저": "prepare_optimizer",
+        "프리페어_데이터_로더": "prepare_data_loader",
+        "개더_포_메트릭스": "gather_for_metrics",
+        "패드_어크로스_프로세시즈": "pad_across_processes",
+        "언랩_모델": "unwrap_model",
+        "클립_그라드_노름_": "clip_grad_norm_",
+        "클립_그라드_밸류_": "clip_grad_value_",
+        "웨이트_포_에브리원": "wait_for_everyone",
+        "메인_프로세스_퍼스트": "main_process_first",
+        "로컬_메인_프로세스_퍼스트": "local_main_process_first",
+        "세이브_스테이트": "save_state",
+        "로드_스테이트": "load_state",
+        "스킵_퍼스트_배치스": "skip_first_batches",
+        "엔드_트레이닝": "end_training",
+        "프로세스_인덱스": "process_index",
+        "로컬_프로세스_인덱스": "local_process_index",
+        "넘_프로세시즈": "num_processes",
+        "이즈_메인_프로세스": "is_main_process",
+        "이즈_로컬_메인_프로세스": "is_local_main_process",
+        "믹스트_프리시전": "mixed_precision",
+        "싱크_그라디언츠": "sync_gradients",
+        "셋_시드": "set_seed",
+        "이니트_엠프티_웨이츠": "init_empty_weights",
+        "인퍼_오토_디바이스_맵": "infer_auto_device_map",
+        "로드_체크포인트_앤드_디스패치": "load_checkpoint_and_dispatch",
     },
     member_descriptions={
         "Accelerator": "학습 루프를 장치·혼합정밀도·분산 환경에 맞게 준비하는 핵심 객체입니다.",
@@ -84,6 +111,10 @@ ACCELERATE_PACK = LibraryPack(
         "backward": (
             "가속기.백워드(손실)",
             "accelerator.backward(loss)",
+        ),
+        "unwrap_model": (
+            "모델 = 가속기.언랩_모델(모델)",
+            "model = accelerator.unwrap_model(model)",
         ),
     },
 )
