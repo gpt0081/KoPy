@@ -107,8 +107,6 @@ def _common_import_path_indices(tokens: list[tokenize.TokenInfo]) -> set[int]:
         if first.string != "import":
             return
 
-        # In ``import package.path as alias, other.path`` protect only package
-        # path segments. Aliases are user identifiers and may be transliterated.
         in_alias = False
         for index in significant[1:]:
             token = tokens[index]
@@ -413,8 +411,6 @@ def _is_function_shadowed(
         if scope.body_start <= position <= scope.end:
             containing.append(scope)
 
-    # Innermost scope first. If it does not bind the name, Python may close over
-    # an enclosing function local; a `global` declaration explicitly stops that.
     containing.sort(key=lambda scope: scope.body_start, reverse=True)
     for scope in containing:
         if token.string in scope.global_names:
@@ -444,13 +440,7 @@ def _translate_library_packs(
     *,
     reverse: bool,
 ) -> tuple[str, tuple[tuple[str, str, int, int], ...]]:
-    """Translate imported library namespaces without making their words global.
-
-    A library pack becomes active only when its module is imported. Once active,
-    module attributes and KoPy-style attributes on objects can use that pack's
-    vocabulary. If future packs disagree about one spelling, the ambiguous
-    attribute is deliberately left untouched rather than guessed.
-    """
+    """Translate imported library namespaces without making their words global."""
     reader = io.StringIO(source).readline
     tokens = list(tokenize.generate_tokens(reader))
     replacements: dict[int, str] = {}
@@ -458,7 +448,6 @@ def _translate_library_packs(
     active_packs: set[str] = set()
     direct_names: dict[str, str] = {}
 
-    # Pass 1: discover imports, activate packs and translate import targets.
     for index, token in enumerate(tokens):
         if token.type != tokenize.NAME:
             continue
@@ -474,7 +463,6 @@ def _translate_library_packs(
 
                 pack = _pack_for_module_token(module_token.string)
                 if pack is None:
-                    # Skip to the next comma-separated import target.
                     while cursor is not None and cursor < end and tokens[cursor].string != ",":
                         cursor = _next_significant(tokens, cursor, end)
                     if cursor is not None:
@@ -486,7 +474,6 @@ def _translate_library_packs(
                 if module_token.string != replacement:
                     replacements[cursor] = replacement
 
-                # Look for `as alias` before the next comma.
                 scan = _next_significant(tokens, cursor, end)
                 alias: str | None = None
                 while scan is not None and scan < end and tokens[scan].string != ",":
@@ -500,8 +487,6 @@ def _translate_library_packs(
                 if alias:
                     active_aliases[alias] = pack
                 else:
-                    # Both spellings are understood in source; output uses the
-                    # direction-appropriate module spelling.
                     active_aliases[pack.module] = pack
                     active_aliases[pack.kopy_module] = pack
 
@@ -567,7 +552,6 @@ def _translate_library_packs(
         if current is None or statement_end < current:
             shadow_after[name] = statement_end
 
-    # Pass 2: translate attributes and direct names using only active packs.
     for index, token in enumerate(tokens):
         if token.type != tokenize.NAME:
             continue
@@ -576,10 +560,8 @@ def _translate_library_packs(
             continue
         previous = tokens[significant[pos - 1]] if pos > 0 else None
         following = tokens[significant[pos + 1]] if pos + 1 < len(significant) else None
+        is_name_equals = following is not None and following.string == "="
 
-        # Bare symbol imported via `from package import symbol`. Common learner
-        # identifiers can shadow the same transliteration through assignments or
-        # any Python function-local binding (parameters, loop targets, etc.).
         if previous is None or previous.string != ".":
             direct = direct_names.get(token.string)
             shadow_end = shadow_after.get(token.string)
@@ -589,13 +571,13 @@ def _translate_library_packs(
             if (
                 direct is not None
                 and token.string != direct
+                and not is_name_equals
                 and not is_rebinding_target
                 and not is_shadowed
                 and not is_function_shadow
             ):
                 replacements.setdefault(index, direct)
 
-        # Module name used as an attribute-chain root without an alias.
         if following is not None and following.string == "." and token.string in active_aliases:
             pack = active_aliases[token.string]
             target_root = pack.kopy_module if reverse else pack.module
@@ -605,7 +587,6 @@ def _translate_library_packs(
         if previous is None or previous.string != ".":
             continue
 
-        # Find the root of a dotted chain: np.linalg.norm -> np.
         root_pos = pos
         while root_pos >= 2 and tokens[significant[root_pos - 1]].string == ".":
             root_pos -= 2
@@ -616,8 +597,6 @@ def _translate_library_packs(
         if pack is not None:
             target = pack.kopy_for(token.string) if reverse else pack.python_for(token.string)
         if target is None:
-            # Supports ndarray-style calls such as x.리셰이프(...) while still
-            # refusing to guess when multiple active packs disagree.
             target = _unique_active_mapping(token.string, active_packs, reverse)
 
         if target is not None and token.string != target:
