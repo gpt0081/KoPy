@@ -15,8 +15,8 @@ class RanxPackTests(unittest.TestCase):
         source = (
             "프롬 랜엑스 임포트 큐렐즈, 런, 퓨즈\n"
             "qrels = 큐렐즈(qrels_dict)\n"
-            "dense_run = 런(dense_scores, name='dense')\n"
-            "lexical_run = 런(lexical_scores, name='bm25')\n"
+            "dense_run = 런(dense_scores, 네임='dense')\n"
+            "lexical_run = 런(lexical_scores, 네임='bm25')\n"
             "hybrid_run = 퓨즈(runs=[dense_run, lexical_run], method='rrf')\n"
         )
         python_source = translate(source).python
@@ -28,7 +28,7 @@ class RanxPackTests(unittest.TestCase):
     def test_generic_ir_vocabulary_remains_python(self):
         source = (
             "프롬 랜엑스 임포트 런, 퓨즈\n"
-            "dense_run = 런(dense_scores, name='dense')\n"
+            "dense_run = 런(dense_scores, 네임='dense')\n"
             "hybrid_run = 퓨즈(runs=[dense_run, lexical_run], norm='min-max', method='sum')\n"
             "score = evaluate(qrels, hybrid_run, 'ndcg@3')\n"
         )
@@ -40,7 +40,7 @@ class RanxPackTests(unittest.TestCase):
         source = "combined = lib.퓨즈(runs=runs)\n"
         self.assertEqual(translate(source).python, source)
 
-    def test_python_to_kopy_preserves_ir_vocabulary(self):
+    def test_python_to_kopy_transliterates_name_but_preserves_other_ir_vocabulary(self):
         source = (
             "from ranx import Qrels, Run, fuse\n"
             "qrels = Qrels(qrels_dict)\n"
@@ -51,7 +51,7 @@ class RanxPackTests(unittest.TestCase):
         kopy = to_kopy(source).kopy
         self.assertIn("프롬 랜엑스 임포트 큐렐즈, 런, 퓨즈", kopy)
         self.assertIn("큐렐즈(qrels_dict)", kopy)
-        self.assertIn("런(dense_scores, name='dense')", kopy)
+        self.assertIn("런(dense_scores, 네임='dense')", kopy)
         self.assertIn("퓨즈(runs=[dense_run, lexical_run], method='rrf')", kopy)
         self.assertIn("evaluate(qrels, hybrid_run", kopy)
 
