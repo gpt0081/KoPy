@@ -43,6 +43,7 @@ TRANSFORMERS_PACK = LibraryPack(
         "리사이즈토큰임베딩스": "resize_token_embeddings",
 
         # Tokenization / decoding / chat templates
+        "토크나이저": "tokenizer",
         "토크나이즈": "tokenize",
         "인코드": "encode",
         "디코드": "decode",
@@ -61,6 +62,7 @@ TRANSFORMERS_PACK = LibraryPack(
         "보캡_사이즈": "vocab_size",
         "리턴_텐서즈": "return_tensors",
         "인풋_아이디즈": "input_ids",
+        "아웃풋_아이디즈": "output_ids",
         "어텐션_마스크": "attention_mask",
         "토큰_타입_아이디즈": "token_type_ids",
         "맥스_렝스": "max_length",
@@ -86,6 +88,7 @@ TRANSFORMERS_PACK = LibraryPack(
 
         # Pipeline API
         "파이프라인": "pipeline",
+        "제너레이터": "generator",
         "텍스트제너레이션파이프라인": "TextGenerationPipeline",
         "텍스트클래시피케이션파이프라인": "TextClassificationPipeline",
         "피처익스트랙션파이프라인": "FeatureExtractionPipeline",
@@ -136,7 +139,7 @@ TRANSFORMERS_PACK = LibraryPack(
             "output_ids = model.generate(input_ids=input_ids)",
         ),
         "pipeline": (
-            "프롬 트랜스포머스 임포트 파이프라인\n제너레이터 = 파이프라인(\"text-generation\", model=모델, tokenizer=토크나이저)",
+            "프롬 트랜스포머스 임포트 파이프라인\n제너레이터 = 파이프라인(\"text-generation\", 모델=모델, 토크나이저=토크나이저)",
             "from transformers import pipeline\ngenerator = pipeline(\"text-generation\", model=model, tokenizer=tokenizer)",
         ),
     },
