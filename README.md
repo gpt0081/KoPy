@@ -2,7 +2,7 @@
 
 KoPy는 표준 Python과 호환되면서 영어 예약어·API·주요 식별자를 **한글 음역**으로도 쓸 수 있게 하는 학습 레이어입니다.
 
-현재 Core 버전: **0.5.50**  
+현재 Core 버전: **0.5.51**  
 개발 기준 Python: **3.12.10**
 
 ## 목표
@@ -58,6 +58,19 @@ test_size              테스트_사이즈
 random_state           랜덤_스테이트
 max_iter               맥스_이터
 dtype                  디타입
+runs                   런즈
+method                 메서드
+norm                   노름
+metric                 메트릭
+qrels                  큐렐즈
+scorer                 스코어러
+processor              프로세서
+score_cutoff           스코어_컷오프
+limit                  리밋
+candidate              캔디데이트
+dense_run              덴스_런
+lexical_run            렉시컬_런
+hybrid_run             하이브리드_런
 ```
 
 숫자는 그대로 남깁니다.
@@ -92,7 +105,9 @@ gaussian_blur2d        가우시안블러2디
 
 해당 팩을 import하지 않은 코드의 `서치`, `리트리브`, `업서트`, `런`을 KoPy가 임의로 추측해 바꾸지는 않습니다.
 
-0.5.49에서는 `client`, `collection`, `pipeline`, `query_embeddings`, `ids`, `show_progress`, `n_results`를 공통 양방향 음역 대상으로 확장했습니다. 0.5.50에서는 `name`, `embedding_function`, `test_size`, `random_state`, `max_iter`, `dtype`까지 시그니처 감사 범위를 넓혔습니다. `top_k` 같은 명시적 교육 예외와 단순 미완성 영어 항목은 구분해서 관리합니다.
+0.5.49에서는 `client`, `collection`, `pipeline`, `query_embeddings`, `ids`, `show_progress`, `n_results`를 공통 양방향 음역 대상으로 확장했습니다. 0.5.50에서는 `name`, `embedding_function`, `test_size`, `random_state`, `max_iter`, `dtype`까지 시그니처 감사 범위를 넓혔습니다. 0.5.51에서는 `runs`, `method`, `norm`, `metric`, `qrels`, `scorer`, `processor`, `score_cutoff`, `limit` 등 정보검색·fuzzy-search 식별자를 추가했습니다. `top_k` 같은 명시적 교육 예외와 단순 미완성 영어 항목은 구분해서 관리합니다.
+
+`Metric`/`metric`, `Qrels`/`qrels`처럼 클래스와 일반 식별자가 같은 음역을 공유할 수 있는 경우에는 Python의 실제 바인딩 규칙을 따릅니다. 직접 import된 클래스는 클래스 이름으로 복원하고, 함수 매개변수·반복문 target 등 함수 로컬 바인딩은 일반 식별자로 복원합니다. 자세한 내용은 [`docs/TRANSLITERATION_AUDIT_IR_FUZZY.md`](docs/TRANSLITERATION_AUDIT_IR_FUZZY.md)에 있습니다.
 
 ## AI 개발 Library Pack
 
@@ -200,7 +215,20 @@ Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy
 리절트 = 컬렉션.쿼리(쿼리_임베딩즈=쿼리_임베딩즈, 엔_리절츠=2)
 ```
 
-0.5.50에서는 `name`, `embedding_function`, `test_size`, `random_state`, `max_iter`, `dtype`를 공통 양방향 음역으로 확장했습니다. 문자열 값과 숫자 값은 그대로 유지합니다. `top_k`는 교육적 이유가 문서화된 예외로 계속 원문을 유지합니다.
+### ranx hybrid retrieval
+
+```kopy
+프롬 랜엑스 임포트 퓨즈, 이밸류에이트
+
+하이브리드_런 = 퓨즈(
+    런즈=[덴스_런, 렉시컬_런],
+    노름="min-max",
+    메서드="sum",
+)
+리절트 = 이밸류에이트(큐렐즈, 하이브리드_런, "ndcg@3")
+```
+
+문자열 값과 숫자 값은 그대로 유지합니다. `top_k`는 교육적 이유가 문서화된 예외로 계속 원문을 유지합니다.
 
 ## pypdf PDF ingestion
 
@@ -240,6 +268,7 @@ kopy version
 ## 문서
 
 - [`docs/TRANSLITERATION_STANDARD.md`](docs/TRANSLITERATION_STANDARD.md)
+- [`docs/TRANSLITERATION_AUDIT_IR_FUZZY.md`](docs/TRANSLITERATION_AUDIT_IR_FUZZY.md)
 - [`docs/FAISS_PACK.md`](docs/FAISS_PACK.md)
 - [`docs/BM25S_PACK.md`](docs/BM25S_PACK.md)
 - [`docs/CHROMA_PACK.md`](docs/CHROMA_PACK.md)
@@ -250,4 +279,4 @@ kopy version
 
 Python 호환성이 최우선입니다. Library Pack 변경은 실제 라이브러리를 설치한 Windows, Linux, macOS CI와 runtime smoke test로 확인합니다. 문자열·주석·숫자 리터럴이 변하지 않는지, pack 고유 API와 공통 식별자가 충돌하지 않는지도 검증합니다.
 
-0.5.47에서 공통 식별자와 숫자 보존 규칙을 확립했고, 0.5.48은 검색/RAG 메서드를 namespace-scoped 음역으로 확장했습니다. 0.5.49는 공통 RAG 변수명과 일부 키워드 인자의 양방향 음역을 확대한 세 번째 감사 단계였습니다. **0.5.50은 반복 사용되는 ML/RAG 시그니처 키워드 인자까지 공통 음역으로 확대한 네 번째 감사 단계**입니다. 다음 감사에서는 나머지 47개 팩 예제를 같은 기준으로 계속 점검합니다.
+0.5.47에서 공통 식별자와 숫자 보존 규칙을 확립했고, 0.5.48은 검색/RAG 메서드를 namespace-scoped 음역으로 확장했습니다. 0.5.49는 공통 RAG 변수명과 일부 키워드 인자의 양방향 음역을 확대한 세 번째 감사 단계였습니다. 0.5.50은 반복 사용되는 ML/RAG 시그니처 키워드 인자까지 공통 음역으로 확대한 네 번째 감사 단계였습니다. **0.5.51은 정보검색·fuzzy-search 식별자를 확장하면서 직접 import 클래스와 일반 변수의 이름 충돌을 Python 스코프 규칙에 맞게 처리하는 다섯 번째 감사 단계**입니다. 다음 감사에서는 나머지 47개 팩 예제를 같은 기준으로 계속 점검합니다.
