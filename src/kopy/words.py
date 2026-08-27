@@ -205,7 +205,7 @@ _EXAMPLES: dict[str, tuple[str, str]] = {
     "int": ('나이 = 인트("20")', 'age = int("20")'),
     "len": ('길이 = 렌([1, 2, 3])', 'length = len([1, 2, 3])'),
     "range": ('포 i 인 레인지(3):\n    프린트(i)', 'for i in range(3):\n    print(i)'),
-    "if": ('이프 점수 >= 60:\n    프린트("합격")', 'if score >= 60:\n    print(score)'),
+    "if": ('이프 점수 >= 60:\n    프린트("합격")', 'if score >= 60:\n    print("합격")'),
     "def": ('데프 더하기(a, b):\n    리턴 a + b', 'def add(a, b):\n    return a + b'),
 }
 
