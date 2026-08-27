@@ -85,16 +85,41 @@ class CommonIdentifierTests(unittest.TestCase):
         ):
             self.assertIn(expected, kopy)
 
+    def test_ir_and_fuzzy_keywords_translate_both_directions(self):
+        source = (
+            "하이브리드_런 = fuse(런즈=[덴스_런, 렉시컬_런], 노름='min-max', 메서드='sum')\n"
+            "리절트 = evaluate(큐렐즈, 하이브리드_런, 메트릭='ndcg@3')\n"
+            "베스트 = extract(쿼리, 초이시즈, 스코어러=fn, 프로세서=논, 스코어_컷오프=50, 리밋=3)\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("hybrid_run = fuse(runs=[dense_run, lexical_run], norm='min-max', method='sum')", python_source)
+        self.assertIn("result = evaluate(qrels, hybrid_run, metric='ndcg@3')", python_source)
+        self.assertIn("scorer=fn", python_source)
+        self.assertIn("processor=None", python_source)
+        self.assertIn("score_cutoff=50", python_source)
+        self.assertIn("limit=3", python_source)
+
+        kopy = to_kopy(python_source).kopy
+        for expected in (
+            "하이브리드_런 = fuse(런즈=[덴스_런, 렉시컬_런], 노름='min-max', 메서드='sum')",
+            "리절트 = evaluate(큐렐즈, 하이브리드_런, 메트릭='ndcg@3')",
+            "스코어러=fn",
+            "프로세서=논",
+            "스코어_컷오프=50",
+            "리밋=3",
+        ):
+            self.assertIn(expected, kopy)
+
     def test_signature_keyword_values_and_strings_are_untouched(self):
         source = (
             "설정 = fn(테스트_사이즈=0.25, 랜덤_스테이트=7, 디타입='float32')\n"
-            "텍스트 = 'name embedding_function test_size random_state max_iter dtype'\n"
+            "텍스트 = 'name embedding_function test_size random_state max_iter dtype method metric limit'\n"
         )
         python_source = translate(source).python
         self.assertIn("test_size=0.25", python_source)
         self.assertIn("random_state=7", python_source)
         self.assertIn("dtype='float32'", python_source)
-        self.assertIn("'name embedding_function test_size random_state max_iter dtype'", python_source)
+        self.assertIn("'name embedding_function test_size random_state max_iter dtype method metric limit'", python_source)
 
     def test_python_to_kopy_common_identifiers(self):
         source = (
@@ -125,6 +150,68 @@ class CommonIdentifierTests(unittest.TestCase):
         self.assertIn("다큐먼츠 = []", kopy)
         self.assertEqual(translate(kopy).python, source)
 
+    def test_direct_pack_class_collision_respects_function_parameter_scope(self):
+        source = (
+            "프롬 랜엑스 임포트 큐렐즈\n"
+            "데프 load(큐렐즈):\n"
+            "    리턴 큐렐즈\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from ranx import Qrels", python_source)
+        self.assertIn("def load(qrels):", python_source)
+        self.assertIn("return qrels", python_source)
+        self.assertNotIn("def load(Qrels):", python_source)
+
+    def test_direct_pack_class_collision_respects_other_function_bindings(self):
+        source = (
+            "프롬 랜엑스 임포트 큐렐즈\n"
+            "데프 collect(items):\n"
+            "    포 큐렐즈 인 items:\n"
+            "        current = 큐렐즈\n"
+            "    리턴 큐렐즈\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from ranx import Qrels", python_source)
+        self.assertIn("for qrels in items:", python_source)
+        self.assertIn("current = qrels", python_source)
+        self.assertIn("return qrels", python_source)
+
+    def test_direct_metric_class_collision_respects_function_parameter_scope(self):
+        source = (
+            "프롬 토치메트릭스 임포트 메트릭\n"
+            "데프 use_metric(메트릭):\n"
+            "    리턴 메트릭\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from torchmetrics import Metric", python_source)
+        self.assertIn("def use_metric(metric):", python_source)
+        self.assertIn("return metric", python_source)
+
+    def test_keyword_label_does_not_shadow_direct_pack_class(self):
+        source = (
+            "프롬 토치메트릭스 임포트 메트릭\n"
+            "리절트 = fn(메트릭=1)\n"
+            "instance = 메트릭()\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from torchmetrics import Metric", python_source)
+        self.assertIn("result = fn(metric=1)", python_source)
+        self.assertIn("instance = Metric()", python_source)
+        self.assertNotIn("fn(Metric=1)", python_source)
+
+    def test_function_default_does_not_shadow_direct_pack_class_after_scope(self):
+        source = (
+            "프롬 토치메트릭스 임포트 메트릭\n"
+            "데프 build(메트릭=논):\n"
+            "    리턴 메트릭\n"
+            "instance = 메트릭()\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("from torchmetrics import Metric", python_source)
+        self.assertIn("def build(metric=None):", python_source)
+        self.assertIn("return metric", python_source)
+        self.assertIn("instance = Metric()", python_source)
+
     def test_strings_comments_and_numeric_literals_are_untouched(self):
         source = (
             "쿼리 = 'query BM25 F1 L2 top_k=2'  # query BM25 F1 L2\n"
@@ -138,6 +225,12 @@ class CommonIdentifierTests(unittest.TestCase):
     def test_top_k_is_intentionally_not_a_common_transliteration(self):
         self.assertNotIn("top_k", COMMON_IDENTIFIERS.values())
         self.assertIn("top_k=2", to_kopy("result = fn(top_k=2)\n").kopy)
+
+    def test_ambiguous_score_is_not_global(self):
+        self.assertNotIn("score", COMMON_IDENTIFIERS.values())
+        kopy = to_kopy("metric.score(reference=reference)\n").kopy
+        self.assertIn("메트릭.score(", kopy)
+        self.assertNotIn(".스코어(", kopy)
 
     def test_common_identifiers_are_exposed_to_editor_metadata(self):
         info = info_for("엑스_트레인")
@@ -153,6 +246,11 @@ class CommonIdentifierTests(unittest.TestCase):
         info = info_for("테스트_사이즈")
         self.assertIsNotNone(info)
         self.assertEqual(info.python, "test_size")
+        self.assertEqual(info.category, "identifier")
+
+        info = info_for("스코어_컷오프")
+        self.assertIsNotNone(info)
+        self.assertEqual(info.python, "score_cutoff")
         self.assertEqual(info.category, "identifier")
 
 

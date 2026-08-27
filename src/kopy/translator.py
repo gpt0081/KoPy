@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import io
 import tokenize
 from dataclasses import dataclass
@@ -22,6 +23,16 @@ class ReverseTranslation:
     source: str
     kopy: str
     replacements: tuple[tuple[str, str, int, int], ...]
+
+
+@dataclass(frozen=True)
+class _FunctionScope:
+    body_start: tuple[int, int]
+    end: tuple[int, int]
+    bound_names: frozenset[str]
+    global_names: frozenset[str]
+    nonlocal_names: frozenset[str]
+    parameter_positions: frozenset[tuple[int, int]]
 
 
 _IGNORED = {
@@ -96,8 +107,6 @@ def _common_import_path_indices(tokens: list[tokenize.TokenInfo]) -> set[int]:
         if first.string != "import":
             return
 
-        # In ``import package.path as alias, other.path`` protect only package
-        # path segments. Aliases are user identifiers and may be transliterated.
         in_alias = False
         for index in significant[1:]:
             token = tokens[index]
@@ -190,20 +199,38 @@ def _direct_name_rebindings(
     direct_names: dict[str, str],
     common_source_names: set[str],
 ) -> dict[int, int]:
-    """Find simple assignments that shadow a directly imported pack symbol.
+    """Find module-level simple assignments that shadow a direct pack import.
 
-    A transliteration can legitimately name both a pack class and a learner's
-    variable. For example ``from usearch.index import Index`` becomes an import
-    of ``인덱스``, while the conventional variable ``index`` is also ``인덱스``.
-    In ``인덱스 = 인덱스(...)`` the left side is the common variable and the
-    right side is still the imported class. The rebinding takes effect only
-    after that statement, matching Python's name-shadowing behaviour.
+    Only a true top-level ``name = ...`` rebinding should shadow the imported
+    symbol for later module statements. Call keywords (``metric=...``), function
+    defaults and local assignments must not poison the module-level direct name.
+    Function-local bindings are handled separately from Python lexical scope.
     """
 
     targets: dict[int, int] = {}
+    indent_depth = 0
+    bracket_depth = 0
+    opening = {"(", "[", "{"}
+    closing = {")", "]", "}"}
+
     for index, token in enumerate(tokens):
+        if token.type == tokenize.INDENT:
+            indent_depth += 1
+            continue
+        if token.type == tokenize.DEDENT:
+            indent_depth = max(0, indent_depth - 1)
+            continue
+        if token.type == tokenize.OP:
+            if token.string in opening:
+                bracket_depth += 1
+            elif token.string in closing:
+                bracket_depth = max(0, bracket_depth - 1)
+            continue
+
         if (
-            token.type != tokenize.NAME
+            indent_depth != 0
+            or bracket_depth != 0
+            or token.type != tokenize.NAME
             or token.string not in direct_names
             or token.string not in common_source_names
         ):
@@ -215,6 +242,184 @@ def _direct_name_rebindings(
         if following is not None and tokens[following].string == "=":
             targets[index] = _statement_end(tokens, index)
     return targets
+
+
+class _LocalBindingCollector(ast.NodeVisitor):
+    """Collect names that Python treats as local to one function scope."""
+
+    def __init__(self, root: ast.FunctionDef | ast.AsyncFunctionDef | ast.Lambda):
+        self.root = root
+        self.bound: set[str] = set()
+        self.globals: set[str] = set()
+        self.nonlocals: set[str] = set()
+
+    def collect(self) -> tuple[frozenset[str], frozenset[str], frozenset[str]]:
+        args = self.root.args
+        for arg in (*args.posonlyargs, *args.args, *args.kwonlyargs):
+            self.bound.add(arg.arg)
+        if args.vararg is not None:
+            self.bound.add(args.vararg.arg)
+        if args.kwarg is not None:
+            self.bound.add(args.kwarg.arg)
+
+        if isinstance(self.root, ast.Lambda):
+            self.visit(self.root.body)
+        else:
+            for statement in self.root.body:
+                self.visit(statement)
+
+        self.bound.difference_update(self.globals)
+        self.bound.difference_update(self.nonlocals)
+        return frozenset(self.bound), frozenset(self.globals), frozenset(self.nonlocals)
+
+    def visit_Name(self, node: ast.Name) -> None:
+        if isinstance(node.ctx, (ast.Store, ast.Del)):
+            self.bound.add(node.id)
+
+    def visit_Global(self, node: ast.Global) -> None:
+        self.globals.update(node.names)
+
+    def visit_Nonlocal(self, node: ast.Nonlocal) -> None:
+        self.nonlocals.update(node.names)
+
+    def visit_Import(self, node: ast.Import) -> None:
+        for alias in node.names:
+            self.bound.add(alias.asname or alias.name.split(".", 1)[0])
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        for alias in node.names:
+            if alias.name != "*":
+                self.bound.add(alias.asname or alias.name)
+
+    def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
+        if isinstance(node.name, str):
+            self.bound.add(node.name)
+        for statement in node.body:
+            self.visit(statement)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        if node is self.root:
+            for statement in node.body:
+                self.visit(statement)
+            return
+        self.bound.add(node.name)
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        if node is self.root:
+            for statement in node.body:
+                self.visit(statement)
+            return
+        self.bound.add(node.name)
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        self.bound.add(node.name)
+
+    def visit_Lambda(self, node: ast.Lambda) -> None:
+        if node is self.root:
+            self.visit(node.body)
+
+    def visit_ListComp(self, node: ast.ListComp) -> None:
+        return
+
+    def visit_SetComp(self, node: ast.SetComp) -> None:
+        return
+
+    def visit_DictComp(self, node: ast.DictComp) -> None:
+        return
+
+    def visit_GeneratorExp(self, node: ast.GeneratorExp) -> None:
+        return
+
+
+def _function_scopes(source: str) -> tuple[_FunctionScope, ...]:
+    """Describe lexical function scopes so common names can shadow pack classes.
+
+    Direct imports such as ``from ranx import Qrels`` can share a KoPy spelling
+    with a learner variable such as ``qrels -> 큐렐즈``. Python decides function
+    locals at compile time, not only after a simple ``=`` assignment, so function
+    parameters, loop targets, ``with ... as`` bindings, exception names and other
+    stores must win over the imported class throughout that function body.
+    """
+
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return ()
+
+    scopes: list[_FunctionScope] = []
+
+    class Finder(ast.NodeVisitor):
+        def _add(self, node: ast.FunctionDef | ast.AsyncFunctionDef | ast.Lambda) -> None:
+            if not hasattr(node, "end_lineno") or node.end_lineno is None:
+                return
+            bound, globals_, nonlocals = _LocalBindingCollector(node).collect()
+            args = node.args
+            parameter_positions = {
+                (arg.lineno, arg.col_offset)
+                for arg in (*args.posonlyargs, *args.args, *args.kwonlyargs)
+            }
+            if args.vararg is not None:
+                parameter_positions.add((args.vararg.lineno, args.vararg.col_offset))
+            if args.kwarg is not None:
+                parameter_positions.add((args.kwarg.lineno, args.kwarg.col_offset))
+
+            if isinstance(node, ast.Lambda):
+                body_start = (node.body.lineno, node.body.col_offset)
+            elif node.body:
+                body_start = (node.body[0].lineno, node.body[0].col_offset)
+            else:
+                body_start = (node.lineno, node.col_offset)
+
+            scopes.append(
+                _FunctionScope(
+                    body_start=body_start,
+                    end=(node.end_lineno, node.end_col_offset or 0),
+                    bound_names=bound,
+                    global_names=globals_,
+                    nonlocal_names=nonlocals,
+                    parameter_positions=frozenset(parameter_positions),
+                )
+            )
+
+        def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+            self._add(node)
+            self.generic_visit(node)
+
+        def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+            self._add(node)
+            self.generic_visit(node)
+
+        def visit_Lambda(self, node: ast.Lambda) -> None:
+            self._add(node)
+            self.generic_visit(node)
+
+    Finder().visit(tree)
+    return tuple(scopes)
+
+
+def _is_function_shadowed(
+    token: tokenize.TokenInfo,
+    scopes: tuple[_FunctionScope, ...],
+) -> bool:
+    """Return whether ``token`` resolves to a common local instead of a pack import."""
+
+    position = token.start
+    containing: list[_FunctionScope] = []
+    for scope in scopes:
+        if position in scope.parameter_positions and token.string in scope.bound_names:
+            return True
+        if scope.body_start <= position <= scope.end:
+            containing.append(scope)
+
+    containing.sort(key=lambda scope: scope.body_start, reverse=True)
+    for scope in containing:
+        if token.string in scope.global_names:
+            return False
+        if token.string in scope.bound_names:
+            return True
+        if token.string in scope.nonlocal_names:
+            continue
+    return False
 
 
 def _unique_active_mapping(name: str, active_packs: set[str], reverse: bool) -> str | None:
@@ -235,13 +440,7 @@ def _translate_library_packs(
     *,
     reverse: bool,
 ) -> tuple[str, tuple[tuple[str, str, int, int], ...]]:
-    """Translate imported library namespaces without making their words global.
-
-    A library pack becomes active only when its module is imported. Once active,
-    module attributes and KoPy-style attributes on objects can use that pack's
-    vocabulary. If future packs disagree about one spelling, the ambiguous
-    attribute is deliberately left untouched rather than guessed.
-    """
+    """Translate imported library namespaces without making their words global."""
     reader = io.StringIO(source).readline
     tokens = list(tokenize.generate_tokens(reader))
     replacements: dict[int, str] = {}
@@ -249,7 +448,6 @@ def _translate_library_packs(
     active_packs: set[str] = set()
     direct_names: dict[str, str] = {}
 
-    # Pass 1: discover imports, activate packs and translate import targets.
     for index, token in enumerate(tokens):
         if token.type != tokenize.NAME:
             continue
@@ -265,7 +463,6 @@ def _translate_library_packs(
 
                 pack = _pack_for_module_token(module_token.string)
                 if pack is None:
-                    # Skip to the next comma-separated import target.
                     while cursor is not None and cursor < end and tokens[cursor].string != ",":
                         cursor = _next_significant(tokens, cursor, end)
                     if cursor is not None:
@@ -277,7 +474,6 @@ def _translate_library_packs(
                 if module_token.string != replacement:
                     replacements[cursor] = replacement
 
-                # Look for `as alias` before the next comma.
                 scan = _next_significant(tokens, cursor, end)
                 alias: str | None = None
                 while scan is not None and scan < end and tokens[scan].string != ",":
@@ -291,8 +487,6 @@ def _translate_library_packs(
                 if alias:
                     active_aliases[alias] = pack
                 else:
-                    # Both spellings are understood in source; output uses the
-                    # direction-appropriate module spelling.
                     active_aliases[pack.module] = pack
                     active_aliases[pack.kopy_module] = pack
 
@@ -350,6 +544,7 @@ def _translate_library_packs(
     sig_position = {token_index: pos for pos, token_index in enumerate(significant)}
     common_source_names = set(COMMON_PY_TO_KO if reverse else COMMON_IDENTIFIERS)
     rebinding_targets = _direct_name_rebindings(tokens, direct_names, common_source_names)
+    function_scopes = _function_scopes(source)
     shadow_after: dict[str, int] = {}
     for target_index, statement_end in rebinding_targets.items():
         name = tokens[target_index].string
@@ -357,7 +552,6 @@ def _translate_library_packs(
         if current is None or statement_end < current:
             shadow_after[name] = statement_end
 
-    # Pass 2: translate attributes and direct names using only active packs.
     for index, token in enumerate(tokens):
         if token.type != tokenize.NAME:
             continue
@@ -366,24 +560,24 @@ def _translate_library_packs(
             continue
         previous = tokens[significant[pos - 1]] if pos > 0 else None
         following = tokens[significant[pos + 1]] if pos + 1 < len(significant) else None
+        is_name_equals = following is not None and following.string == "="
 
-        # Bare symbol imported via `from package import symbol`. A common learner
-        # identifier that rebinds the same transliteration takes precedence on
-        # the assignment target and from the following statement onward.
         if previous is None or previous.string != ".":
             direct = direct_names.get(token.string)
             shadow_end = shadow_after.get(token.string)
             is_rebinding_target = index in rebinding_targets
             is_shadowed = shadow_end is not None and index >= shadow_end
+            is_function_shadow = _is_function_shadowed(token, function_scopes)
             if (
                 direct is not None
                 and token.string != direct
+                and not is_name_equals
                 and not is_rebinding_target
                 and not is_shadowed
+                and not is_function_shadow
             ):
                 replacements.setdefault(index, direct)
 
-        # Module name used as an attribute-chain root without an alias.
         if following is not None and following.string == "." and token.string in active_aliases:
             pack = active_aliases[token.string]
             target_root = pack.kopy_module if reverse else pack.module
@@ -393,7 +587,6 @@ def _translate_library_packs(
         if previous is None or previous.string != ".":
             continue
 
-        # Find the root of a dotted chain: np.linalg.norm -> np.
         root_pos = pos
         while root_pos >= 2 and tokens[significant[root_pos - 1]].string == ".":
             root_pos -= 2
@@ -404,8 +597,6 @@ def _translate_library_packs(
         if pack is not None:
             target = pack.kopy_for(token.string) if reverse else pack.python_for(token.string)
         if target is None:
-            # Supports ndarray-style calls such as x.리셰이프(...) while still
-            # refusing to guess when multiple active packs disagree.
             target = _unique_active_mapping(token.string, active_packs, reverse)
 
         if target is not None and token.string != target:

@@ -51,7 +51,7 @@ class LanceDBPackTests(unittest.TestCase):
         self.assertIn("임포트 랜스디비 애즈 ldb", kopy)
         self.assertIn("프롬 랜스디비.rerankers 임포트 알알에프리랭커", kopy)
         self.assertIn("ldb.connect(path)", kopy)
-        self.assertIn("리절츠 = table.search(쿼리).limit(5).to_list()", kopy)
+        self.assertIn("리절츠 = table.search(쿼리).리밋(5).to_list()", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("랜스디비.알알에프리랭커")

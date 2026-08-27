@@ -1,32 +1,32 @@
-프롬 랜엑스 임포트 큐렐즈, 런, 퓨즈, evaluate
+프롬 랜엑스 임포트 큐렐즈, 런, 퓨즈, 이밸류에이트
 
 # dense vector search와 BM25 lexical search가 각각 만든 ranking을 가정합니다.
-qrels = 큐렐즈({
+큐렐즈 = 큐렐즈({
     "q1": {"doc_b": 1},
 })
 
-dense_run = 런({
+덴스_런 = 런({
     "q1": {
         "doc_a": 0.91,
         "doc_b": 0.82,
         "doc_c": 0.10,
     }
-}, name="dense")
+}, 네임="dense")
 
-lexical_run = 런({
+렉시컬_런 = 런({
     "q1": {
         "doc_b": 3.0,
         "doc_a": 2.0,
         "doc_c": 0.1,
     }
-}, name="bm25")
+}, 네임="bm25")
 
-hybrid_run = 퓨즈(
-    runs=[dense_run, lexical_run],
-    norm="min-max",
-    method="sum",
+하이브리드_런 = 퓨즈(
+    런즈=[덴스_런, 렉시컬_런],
+    노름="min-max",
+    메서드="sum",
 )
 
-ndcg = evaluate(qrels, hybrid_run, "ndcg@3")
+리절트 = 이밸류에이트(큐렐즈, 하이브리드_런, "ndcg@3")
 
-프린트("hybrid NDCG@3:", ndcg)
+프린트("hybrid NDCG@3:", 리절트)

@@ -25,12 +25,12 @@ class RagasPackTests(unittest.TestCase):
     def test_collections_metric_dotted_path_stays_python_native(self):
         source = (
             "프롬 라가스.metrics.collections 임포트 논엘엘엠스트링시밀래리티, 디스턴스메저\n"
-            "metric = 논엘엘엠스트링시밀래리티(distance_measure=디스턴스메저.LEVENSHTEIN)\n"
-            "리절트 = metric.score(레퍼런스=레퍼런스, 리스폰스=리스폰스)\n"
+            "메트릭 = 논엘엘엠스트링시밀래리티(distance_measure=디스턴스메저.LEVENSHTEIN)\n"
+            "리절트 = 메트릭.score(레퍼런스=레퍼런스, 리스폰스=리스폰스)\n"
         )
         python_source = translate(source).python
         self.assertIn("from ragas.metrics.collections import NonLLMStringSimilarity, DistanceMeasure", python_source)
-        self.assertIn("NonLLMStringSimilarity(distance_measure=DistanceMeasure.LEVENSHTEIN)", python_source)
+        self.assertIn("metric = NonLLMStringSimilarity(distance_measure=DistanceMeasure.LEVENSHTEIN)", python_source)
         self.assertIn("result = metric.score(reference=reference, response=response)", python_source)
 
     def test_python_spellings_remain_accepted(self):
@@ -44,8 +44,9 @@ class RagasPackTests(unittest.TestCase):
             self.assertIn(token, python_source)
 
     def test_unimported_members_are_not_global(self):
-        source = "metric = lib.논엘엘엠스트링시밀래리티()\n"
-        self.assertEqual(translate(source).python, source)
+        source = "메트릭 = lib.논엘엘엠스트링시밀래리티()\n"
+        translated = translate(source).python
+        self.assertEqual(translated, "metric = lib.논엘엘엠스트링시밀래리티()\n")
 
     def test_python_to_kopy(self):
         source = (
@@ -55,8 +56,8 @@ class RagasPackTests(unittest.TestCase):
         )
         kopy = to_kopy(source).kopy
         self.assertIn("프롬 라가스.metrics.collections 임포트 논엘엘엠스트링시밀래리티, 디스턴스메저", kopy)
-        self.assertIn("논엘엘엠스트링시밀래리티(distance_measure=디스턴스메저.LEVENSHTEIN)", kopy)
-        self.assertIn("리절트 = metric.score(레퍼런스=레퍼런스, 리스폰스=리스폰스)", kopy)
+        self.assertIn("메트릭 = 논엘엘엠스트링시밀래리티(distance_measure=디스턴스메저.LEVENSHTEIN)", kopy)
+        self.assertIn("리절트 = 메트릭.score(레퍼런스=레퍼런스, 리스폰스=리스폰스)", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("라가스.논엘엘엠스트링시밀래리티")
