@@ -51,15 +51,15 @@ CHROMA_PACK = LibraryPack(
     },
     examples={
         "Client": (
-            "임포트 크로마 애즈 chroma\n클라이언트 = chroma.클라이언트()",
+            "임포트 크로마 애즈 chroma\nclient = chroma.클라이언트()",
             "import chromadb as chroma\nclient = chroma.Client()",
         ),
         "create_collection": (
-            "컬렉션 = 클라이언트.크리에이트컬렉션(name='docs', embedding_function=None)",
+            "collection = client.크리에이트컬렉션(name='docs', embedding_function=None)",
             "collection = client.create_collection(name='docs', embedding_function=None)",
         ),
         "query": (
-            "컬렉션.애드(ids=아이디즈, embeddings=임베딩즈, documents=다큐먼츠)\n리절트 = 컬렉션.쿼리(query_embeddings=쿼리_임베딩즈, n_results=2)",
+            "collection.애드(ids=ids, embeddings=임베딩즈, documents=다큐먼츠)\n리절트 = collection.쿼리(query_embeddings=query_embeddings, n_results=2)",
             "collection.add(ids=ids, embeddings=embeddings, documents=documents)\nresult = collection.query(query_embeddings=query_embeddings, n_results=2)",
         ),
     },
