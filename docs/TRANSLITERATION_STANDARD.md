@@ -71,6 +71,12 @@ gaussian_blur2d -> 가우시안블러2디
 | `ids` | `아이디즈` |
 | `show_progress` | `쇼_프로그레스` |
 | `n_results` | `엔_리절츠` |
+| `name` | `네임` |
+| `embedding_function` | `임베딩_펑션` |
+| `test_size` | `테스트_사이즈` |
+| `random_state` | `랜덤_스테이트` |
+| `max_iter` | `맥스_이터` |
+| `dtype` | `디타입` |
 
 예:
 
@@ -120,18 +126,23 @@ KoPy 0.5.48부터 이런 이름은 가능한 경우 해당 Library Pack 안에�
 
 ## 6. 공통 RAG 식별자와 키워드 인자
 
-0.5.49부터 충돌 위험이 낮고 여러 RAG 팩에서 반복되는 이름은 공통 음역 대상으로 확대합니다.
+0.5.49부터 충돌 위험이 낮고 여러 RAG 팩에서 반복되는 이름은 공통 음역 대상으로 확대합니다. 0.5.50에서는 ML/RAG 예제에 반복적으로 등장하는 시그니처 키워드 인자까지 같은 원칙으로 확장합니다.
 
 ```kopy
 클라이언트 = 크로마.클라이언트()
-컬렉션 = 클라이언트.크리에이트컬렉션()
+컬렉션 = 클라이언트.크리에이트컬렉션(
+    네임="docs",
+    임베딩_펑션=논,
+)
 리절트 = 컬렉션.쿼리(
     쿼리_임베딩즈=임베딩즈,
     엔_리절츠=2,
 )
 ```
 
-`query_embeddings=`, `n_results=`, `show_progress=`처럼 함수 호출 시 키워드 인자로 쓰이는 이름도 Python tokenizer에서는 식별자 토큰이므로 같은 양방향 공통 음역 규칙으로 처리할 수 있습니다. 다만 실제 라이브러리 시그니처와 정확히 다시 연결되어야 하므로 테스트를 반드시 둡니다.
+`query_embeddings=`, `n_results=`, `show_progress=`, `test_size=`, `random_state=`, `max_iter=`, `dtype=`처럼 함수 호출 시 키워드 인자로 쓰이는 이름도 Python tokenizer에서는 식별자 토큰이므로 같은 양방향 공통 음역 규칙으로 처리할 수 있습니다. 실제 라이브러리 시그니처와 정확히 다시 연결되어야 하므로 테스트를 반드시 둡니다.
+
+숫자와 문자열 값은 번역하지 않습니다. 예를 들어 `테스트_사이즈=0.2`, `랜덤_스테이트=42`, `디타입="float32"`는 각각 `test_size=0.2`, `random_state=42`, `dtype="float32"`로 돌아갑니다.
 
 `top_k`는 이 범주에 넣지 않습니다. 교육적 이유로 원문을 남기는 명시적 예외입니다.
 
@@ -154,4 +165,11 @@ KoPy 0.5.48부터 이런 이름은 가능한 경우 해당 Library Pack 안에�
 - 라이브러리의 실제 dotted import 경로는 필요하면 그대로 유지합니다. 경로 구조 자체도 Python 학습 대상이기 때문입니다.
 - 키워드 인자는 함수 시그니처와 직접 연결되므로 전 팩 충돌 감사를 거쳐 단계적으로 음역합니다.
 
-0.5.47은 공통 식별자와 숫자 규칙을 확립했고, 0.5.48은 검색/RAG 핵심 팩의 일반 메서드를 namespace-scoped 음역으로 전환했습니다. **0.5.49는 `client`, `collection`, `pipeline`, `query_embeddings`, `ids`, `show_progress`, `n_results`를 공통 양방향 음역으로 확장하는 세 번째 감사 단계**입니다. 나머지 Library Pack도 같은 기준으로 순차 점검합니다.
+## 9. 감사 단계
+
+- 0.5.47: 공통 식별자와 숫자 보존 규칙 확립
+- 0.5.48: 검색/RAG 핵심 팩의 일반 메서드를 namespace-scoped 음역으로 전환
+- 0.5.49: `client`, `collection`, `pipeline`, `query_embeddings`, `ids`, `show_progress`, `n_results` 공통 양방향 음역
+- 0.5.50: `name`, `embedding_function`, `test_size`, `random_state`, `max_iter`, `dtype` 공통 양방향 음역
+
+나머지 Library Pack도 같은 기준으로 순차 점검합니다.
