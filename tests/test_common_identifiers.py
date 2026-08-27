@@ -36,6 +36,33 @@ class CommonIdentifierTests(unittest.TestCase):
         ):
             self.assertIn(expected, python_source)
 
+    def test_extended_rag_identifiers_translate_both_directions(self):
+        source = (
+            "클라이언트 = make_client()\n"
+            "컬렉션 = 클라이언트.get_collection()\n"
+            "파이프라인 = build_pipeline()\n"
+            "리절트 = 컬렉션.query(쿼리_임베딩즈=임베딩즈, 엔_리절츠=2)\n"
+            "리절츠 = encode(아이디즈, 쇼_프로그레스=펄스)\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("client = make_client()", python_source)
+        self.assertIn("collection = client.get_collection()", python_source)
+        self.assertIn("pipeline = build_pipeline()", python_source)
+        self.assertIn("query_embeddings=embeddings", python_source)
+        self.assertIn("n_results=2", python_source)
+        self.assertIn("encode(ids, show_progress=False)", python_source)
+
+        kopy = to_kopy(python_source).kopy
+        for expected in (
+            "클라이언트 = make_client()",
+            "컬렉션 = 클라이언트.get_collection()",
+            "파이프라인 = build_pipeline()",
+            "쿼리_임베딩즈=임베딩즈",
+            "엔_리절츠=2",
+            "아이디즈, 쇼_프로그레스=펄스",
+        ):
+            self.assertIn(expected, kopy)
+
     def test_python_to_kopy_common_identifiers(self):
         source = (
             "X_train = scaler.fit(X_train)\n"
@@ -83,6 +110,11 @@ class CommonIdentifierTests(unittest.TestCase):
         info = info_for("엑스_트레인")
         self.assertIsNotNone(info)
         self.assertEqual(info.python, "X_train")
+        self.assertEqual(info.category, "identifier")
+
+        info = info_for("쿼리_임베딩즈")
+        self.assertIsNotNone(info)
+        self.assertEqual(info.python, "query_embeddings")
         self.assertEqual(info.category, "identifier")
 
 
