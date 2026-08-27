@@ -80,7 +80,7 @@ BM25                   비엠25
 BM25S                  비엠25에스
 F1Score                에프1스코어
 IndexFlatL2            인덱스플랫엘2
-gaussian_blur2d        가우시안블러2디
+gaussian_blur2d        가우시안_블러2디
 ```
 
 ## 일반 메서드와 namespace
