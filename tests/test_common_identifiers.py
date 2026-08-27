@@ -25,6 +25,9 @@ class CommonIdentifierTests(unittest.TestCase):
             "리트리버 = make_retriever(인덱스)\n"
             "리절츠 = 리트리버.search(쿼리)\n"
             "리스폰스 = answer(리절츠, 레퍼런스)\n"
+            "클라이언트 = connect()\n"
+            "컬렉션 = make_collection(클라이언트)\n"
+            "쿼리_임베딩즈 = encoder(쿼리)\n"
         )
         python_source = translate(source).python
         for expected in (
@@ -33,6 +36,9 @@ class CommonIdentifierTests(unittest.TestCase):
             "retriever = make_retriever(index)",
             "results = retriever.search(query)",
             "response = answer(results, reference)",
+            "client = connect()",
+            "collection = make_collection(client)",
+            "query_embeddings = encoder(query)",
         ):
             self.assertIn(expected, python_source)
 
@@ -42,12 +48,18 @@ class CommonIdentifierTests(unittest.TestCase):
             "predictions = model.predict(X_test)\n"
             "edge_index = graph.edge_index\n"
             "embeddings = encoder(query)\n"
+            "client = factory()\n"
+            "collection = client.collection\n"
+            "query_embeddings = encoder(query)\n"
         )
         kopy = to_kopy(source).kopy
         self.assertIn("엑스_트레인 = 스케일러.핏(엑스_트레인)", kopy)
         self.assertIn("프레딕션즈 = 모델.프리딕트(엑스_테스트)", kopy)
         self.assertIn("엣지_인덱스 = graph.엣지_인덱스", kopy)
         self.assertIn("임베딩즈 = encoder(쿼리)", kopy)
+        self.assertIn("클라이언트 = 팩토리()", kopy)
+        self.assertIn("컬렉션 = 클라이언트.컬렉션", kopy)
+        self.assertIn("쿼리_임베딩즈 = encoder(쿼리)", kopy)
 
     def test_import_paths_are_protected_from_common_identifier_rewrites(self):
         source = (
@@ -65,6 +77,16 @@ class CommonIdentifierTests(unittest.TestCase):
         self.assertIn("다큐먼츠 = []", kopy)
         self.assertEqual(translate(kopy).python, source)
 
+    def test_pack_member_and_common_pipeline_shadowing_round_trip(self):
+        source = (
+            "from haystack import Pipeline\n"
+            "pipeline = Pipeline()\n"
+        )
+        kopy = to_kopy(source).kopy
+        self.assertIn("프롬 헤이스택 임포트 파이프라인", kopy)
+        self.assertIn("파이프라인 = 파이프라인()", kopy)
+        self.assertEqual(translate(kopy).python, source)
+
     def test_strings_comments_and_numeric_literals_are_untouched(self):
         source = (
             "쿼리 = 'query BM25 F1 L2 top_k=2'  # query BM25 F1 L2\n"
@@ -80,10 +102,16 @@ class CommonIdentifierTests(unittest.TestCase):
         self.assertIn("top_k=2", to_kopy("result = fn(top_k=2)\n").kopy)
 
     def test_common_identifiers_are_exposed_to_editor_metadata(self):
-        info = info_for("엑스_트레인")
-        self.assertIsNotNone(info)
-        self.assertEqual(info.python, "X_train")
-        self.assertEqual(info.category, "identifier")
+        for word, python_name in (
+            ("엑스_트레인", "X_train"),
+            ("클라이언트", "client"),
+            ("컬렉션", "collection"),
+            ("파이프라인", "pipeline"),
+        ):
+            info = info_for(word)
+            self.assertIsNotNone(info)
+            self.assertEqual(info.python, python_name)
+            self.assertEqual(info.category, "identifier")
 
 
 if __name__ == "__main__":
