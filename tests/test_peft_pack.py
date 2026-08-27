@@ -44,7 +44,7 @@ class PeftPackTests(unittest.TestCase):
 
     def test_peft_member_spellings_are_namespace_scoped(self):
         result = translate("모델 = 모델.머지_앤드_언로드()\n").python
-        self.assertIn("모델 = 모델.머지_앤드_언로드()", result)
+        self.assertIn("model = model.머지_앤드_언로드()", result)
 
 
 if __name__ == "__main__":
