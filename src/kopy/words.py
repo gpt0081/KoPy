@@ -153,6 +153,20 @@ COMMON_IDENTIFIERS: dict[str, str] = {
     "랜덤_스테이트": "random_state",
     "맥스_이터": "max_iter",
     "디타입": "dtype",
+    "런즈": "runs",
+    "메서드": "method",
+    "노름": "norm",
+    "메트릭": "metric",
+    "큐렐즈": "qrels",
+    "스코어": "score",
+    "스코어러": "scorer",
+    "프로세서": "processor",
+    "스코어_컷오프": "score_cutoff",
+    "리밋": "limit",
+    "캔디데이트": "candidate",
+    "덴스_런": "dense_run",
+    "렉시컬_런": "lexical_run",
+    "하이브리드_런": "hybrid_run",
 }
 
 ENGLISH_TARGETS: frozenset[str] = frozenset(WORDS.values())
