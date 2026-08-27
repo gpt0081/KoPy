@@ -45,7 +45,8 @@ class HaystackPackTests(unittest.TestCase):
 
     def test_unimported_workflow_methods_are_not_global(self):
         source = "파이프라인.애드컴포넌트('x', 컴포넌트)\n"
-        self.assertEqual(translate(source).python, source)
+        python_source = translate(source).python
+        self.assertIn("pipeline.애드컴포넌트", python_source)
 
     def test_python_to_kopy_transliterates_pipeline_workflow(self):
         source = (
@@ -65,8 +66,9 @@ class HaystackPackTests(unittest.TestCase):
         self.assertIn("다큐먼트_스토어.라이트도큐먼츠([])", kopy)
         self.assertIn("리트리버 = 오브젝트()", kopy)
         self.assertIn("쿼리 = 'KoPy'", kopy)
-        self.assertIn("pipeline.애드컴포넌트", kopy)
-        self.assertIn("pipeline.런", kopy)
+        self.assertIn("파이프라인 = 파이프라인()", kopy)
+        self.assertIn("파이프라인.애드컴포넌트", kopy)
+        self.assertIn("파이프라인.런", kopy)
         self.assertIn("리절트 =", kopy)
 
     def test_help_resolution(self):
