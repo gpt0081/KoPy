@@ -1,9 +1,9 @@
 """Haystack RAG/search orchestration pack for KoPy.
 
 Haystack-specific types and workflow methods are namespace-scoped. Shared
-learning identifiers such as document_store, retriever, pipeline, result, and
-query may use KoPy common identifier transliterations. Dotted upstream package
-paths remain unchanged. Numeric fragments remain digits: BM25 -> 비엠25.
+learning identifiers such as document_store, retriever, result, and query may use
+KoPy common identifier transliterations. Dotted upstream package paths remain
+unchanged. Numeric fragments remain digits: BM25 -> 비엠25.
 """
 
 from __future__ import annotations
@@ -54,7 +54,7 @@ HAYSTACK_PACK = LibraryPack(
     },
     examples={
         "Pipeline": (
-            "프롬 헤이스택 임포트 도큐먼트, 파이프라인\n프롬 헤이스택.document_stores.in_memory 임포트 인메모리도큐먼트스토어\n프롬 헤이스택.components.retrievers.in_memory 임포트 인메모리비엠25리트리버\n다큐먼트_스토어 = 인메모리도큐먼트스토어()\n다큐먼트_스토어.라이트도큐먼츠([도큐먼트(content='KoPy teaches Python.')])\n리트리버 = 인메모리비엠25리트리버(다큐먼트_스토어=다큐먼트_스토어)\n파이프라인 = 파이프라인()\n파이프라인.애드컴포넌트('retriever', 리트리버)\n리절트 = 파이프라인.런({'retriever': {'query': 쿼리}})",
+            "프롬 헤이스택 임포트 도큐먼트, 파이프라인\n프롬 헤이스택.document_stores.in_memory 임포트 인메모리도큐먼트스토어\n프롬 헤이스택.components.retrievers.in_memory 임포트 인메모리비엠25리트리버\n다큐먼트_스토어 = 인메모리도큐먼트스토어()\n다큐먼트_스토어.라이트도큐먼츠([도큐먼트(content='KoPy teaches Python.')])\n리트리버 = 인메모리비엠25리트리버(다큐먼트_스토어=다큐먼트_스토어)\npipeline = 파이프라인()\npipeline.애드컴포넌트('retriever', 리트리버)\n리절트 = pipeline.런({'retriever': {'query': 쿼리}})",
             "from haystack import Document, Pipeline\nfrom haystack.document_stores.in_memory import InMemoryDocumentStore\nfrom haystack.components.retrievers.in_memory import InMemoryBM25Retriever\ndocument_store = InMemoryDocumentStore()\ndocument_store.write_documents([Document(content='KoPy teaches Python.')])\nretriever = InMemoryBM25Retriever(document_store=document_store)\npipeline = Pipeline()\npipeline.add_component('retriever', retriever)\nresult = pipeline.run({'retriever': {'query': query}})",
         ),
     },
