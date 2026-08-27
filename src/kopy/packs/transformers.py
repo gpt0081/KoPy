@@ -33,8 +33,8 @@ TRANSFORMERS_PACK = LibraryPack(
         # Common concrete classes useful for offline/local tests and education
         "버트컨피그": "BertConfig",
         "버트모델": "BertModel",
-        "지피티투컨피그": "GPT2Config",
-        "지피티투엘엠헤드모델": "GPT2LMHeadModel",
+        "지피티2컨피그": "GPT2Config",
+        "지피티2엘엠헤드모델": "GPT2LMHeadModel",
 
         # Loading / saving / hub workflow
         "프롬프리트레인드": "from_pretrained",
@@ -43,6 +43,7 @@ TRANSFORMERS_PACK = LibraryPack(
         "리사이즈토큰임베딩스": "resize_token_embeddings",
 
         # Tokenization / decoding / chat templates
+        "토크나이저": "tokenizer",
         "토크나이즈": "tokenize",
         "인코드": "encode",
         "디코드": "decode",
@@ -58,7 +59,22 @@ TRANSFORMERS_PACK = LibraryPack(
         "언크토큰": "unk_token",
         "마스크토큰": "mask_token",
         "모델맥스렝스": "model_max_length",
-        "보캡사이즈": "vocab_size",
+        "보캡_사이즈": "vocab_size",
+        "리턴_텐서즈": "return_tensors",
+        "인풋_아이디즈": "input_ids",
+        "아웃풋_아이디즈": "output_ids",
+        "어텐션_마스크": "attention_mask",
+        "토큰_타입_아이디즈": "token_type_ids",
+        "맥스_렝스": "max_length",
+        "패딩": "padding",
+        "트렁케이션": "truncation",
+        "배치_사이즈": "batch_size",
+
+        # Model configuration identifiers / keyword arguments
+        "히든_사이즈": "hidden_size",
+        "넘_히든_레이어즈": "num_hidden_layers",
+        "넘_어텐션_헤즈": "num_attention_heads",
+        "인터미디어트_사이즈": "intermediate_size",
 
         # Model outputs / inference / generation
         "제너레이트": "generate",
@@ -72,6 +88,7 @@ TRANSFORMERS_PACK = LibraryPack(
 
         # Pipeline API
         "파이프라인": "pipeline",
+        "제너레이터": "generator",
         "텍스트제너레이션파이프라인": "TextGenerationPipeline",
         "텍스트클래시피케이션파이프라인": "TextClassificationPipeline",
         "피처익스트랙션파이프라인": "FeatureExtractionPipeline",
@@ -118,11 +135,11 @@ TRANSFORMERS_PACK = LibraryPack(
             "from transformers import AutoModelForCausalLM\nmodel = AutoModelForCausalLM.from_pretrained(\"model-path\")",
         ),
         "generate": (
-            "출력아이디 = 모델.제너레이트(**입력값)",
-            "output_ids = model.generate(**inputs)",
+            "아웃풋_아이디즈 = 모델.제너레이트(인풋_아이디즈=인풋_아이디즈)",
+            "output_ids = model.generate(input_ids=input_ids)",
         ),
         "pipeline": (
-            "프롬 트랜스포머스 임포트 파이프라인\n생성기 = 파이프라인(\"text-generation\", model=모델, tokenizer=토크나이저)",
+            "프롬 트랜스포머스 임포트 파이프라인\n제너레이터 = 파이프라인(\"text-generation\", 모델=모델, 토크나이저=토크나이저)",
             "from transformers import pipeline\ngenerator = pipeline(\"text-generation\", model=model, tokenizer=tokenizer)",
         ),
     },
