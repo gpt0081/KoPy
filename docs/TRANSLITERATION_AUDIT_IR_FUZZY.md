@@ -11,7 +11,6 @@ KoPy의 기본은 영어 식별자·API·키워드 인자를 한글로 음역하
 | `norm` | `노름` |
 | `metric` | `메트릭` |
 | `qrels` | `큐렐즈` |
-| `score` | `스코어` |
 | `scorer` | `스코어러` |
 | `processor` | `프로세서` |
 | `score_cutoff` | `스코어_컷오프` |
@@ -23,6 +22,8 @@ KoPy의 기본은 영어 식별자·API·키워드 인자를 한글로 음역하
 
 ranx의 `evaluate`와 `compare`, RapidFuzz의 `fuzz`와 `process`도 각 Library Pack 안에서 음역합니다. 일반 API를 전역 추측으로 바꾸지 않고, 해당 팩이 import된 경우에만 라이브러리 고유 이름을 해석합니다.
 
+`score`는 이번 공통 레지스트리에는 넣지 않습니다. 변수명으로도 흔하지만 scikit-learn, Ragas 등 여러 라이브러리의 `.score()` 메서드와 충돌할 수 있기 때문입니다. 현재 translator는 일반 식별자와 속성 이름을 모두 NAME 토큰으로 보므로, `score`를 무조건 공통 음역하면 관련 없는 라이브러리의 메서드까지 바뀝니다. 이런 이름은 이후 문맥 구분 또는 namespace-scoped 처리로 다루는 것이 안전합니다.
+
 예:
 
 ```kopy
@@ -33,7 +34,7 @@ ranx의 `evaluate`와 `compare`, RapidFuzz의 `fuzz`와 `process`도 각 Library
     노름="min-max",
     메서드="sum",
 )
-스코어 = 이밸류에이트(큐렐즈, 하이브리드_런, "ndcg@3")
+리절트 = 이밸류에이트(큐렐즈, 하이브리드_런, "ndcg@3")
 ```
 
 ```kopy
