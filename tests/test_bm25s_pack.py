@@ -14,11 +14,11 @@ class BM25SPackTests(unittest.TestCase):
     def test_bm25_workflow_translates(self):
         source = (
             "임포트 비엠25에스 애즈 bm25s\n"
-            "코퍼스_토큰즈 = bm25s.토크나이즈(코퍼스, show_progress=False)\n"
+            "코퍼스_토큰즈 = bm25s.토크나이즈(코퍼스, 쇼_프로그레스=펄스)\n"
             "리트리버 = bm25s.비엠25(코퍼스=코퍼스)\n"
-            "리트리버.인덱스(코퍼스_토큰즈, show_progress=False)\n"
-            "쿼리_토큰즈 = bm25s.토크나이즈([쿼리], show_progress=False)\n"
-            "리절츠 = 리트리버.리트리브(쿼리_토큰즈, k=2, show_progress=False)\n"
+            "리트리버.인덱스(코퍼스_토큰즈, 쇼_프로그레스=펄스)\n"
+            "쿼리_토큰즈 = bm25s.토크나이즈([쿼리], 쇼_프로그레스=펄스)\n"
+            "리절츠 = 리트리버.리트리브(쿼리_토큰즈, k=2, 쇼_프로그레스=펄스)\n"
         )
         python_source = translate(source).python
         self.assertIn("import bm25s", python_source)
@@ -42,12 +42,12 @@ class BM25SPackTests(unittest.TestCase):
         )
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 비엠25에스", kopy)
-        self.assertIn("비엠25에스.토크나이즈(코퍼스, show_progress=펄스)", kopy)
+        self.assertIn("비엠25에스.토크나이즈(코퍼스, 쇼_프로그레스=펄스)", kopy)
         self.assertIn("리트리버 = 비엠25에스.비엠25(코퍼스=코퍼스)", kopy)
         self.assertIn("리트리버.인덱스(", kopy)
         self.assertIn("리트리버.리트리브(", kopy)
         self.assertIn("k=2", kopy)
-        self.assertIn("show_progress=펄스", kopy)
+        self.assertIn("쇼_프로그레스=펄스", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("비엠25에스.리트리브")
