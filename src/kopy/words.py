@@ -158,7 +158,6 @@ COMMON_IDENTIFIERS: dict[str, str] = {
     "노름": "norm",
     "메트릭": "metric",
     "큐렐즈": "qrels",
-    "스코어": "score",
     "스코어러": "scorer",
     "프로세서": "processor",
     "스코어_컷오프": "score_cutoff",
