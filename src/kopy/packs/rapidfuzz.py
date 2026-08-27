@@ -50,8 +50,8 @@ RAPIDFUZZ_PACK = LibraryPack(
     },
     examples={
         "WRatio": (
-            "프롬 래피드퍼즈 임포트 퍼즈\n스코어 = 퍼즈.더블유레이쇼(쿼리, 캔디데이트)",
-            "from rapidfuzz import fuzz\nscore = fuzz.WRatio(query, candidate)",
+            "프롬 래피드퍼즈 임포트 퍼즈\n리절트 = 퍼즈.더블유레이쇼(쿼리, 캔디데이트)",
+            "from rapidfuzz import fuzz\nresult = fuzz.WRatio(query, candidate)",
         ),
         "extractOne": (
             "프롬 래피드퍼즈 임포트 프로세스, 퍼즈\n베스트 = 프로세스.익스트랙트원(쿼리, 초이시즈, 스코어러=퍼즈.더블유레이쇼)",
