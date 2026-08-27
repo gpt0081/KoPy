@@ -37,7 +37,8 @@ class TokenizersPackTests(unittest.TestCase):
         self.assertIn("프롬 토크나이저스 임포트 토크나이저", kopy)
         self.assertIn("프롬 토크나이저스.models 임포트 워드피스", kopy)
         self.assertIn("모델 = 워드피스", kopy)
-        self.assertIn("리절트 = tokenizer.엔코드('hello')", kopy)
+        self.assertIn("토크나이저 = 토크나이저(모델)", kopy)
+        self.assertIn("리절트 = 토크나이저.엔코드('hello')", kopy)
         self.assertEqual(source, translate(kopy).python)
 
 
