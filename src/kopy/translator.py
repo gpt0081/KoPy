@@ -201,20 +201,38 @@ def _direct_name_rebindings(
     direct_names: dict[str, str],
     common_source_names: set[str],
 ) -> dict[int, int]:
-    """Find simple assignments that shadow a directly imported pack symbol.
+    """Find module-level simple assignments that shadow a direct pack import.
 
-    A transliteration can legitimately name both a pack class and a learner's
-    variable. For example ``from usearch.index import Index`` becomes an import
-    of ``인덱스``, while the conventional variable ``index`` is also ``인덱스``.
-    In ``인덱스 = 인덱스(...)`` the left side is the common variable and the
-    right side is still the imported class. The rebinding takes effect only
-    after that statement, matching Python's name-shadowing behaviour.
+    Only a true top-level ``name = ...`` rebinding should shadow the imported
+    symbol for later module statements. Call keywords (``metric=...``), function
+    defaults and local assignments must not poison the module-level direct name.
+    Function-local bindings are handled separately from Python lexical scope.
     """
 
     targets: dict[int, int] = {}
+    indent_depth = 0
+    bracket_depth = 0
+    opening = {"(", "[", "{"}
+    closing = {")", "]", "}"}
+
     for index, token in enumerate(tokens):
+        if token.type == tokenize.INDENT:
+            indent_depth += 1
+            continue
+        if token.type == tokenize.DEDENT:
+            indent_depth = max(0, indent_depth - 1)
+            continue
+        if token.type == tokenize.OP:
+            if token.string in opening:
+                bracket_depth += 1
+            elif token.string in closing:
+                bracket_depth = max(0, bracket_depth - 1)
+            continue
+
         if (
-            token.type != tokenize.NAME
+            indent_depth != 0
+            or bracket_depth != 0
+            or token.type != tokenize.NAME
             or token.string not in direct_names
             or token.string not in common_source_names
         ):
