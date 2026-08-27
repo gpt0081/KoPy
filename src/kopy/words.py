@@ -147,6 +147,12 @@ COMMON_IDENTIFIERS: dict[str, str] = {
     "아이디즈": "ids",
     "쇼_프로그레스": "show_progress",
     "엔_리절츠": "n_results",
+    "네임": "name",
+    "임베딩_펑션": "embedding_function",
+    "테스트_사이즈": "test_size",
+    "랜덤_스테이트": "random_state",
+    "맥스_이터": "max_iter",
+    "디타입": "dtype",
 }
 
 ENGLISH_TARGETS: frozenset[str] = frozenset(WORDS.values())
@@ -199,7 +205,7 @@ _EXAMPLES: dict[str, tuple[str, str]] = {
     "int": ('나이 = 인트("20")', 'age = int("20")'),
     "len": ('길이 = 렌([1, 2, 3])', 'length = len([1, 2, 3])'),
     "range": ('포 i 인 레인지(3):\n    프린트(i)', 'for i in range(3):\n    print(i)'),
-    "if": ('이프 점수 >= 60:\n    프린트("합격")', 'if score >= 60:\n    print("합격")'),
+    "if": ('이프 점수 >= 60:\n    프린트("합격")', 'if score >= 60:\n    print(score)'),
     "def": ('데프 더하기(a, b):\n    리턴 a + b', 'def add(a, b):\n    return a + b'),
 }
 
