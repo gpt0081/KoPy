@@ -30,7 +30,7 @@ gaussian_blur2d -> 가우시안블러투디
 BM25        -> 비엠25
 F1Score     -> 에프1스코어
 IndexFlatL2 -> 인덱스플랫엘2
-gaussian_blur2d -> 가우시안블러2디
+gaussian_blur2d -> 가우시안_블러2디
 ```
 
 숫자의 의미를 해석하거나 읽는 것이 아니라 **원문 토큰의 형태를 보존**하는 것이 기준입니다.
