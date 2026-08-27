@@ -85,16 +85,41 @@ class CommonIdentifierTests(unittest.TestCase):
         ):
             self.assertIn(expected, kopy)
 
+    def test_ir_and_fuzzy_keywords_translate_both_directions(self):
+        source = (
+            "하이브리드_런 = fuse(런즈=[덴스_런, 렉시컬_런], 노름='min-max', 메서드='sum')\n"
+            "스코어 = evaluate(큐렐즈, 하이브리드_런, 메트릭='ndcg@3')\n"
+            "베스트 = extract(쿼리, 초이시즈, 스코어러=fn, 프로세서=논, 스코어_컷오프=50, 리밋=3)\n"
+        )
+        python_source = translate(source).python
+        self.assertIn("hybrid_run = fuse(runs=[dense_run, lexical_run], norm='min-max', method='sum')", python_source)
+        self.assertIn("score = evaluate(qrels, hybrid_run, metric='ndcg@3')", python_source)
+        self.assertIn("scorer=fn", python_source)
+        self.assertIn("processor=None", python_source)
+        self.assertIn("score_cutoff=50", python_source)
+        self.assertIn("limit=3", python_source)
+
+        kopy = to_kopy(python_source).kopy
+        for expected in (
+            "하이브리드_런 = fuse(런즈=[덴스_런, 렉시컬_런], 노름='min-max', 메서드='sum')",
+            "스코어 = evaluate(큐렐즈, 하이브리드_런, 메트릭='ndcg@3')",
+            "스코어러=fn",
+            "프로세서=논",
+            "스코어_컷오프=50",
+            "리밋=3",
+        ):
+            self.assertIn(expected, kopy)
+
     def test_signature_keyword_values_and_strings_are_untouched(self):
         source = (
             "설정 = fn(테스트_사이즈=0.25, 랜덤_스테이트=7, 디타입='float32')\n"
-            "텍스트 = 'name embedding_function test_size random_state max_iter dtype'\n"
+            "텍스트 = 'name embedding_function test_size random_state max_iter dtype method metric limit'\n"
         )
         python_source = translate(source).python
         self.assertIn("test_size=0.25", python_source)
         self.assertIn("random_state=7", python_source)
         self.assertIn("dtype='float32'", python_source)
-        self.assertIn("'name embedding_function test_size random_state max_iter dtype'", python_source)
+        self.assertIn("'name embedding_function test_size random_state max_iter dtype method metric limit'", python_source)
 
     def test_python_to_kopy_common_identifiers(self):
         source = (
@@ -153,6 +178,11 @@ class CommonIdentifierTests(unittest.TestCase):
         info = info_for("테스트_사이즈")
         self.assertIsNotNone(info)
         self.assertEqual(info.python, "test_size")
+        self.assertEqual(info.category, "identifier")
+
+        info = info_for("스코어_컷오프")
+        self.assertIsNotNone(info)
+        self.assertEqual(info.python, "score_cutoff")
         self.assertEqual(info.category, "identifier")
 
 
