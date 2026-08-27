@@ -19,9 +19,9 @@ class HaystackPackTests(unittest.TestCase):
             "다큐먼트_스토어 = 인메모리도큐먼트스토어()\n"
             "다큐먼트_스토어.라이트도큐먼츠([도큐먼트(content='alpha')])\n"
             "리트리버 = 인메모리비엠25리트리버(다큐먼트_스토어=다큐먼트_스토어, top_k=2)\n"
-            "파이프라인 = 파이프라인()\n"
-            "파이프라인.애드컴포넌트('retriever', 리트리버)\n"
-            "리절트 = 파이프라인.런({'retriever': {'query': 쿼리}})\n"
+            "pipeline = 파이프라인()\n"
+            "pipeline.애드컴포넌트('retriever', 리트리버)\n"
+            "리절트 = pipeline.런({'retriever': {'query': 쿼리}})\n"
         )
         python_source = translate(source).python
         self.assertIn("from haystack import Document, Pipeline", python_source)
@@ -44,9 +44,8 @@ class HaystackPackTests(unittest.TestCase):
         self.assertIn("top_k=2", python_source)
 
     def test_unimported_workflow_methods_are_not_global(self):
-        source = "파이프라인.애드컴포넌트('x', 컴포넌트)\n"
-        python_source = translate(source).python
-        self.assertIn("pipeline.애드컴포넌트", python_source)
+        source = "pipeline.애드컴포넌트('x', component)\n"
+        self.assertEqual(translate(source).python, source)
 
     def test_python_to_kopy_transliterates_pipeline_workflow(self):
         source = (
@@ -66,9 +65,9 @@ class HaystackPackTests(unittest.TestCase):
         self.assertIn("다큐먼트_스토어.라이트도큐먼츠([])", kopy)
         self.assertIn("리트리버 = 오브젝트()", kopy)
         self.assertIn("쿼리 = 'KoPy'", kopy)
-        self.assertIn("파이프라인 = 파이프라인()", kopy)
-        self.assertIn("파이프라인.애드컴포넌트", kopy)
-        self.assertIn("파이프라인.런", kopy)
+        self.assertIn("pipeline = 파이프라인()", kopy)
+        self.assertIn("pipeline.애드컴포넌트", kopy)
+        self.assertIn("pipeline.런", kopy)
         self.assertIn("리절트 =", kopy)
 
     def test_help_resolution(self):
