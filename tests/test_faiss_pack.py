@@ -16,7 +16,7 @@ class FaissPackTests(unittest.TestCase):
             "임포트 파이스 애즈 faiss\n"
             "인덱스 = faiss.인덱스플랫엘2(384)\n"
             "faiss.노멀라이즈엘2(임베딩즈)\n"
-            "팩토리 = faiss.인덱스팩토리(384, 'Flat')\n"
+            "factory = faiss.인덱스팩토리(384, 'Flat')\n"
         )
         python_source = translate(source).python
         self.assertIn("import faiss as faiss", python_source)
@@ -28,11 +28,11 @@ class FaissPackTests(unittest.TestCase):
         source = (
             "임포트 파이스 애즈 faiss\n"
             "인덱스 = faiss.인덱스플랫엘2(4)\n"
-            "인덱스.애드(벡터즈)\n"
+            "인덱스.애드(임베딩즈)\n"
             "디스턴시즈, 인디시즈 = 인덱스.서치(쿼리, 2)\n"
         )
         python_source = translate(source).python
-        self.assertIn("index.add(벡터즈)", python_source)
+        self.assertIn("index.add(embeddings)", python_source)
         self.assertIn("distances, indices = index.search(query, 2)", python_source)
 
     def test_unimported_faiss_words_are_not_pack_global(self):
