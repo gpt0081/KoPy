@@ -36,10 +36,12 @@ Haystack 팩은 검색/RAG pipeline 구성 요소와 핵심 workflow 메서드�
     top_k=2,
 )
 
-파이프라인 = 파이프라인()
-파이프라인.애드컴포넌트("retriever", 리트리버)
-리절트 = 파이프라인.런({"retriever": {"query": 쿼리}})
+pipeline = 파이프라인()
+pipeline.애드컴포넌트("retriever", 리트리버)
+리절트 = pipeline.런({"retriever": {"query": 쿼리}})
 ```
+
+`document_store → 다큐먼트_스토어`, `retriever → 리트리버`, `query → 쿼리`, `result → 리절트`는 공통 식별자 음역으로 지원합니다. 일반 변수 `pipeline`은 클래스 `Pipeline → 파이프라인`과 같은 음역을 공유해 shadowing 범위를 더 넓게 감사해야 하므로 이번 단계에서는 원문 변수명을 유지합니다.
 
 ## `top_k` 예외
 
