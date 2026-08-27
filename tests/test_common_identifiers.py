@@ -166,7 +166,9 @@ class CommonIdentifierTests(unittest.TestCase):
 
     def test_ambiguous_score_is_not_global(self):
         self.assertNotIn("score", COMMON_IDENTIFIERS.values())
-        self.assertIn("metric.score(", to_kopy("metric.score(reference=reference)\n").kopy)
+        kopy = to_kopy("metric.score(reference=reference)\n").kopy
+        self.assertIn("메트릭.score(", kopy)
+        self.assertNotIn(".스코어(", kopy)
 
     def test_common_identifiers_are_exposed_to_editor_metadata(self):
         info = info_for("엑스_트레인")
