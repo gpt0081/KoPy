@@ -14,8 +14,8 @@ class ChromaPackTests(unittest.TestCase):
     def test_client_and_collection_management_translate(self):
         source = (
             "임포트 크로마 애즈 chroma\n"
-            "client = chroma.클라이언트()\n"
-            "collection = client.크리에이트컬렉션(name='docs', embedding_function=None)\n"
+            "클라이언트 = chroma.클라이언트()\n"
+            "컬렉션 = 클라이언트.크리에이트컬렉션(name='docs', embedding_function=논)\n"
         )
         python_source = translate(source).python
         self.assertIn("import chromadb as chroma", python_source)
@@ -25,10 +25,10 @@ class ChromaPackTests(unittest.TestCase):
     def test_collection_data_methods_translate_in_chroma_scope(self):
         source = (
             "임포트 크로마 애즈 chroma\n"
-            "collection.애드(ids=ids, embeddings=임베딩즈, documents=다큐먼츠)\n"
-            "리절트 = collection.쿼리(query_embeddings=query_embeddings, n_results=2)\n"
-            "collection.업서트(ids=ids, embeddings=임베딩즈)\n"
-            "records = collection.겟(ids=ids)\n"
+            "컬렉션.애드(아이디즈=아이디즈, 임베딩즈=임베딩즈, 다큐먼츠=다큐먼츠)\n"
+            "리절트 = 컬렉션.쿼리(쿼리_임베딩즈=쿼리_임베딩즈, 엔_리절츠=2)\n"
+            "컬렉션.업서트(아이디즈=아이디즈, 임베딩즈=임베딩즈)\n"
+            "records = 컬렉션.겟(아이디즈=아이디즈)\n"
         )
         python_source = translate(source).python
         self.assertIn("collection.add(ids=ids, embeddings=embeddings, documents=documents)", python_source)
@@ -51,15 +51,15 @@ class ChromaPackTests(unittest.TestCase):
         )
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 크로마 애즈 chroma", kopy)
-        self.assertIn("client = chroma.클라이언트()", kopy)
-        self.assertIn("collection = client.크리에이트컬렉션(", kopy)
-        self.assertIn("collection.애드(", kopy)
-        self.assertIn("collection.쿼리(", kopy)
-        self.assertIn("collection.업서트(", kopy)
+        self.assertIn("클라이언트 = chroma.클라이언트()", kopy)
+        self.assertIn("컬렉션 = 클라이언트.크리에이트컬렉션(", kopy)
+        self.assertIn("컬렉션.애드(", kopy)
+        self.assertIn("컬렉션.쿼리(", kopy)
+        self.assertIn("컬렉션.업서트(", kopy)
         self.assertIn("리절트 =", kopy)
         self.assertIn("임베딩즈=임베딩즈", kopy)
         self.assertIn("다큐먼츠=다큐먼츠", kopy)
-        for token in ("ids=", "query_embeddings=", "n_results="):
+        for token in ("아이디즈=", "쿼리_임베딩즈=", "엔_리절츠="):
             self.assertIn(token, kopy)
 
     def test_help_resolution(self):
