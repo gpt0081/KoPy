@@ -1,7 +1,7 @@
 임포트 토치
 임포트 토치비전 애즈 tv
 
-image = 토치.원즈((3, 32, 32), dtype=토치.플로트32)
+image = 토치.원즈((3, 32, 32), 디타입=토치.플로트32)
 
 transform = tv.트랜스폼즈.컴포즈([
     tv.트랜스폼즈.리사이즈((16, 16)),
@@ -11,9 +11,9 @@ transform = tv.트랜스폼즈.컴포즈([
     ),
 ])
 
-features = transform(image)
-model = tv.모델즈.레스넷18(weights=None)
+피처스 = transform(image)
+모델 = tv.모델즈.레스넷18(weights=논)
 
 프린트("input shape:", image.셰이프)
-프린트("transformed shape:", features.셰이프)
-프린트("model:", model.__class__.__name__)
+프린트("transformed shape:", 피처스.셰이프)
+프린트("model:", 모델.__class__.__name__)

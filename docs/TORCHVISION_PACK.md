@@ -10,7 +10,7 @@ KoPy의 TorchVision 팩은 표준 `torchvision` 라이브러리를 다시 구현
 임포트 토치
 임포트 토치비전 애즈 tv
 
-image = 토치.원즈((3, 32, 32), dtype=토치.플로트32)
+image = 토치.원즈((3, 32, 32), 디타입=토치.플로트32)
 
 transform = tv.트랜스폼즈.컴포즈([
     tv.트랜스폼즈.리사이즈((16, 16)),
@@ -20,11 +20,11 @@ transform = tv.트랜스폼즈.컴포즈([
     ),
 ])
 
-features = transform(image)
-model = tv.모델즈.레스넷18(weights=None)
+피처스 = transform(image)
+모델 = tv.모델즈.레스넷18(weights=논)
 ```
 
-위 코드는 핵심적으로 다음 Python 표현을 익히도록 설계돼 있습니다.
+위 코드는 핵심적으로 다음 Python 표현으로 돌아갑니다.
 
 ```python
 import torch
@@ -39,7 +39,23 @@ features = transform(image)
 model = tv.models.resnet18(weights=None)
 ```
 
-`tv`, `image`, `features`, `model`, `weights=` 같은 실제 Python/TorchVision 관례는 학습 가치 때문에 원문 형태를 유지합니다.
+`피처스 → features`, `모델 → model`, `디타입 → dtype`처럼 이미 공통 음역 표준에 들어온 표현은 KoPy에서도 음역형을 사용합니다. `image`, `transform`, `weights`, `mean`, `std`처럼 아직 남아 있는 영어는 영구 예외가 아니라 후속 공통 식별자/키워드 감사 대상입니다.
+
+## 숫자와 언더스코어 표준
+
+숫자는 한글 단어로 풀어쓰지 않고 원래 숫자를 그대로 유지하며, Python 식별자의 `_` 구조도 가능한 한 보존합니다.
+
+- `mobilenet_v3_large` → `모빌넷_브이3_라지`
+- `efficientnet_b0` → `이피션트넷_비0`
+- `vit_b_16` → `브이아이티_비_16`
+- `ResNet18_Weights` → `레스넷18_웨이츠`
+- `make_grid` → `메이크_그리드`
+- `save_image` → `세이브_이미지`
+- `box_iou` → `박스_아이오유`
+- `clip_boxes_to_image` → `클립_박시즈_투_이미지`
+- `remove_small_boxes` → `리무브_스몰_박시즈`
+
+기존 `모빌넷브이스리라지`, `이피션트넷비제로`, `메이크그리드`, `박스아이오유` 같은 표기도 호환 alias로 계속 입력할 수 있지만 Python → KoPy에서는 새 표준형을 출력합니다.
 
 ## 지원 범위
 
@@ -49,15 +65,11 @@ model = tv.models.resnet18(weights=None)
 - datasets: `ImageFolder`, `CIFAR10`, `CIFAR100`, `MNIST`, `FashionMNIST`
 - utilities/ops: `make_grid`, `save_image`, `box_iou`, `nms`, `clip_boxes_to_image`, `remove_small_boxes`
 
-## 충돌 방지
+## 충돌 방지와 남은 감사 항목
 
-TorchVision 멤버 이름은 Core 전역 단어표에 추가하지 않습니다. 다음 코드는 TorchVision을 import하지 않았기 때문에 KoPy가 임의로 번역하지 않습니다.
+TorchVision 고유 멤버는 Core 전역 단어표에 추가하지 않고 namespace-scoped로 처리합니다. 따라서 TorchVision을 import하지 않은 파일에서 `컴포즈`, `리사이즈` 같은 이름을 임의로 바꾸지 않습니다.
 
-```kopy
-transform = 컴포즈([리사이즈((224, 224))])
-```
-
-`mean=`, `std=`, `inplace=`, `weights=`, `progress=`, `num_classes=`, `download=`, `root=`, `train=` 같은 키워드 인자도 Python 원형을 유지합니다. 이 이름들은 다른 라이브러리나 사용자 코드에서도 흔해서 전역 음역 대상으로 삼기 부적절합니다.
+`mean=`, `std=`, `inplace=`, `weights=`, `progress=`, `num_classes=`, `download=`, `root=`, `train=` 같은 키워드는 과거에는 충돌 위험 때문에 영어 원형을 영구 유지한다고 문서화했지만, 현재 KoPy 원칙에서는 **후속 감사 대상**입니다. 안전한 공통 음역 또는 문맥 기반 처리가 검증되는 순서대로 한국어 음역을 추가합니다. 특히 `mean`은 `min`과 음역 충돌이 있어 별도의 문맥 처리가 필요합니다.
 
 ## 설치
 
@@ -65,14 +77,6 @@ transform = 컴포즈([리사이즈((224, 224))])
 python -m pip install "torch>=2.13,<2.14" "torchvision>=0.28,<0.29"
 ```
 
-TorchVision 0.28.0은 Python 3.12용 Windows, Linux, macOS wheel을 제공합니다.
-
 ## 테스트
 
-CI는 Windows, Ubuntu, macOS에서 실제 TorchVision 0.28.x를 설치해 다음을 실행합니다.
-
-- `transforms.Compose + Resize + Normalize`
-- `models.resnet18(weights=None)` 생성
-- `ops.box_iou` 실제 연산 및 수치 결과 확인
-
-외부 이미지, 모델 weight, 인터넷 데이터셋 다운로드 없이 실제 라이브러리 런타임을 검증합니다.
+CI는 Windows, Ubuntu, macOS에서 실제 TorchVision을 설치해 `Compose + Resize + Normalize`, `resnet18(weights=None)`, `box_iou` 실제 연산을 검증합니다. 외부 이미지나 모델 weight 다운로드는 필요하지 않습니다.

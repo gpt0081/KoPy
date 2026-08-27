@@ -53,6 +53,8 @@ TORCH_PACK = LibraryPack(
         "매트멀": "matmul",
         "엠엠": "mm",
         "썸": "sum",
+        # `mean` cannot use 민 because KoPy core already maps 민 -> min.
+        # 미인 is retained until a safer contextual disambiguation exists.
         "미인": "mean",
         "맥스": "max",
         "민": "min",
@@ -64,10 +66,12 @@ TORCH_PACK = LibraryPack(
         "클램프": "clamp",
         "노름": "norm",
 
-        # Autograd / tensor lifecycle
+        # Autograd / tensor lifecycle. Legacy compact spellings stay accepted;
+        # underscore-preserving forms below are the canonical reverse spelling.
         "백워드": "backward",
         "그라드": "grad",
         "리콰이어즈그라드": "requires_grad",
+        "리콰이어즈_그라드": "requires_grad",
         "디태치": "detach",
         "아이템": "item",
         "넘파이": "numpy",
@@ -76,7 +80,9 @@ TORCH_PACK = LibraryPack(
         "씨피유": "cpu",
         "쿠다": "cuda",
         "노그라드": "no_grad",
+        "노_그라드": "no_grad",
         "인퍼런스모드": "inference_mode",
+        "인퍼런스_모드": "inference_mode",
 
         # Neural-network namespace / layers / losses
         "엔엔": "nn",
@@ -89,8 +95,11 @@ TORCH_PACK = LibraryPack(
         "임베딩": "Embedding",
         "레이어노름": "LayerNorm",
         "배치노름원디": "BatchNorm1d",
+        "배치노름1디": "BatchNorm1d",
         "컨브원디": "Conv1d",
+        "컨브1디": "Conv1d",
         "컨브투디": "Conv2d",
+        "컨브2디": "Conv2d",
         "엘에스티엠": "LSTM",
         "그루": "GRU",
         "트랜스포머인코더레이어": "TransformerEncoderLayer",
@@ -104,7 +113,9 @@ TORCH_PACK = LibraryPack(
         "트레인": "train",
         "이밸": "eval",
         "스테이트딕트": "state_dict",
+        "스테이트_딕트": "state_dict",
         "로드스테이트딕트": "load_state_dict",
+        "로드_스테이트_딕트": "load_state_dict",
 
         # Optimizers
         "옵팀": "optim",
@@ -113,6 +124,7 @@ TORCH_PACK = LibraryPack(
         "아담더블유": "AdamW",
         "알엠에스프롭": "RMSprop",
         "제로그라드": "zero_grad",
+        "제로_그라드": "zero_grad",
         "스텝": "step",
 
         # Data utilities / serialization
@@ -122,6 +134,7 @@ TORCH_PACK = LibraryPack(
         "세이브": "save",
         "로드": "load",
         "매뉴얼시드": "manual_seed",
+        "매뉴얼_시드": "manual_seed",
     },
     member_descriptions={
         "tensor": "Python 데이터에서 PyTorch 텐서를 만듭니다.",
@@ -137,8 +150,8 @@ TORCH_PACK = LibraryPack(
     },
     examples={
         "tensor": (
-            "임포트 토치\nx = 토치.텐서([1.0, 2.0, 3.0], requires_grad=True)",
-            "import torch\nx = torch.tensor([1.0, 2.0, 3.0], requires_grad=True)",
+            "임포트 토치\n엑스 = 토치.텐서([1.0, 2.0, 3.0], requires_grad=True)",
+            "import torch\nX = torch.tensor([1.0, 2.0, 3.0], requires_grad=True)",
         ),
         "Linear": (
             "임포트 토치\n모델 = 토치.엔엔.리니어(3, 1)",

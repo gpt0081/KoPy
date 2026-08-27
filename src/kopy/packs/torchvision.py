@@ -40,25 +40,34 @@ TORCHVISION_PACK = LibraryPack(
         "투디타입": "ToDtype",
         "투이미지": "ToImage",
 
-        # Functional transform helpers
+        # Functional transform helpers. Compact legacy spellings are retained;
+        # underscore-preserving spellings are canonical for Python -> KoPy.
         "투필이미지": "to_pil_image",
+        "투_필_이미지": "to_pil_image",
         "필투텐서": "pil_to_tensor",
+        "필_투_텐서": "pil_to_tensor",
         "컨버트이미지디타입": "convert_image_dtype",
+        "컨버트_이미지_디타입": "convert_image_dtype",
         "리사이즈함수": "resize",
         "노멀라이즈함수": "normalize",
         "에이치플립": "hflip",
         "브이플립": "vflip",
         "로테이트": "rotate",
 
-        # Model constructors / weights
+        # Model constructors / weights. Digits stay digits.
         "레스넷18": "resnet18",
         "레스넷50": "resnet50",
         "모빌넷브이스리라지": "mobilenet_v3_large",
+        "모빌넷_브이3_라지": "mobilenet_v3_large",
         "이피션트넷비제로": "efficientnet_b0",
+        "이피션트넷_비0": "efficientnet_b0",
         "비전트랜스포머비16": "vit_b_16",
+        "브이아이티_비_16": "vit_b_16",
         "스윈티": "swin_t",
         "레스넷18웨이츠": "ResNet18_Weights",
+        "레스넷18_웨이츠": "ResNet18_Weights",
         "레스넷50웨이츠": "ResNet50_Weights",
+        "레스넷50_웨이츠": "ResNet50_Weights",
 
         # Common datasets
         "이미지폴더": "ImageFolder",
@@ -69,11 +78,16 @@ TORCHVISION_PACK = LibraryPack(
 
         # Utility / detection helpers
         "메이크그리드": "make_grid",
+        "메이크_그리드": "make_grid",
         "세이브이미지": "save_image",
+        "세이브_이미지": "save_image",
         "박스아이오유": "box_iou",
+        "박스_아이오유": "box_iou",
         "엔엠에스": "nms",
         "클립박시스토이미지": "clip_boxes_to_image",
+        "클립_박시즈_투_이미지": "clip_boxes_to_image",
         "리무브스몰박시스": "remove_small_boxes",
+        "리무브_스몰_박시즈": "remove_small_boxes",
     },
     member_descriptions={
         "Compose": "여러 이미지 변환을 순서대로 연결합니다.",
@@ -86,15 +100,15 @@ TORCHVISION_PACK = LibraryPack(
     },
     examples={
         "Compose": (
-            "임포트 토치비전 애즈 tv\ntransform = tv.트랜스폼즈.컴포즈([tv.트랜스폼즈.리사이즈((224, 224)), tv.트랜스폼즈.노멀라이즈(mean=[0.5]*3, std=[0.5]*3)])",
+            "임포트 토치비전 애즈 tv\n트랜스폼 = tv.트랜스폼즈.컴포즈([tv.트랜스폼즈.리사이즈((224, 224)), tv.트랜스폼즈.노멀라이즈(mean=[0.5]*3, std=[0.5]*3)])",
             "import torchvision as tv\ntransform = tv.transforms.Compose([tv.transforms.Resize((224, 224)), tv.transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)])",
         ),
         "resnet18": (
-            "임포트 토치비전 애즈 tv\nmodel = tv.모델즈.레스넷18(weights=None)",
+            "임포트 토치비전 애즈 tv\n모델 = tv.모델즈.레스넷18(weights=None)",
             "import torchvision as tv\nmodel = tv.models.resnet18(weights=None)",
         ),
         "box_iou": (
-            "임포트 토치비전 애즈 tv\niou = tv.옵스.박스아이오유(boxes1, boxes2)",
+            "임포트 토치비전 애즈 tv\n아이오유 = tv.옵스.박스_아이오유(boxes1, boxes2)",
             "import torchvision as tv\niou = tv.ops.box_iou(boxes1, boxes2)",
         ),
     },
