@@ -28,13 +28,13 @@ class TorchMetricsPackTests(unittest.TestCase):
         source = "accuracy = tm.애큐러시(task='binary')\n"
         self.assertEqual(translate(source).python, source)
 
-    def test_generic_lifecycle_methods_remain_python_native(self):
+    def test_common_metric_identifier_translates(self):
         source = (
             "임포트 토치메트릭스 애즈 tm\n"
-            "metric = tm.애큐러시(task='binary')\n"
-            "metric.update(프레즈, 타깃)\n"
-            "value = metric.compute()\n"
-            "metric.reset()\n"
+            "메트릭 = tm.애큐러시(task='binary')\n"
+            "메트릭.update(프레즈, 타깃)\n"
+            "value = 메트릭.compute()\n"
+            "메트릭.reset()\n"
         )
         python_source = translate(source).python
         self.assertIn("metric.update(preds, target)", python_source)
@@ -46,11 +46,13 @@ class TorchMetricsPackTests(unittest.TestCase):
             "import torchmetrics as tm\n"
             "accuracy = tm.Accuracy(task='binary')\n"
             "f1 = tm.F1Score(task='binary')\n"
+            "metric = tm.Accuracy(task='binary')\n"
         )
         kopy = to_kopy(source).kopy
         self.assertIn("임포트 토치메트릭스 애즈 tm", kopy)
         self.assertIn("tm.애큐러시(task='binary')", kopy)
         self.assertIn("에프1 = tm.에프1스코어(task='binary')", kopy)
+        self.assertIn("메트릭 = tm.애큐러시(task='binary')", kopy)
 
     def test_help_resolution(self):
         resolved = resolve_pack_member("토치메트릭스.에프1스코어")
@@ -61,7 +63,7 @@ class TorchMetricsPackTests(unittest.TestCase):
     def test_generic_keywords_remain_python(self):
         source = (
             "임포트 토치메트릭스 애즈 tm\n"
-            "metric = tm.에프1스코어(task='multiclass', num_classes=4, average='macro')\n"
+            "메트릭 = tm.에프1스코어(task='multiclass', num_classes=4, average='macro')\n"
         )
         python_source = translate(source).python
         for token in ("task=", "num_classes=", "average="):
