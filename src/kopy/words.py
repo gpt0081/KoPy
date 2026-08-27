@@ -166,6 +166,18 @@ COMMON_IDENTIFIERS: dict[str, str] = {
     "덴스_런": "dense_run",
     "렉시컬_런": "lexical_run",
     "하이브리드_런": "hybrid_run",
+    "엔_에스티메이터즈": "n_estimators",
+    "맥스_뎁스": "max_depth",
+    "러닝_레이트": "learning_rate",
+    "엔_잡스": "n_jobs",
+    "넘_리브즈": "num_leaves",
+    "민_차일드_샘플즈": "min_child_samples",
+    "트리_메서드": "tree_method",
+    "디바이스": "device",
+    "버보시티": "verbosity",
+    "레이블": "label",
+    "넘_부스트_라운드": "num_boost_round",
+    "프로바": "proba",
 }
 
 ENGLISH_TARGETS: frozenset[str] = frozenset(WORDS.values())
