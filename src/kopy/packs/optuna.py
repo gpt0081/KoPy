@@ -1,9 +1,10 @@
 """Official Optuna library pack for KoPy.
 
-The pack focuses on the stable, high-value study/trial API used in real
-hyperparameter optimization code. Generic keyword arguments and user-defined
-parameter names remain in standard Python form to avoid ambiguous global
-translations and preserve transfer to upstream Optuna examples.
+The pack focuses on the stable, high-value Study/Trial API used in real
+hyperparameter optimization code. Canonical KoPy spellings preserve the
+underscore structure of the upstream Python API. Older compact spellings remain
+accepted as compatibility aliases while Python -> KoPy output prefers the
+canonical form.
 """
 
 from __future__ import annotations
@@ -18,31 +19,51 @@ OPTUNA_PACK = LibraryPack(
     preferred_aliases=("optuna",),
     description="하이퍼파라미터 탐색 Study/Trial·샘플링·가지치기·최적화 API 팩",
     members={
+        # Legacy compact spellings kept for source compatibility.
         "크리에이트스터디": "create_study",
         "로드스터디": "load_study",
         "딜리트스터디": "delete_study",
-        "스터디": "Study",
-        "트라이얼": "Trial",
         "프로즌트라이얼": "FrozenTrial",
         "트라이얼스테이트": "TrialState",
-        "옵티마이즈": "optimize",
         "서제스트플로트": "suggest_float",
         "서제스트인트": "suggest_int",
         "서제스트캐터고리컬": "suggest_categorical",
-        "리포트": "report",
         "슈드프룬": "should_prune",
         "셋유저애트르": "set_user_attr",
         "셋시스템애트르": "set_system_attr",
         "베스트트라이얼": "best_trial",
         "베스트밸류": "best_value",
         "베스트파람스": "best_params",
-        "트라이얼즈": "trials",
         "겟트라이얼즈": "get_trials",
+        "인큐트라이얼": "enqueue_trial",
+        "겟트라이얼": "get_trial",
+        # Names without upstream underscores are already canonical.
+        "스터디": "Study",
+        "트라이얼": "Trial",
+        "옵티마이즈": "optimize",
+        "리포트": "report",
+        "트라이얼즈": "trials",
         "스톱": "stop",
         "애스크": "ask",
         "텔": "tell",
-        "인큐트라이얼": "enqueue_trial",
-        "겟트라이얼": "get_trial",
+        # Canonical spellings preserve upstream underscore structure.
+        "크리에이트_스터디": "create_study",
+        "로드_스터디": "load_study",
+        "딜리트_스터디": "delete_study",
+        "프로즌_트라이얼": "FrozenTrial",
+        "트라이얼_스테이트": "TrialState",
+        "서제스트_플로트": "suggest_float",
+        "서제스트_인트": "suggest_int",
+        "서제스트_캐터고리컬": "suggest_categorical",
+        "슈드_프룬": "should_prune",
+        "셋_유저_애트르": "set_user_attr",
+        "셋_시스템_애트르": "set_system_attr",
+        "베스트_트라이얼": "best_trial",
+        "베스트_밸류": "best_value",
+        "베스트_패럼즈": "best_params",
+        "겟_트라이얼즈": "get_trials",
+        "인큐_트라이얼": "enqueue_trial",
+        "겟_트라이얼": "get_trial",
     },
     member_descriptions={
         "create_study": "새 Optuna Study를 생성합니다.",
@@ -59,11 +80,11 @@ OPTUNA_PACK = LibraryPack(
     },
     examples={
         "create_study": (
-            "임포트 옵튜나\nstudy = 옵튜나.크리에이트스터디(direction='minimize')",
+            "임포트 옵튜나\nstudy = 옵튜나.크리에이트_스터디(direction='minimize')",
             "import optuna\nstudy = optuna.create_study(direction='minimize')",
         ),
         "suggest_float": (
-            "x = trial.서제스트플로트('x', -10.0, 10.0)",
+            "x = trial.서제스트_플로트('x', -10.0, 10.0)",
             "x = trial.suggest_float('x', -10.0, 10.0)",
         ),
         "optimize": (
