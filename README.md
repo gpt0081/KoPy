@@ -70,14 +70,16 @@ gaussian_blur2d        가우시안블러2디
 리절츠 = 리트리버.리트리브(쿼리_토큰즈, k=5)
 
 # Chroma
-컬렉션.업서트(ids=아이디즈, embeddings=임베딩즈)
+collection.업서트(ids=ids, embeddings=임베딩즈)
 
 # Haystack
-파이프라인.애드컴포넌트("retriever", 리트리버)
-리절트 = 파이프라인.런(인풋)
+pipeline.애드컴포넌트("retriever", 리트리버)
+리절트 = pipeline.런(인풋)
 ```
 
 해당 팩을 import하지 않은 코드의 `서치`, `리트리브`, `업서트`, `런`을 KoPy가 임의로 추측해 바꾸지는 않습니다.
+
+`client`, `collection`, `pipeline`, 일부 키워드 인자처럼 아직 영어로 보이는 항목은 영구 예외로 확정한 것이 아닙니다. 공통 식별자로 추가했을 때 기존 47개 팩의 class/variable shadowing과 역변환이 함께 바뀌므로 별도 전수 감사 대상으로 남겨 둡니다.
 
 ## AI 개발 Library Pack
 
@@ -142,12 +144,12 @@ Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy
     top_k=2,
 )
 
-파이프라인 = 파이프라인()
-파이프라인.애드컴포넌트("retriever", 리트리버)
-리절트 = 파이프라인.런({"retriever": {"query": 쿼리}})
+pipeline = 파이프라인()
+pipeline.애드컴포넌트("retriever", 리트리버)
+리절트 = pipeline.런({"retriever": {"query": 쿼리}})
 ```
 
-`top_k`는 검색·추천·머신러닝에서 “상위 k개”를 뜻하며 논문과 여러 Python 라이브러리에서 거의 같은 형태로 반복됩니다. 그래서 현재는 원문을 유지합니다. **이것은 예외이며 기본은 음역입니다.**
+`top_k`는 검색·추천·머신러닝에서 “상위 k개”를 뜻하며 논문과 여러 Python 라이브러리에서 거의 같은 형태로 반복됩니다. 그래서 현재는 원문을 유지합니다. **이것은 명시적 예외이며 기본은 음역입니다.**
 
 ### FAISS 벡터 검색
 
@@ -179,13 +181,13 @@ Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy
 ```kopy
 임포트 크로마 애즈 chroma
 
-클라이언트 = chroma.클라이언트()
-컬렉션 = 클라이언트.크리에이트컬렉션(name="docs", embedding_function=None)
-컬렉션.애드(ids=아이디즈, embeddings=임베딩즈, documents=다큐먼츠)
-리절트 = 컬렉션.쿼리(query_embeddings=쿼리_임베딩즈, n_results=2)
+client = chroma.클라이언트()
+collection = client.크리에이트컬렉션(name="docs", embedding_function=None)
+collection.애드(ids=ids, embeddings=임베딩즈, documents=다큐먼츠)
+리절트 = collection.쿼리(query_embeddings=query_embeddings, n_results=2)
 ```
 
-키워드 인자는 함수 시그니처에 직접 연결되므로 아직 영어가 남은 부분이 있습니다. `top_k`처럼 명시적 교육 예외인 경우와 단순히 아직 감사되지 않은 경우를 구분하며, 후자는 순차적으로 정리합니다.
+여기 남아 있는 `client`, `collection`, `query_embeddings`, 일부 키워드 인자는 다음 공통 식별자/시그니처 감사 대상입니다. `top_k` 같은 교육적 예외와 단순 미완성 항목을 구분해 문서화합니다.
 
 ## pypdf PDF ingestion
 
@@ -199,8 +201,6 @@ Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy
 파일 경로와 실제 PDF 내용은 데이터이므로 음역하지 않습니다. 이미지로만 구성된 PDF는 별도 OCR 단계가 필요합니다.
 
 ## 설치
-
-KoPy 자체:
 
 ```powershell
 git clone https://github.com/gpt0081/KoPy.git
@@ -237,4 +237,4 @@ kopy version
 
 Python 호환성이 최우선입니다. Library Pack 변경은 실제 라이브러리를 설치한 Windows, Linux, macOS CI와 runtime smoke test로 확인합니다. 문자열·주석·숫자 리터럴이 변하지 않는지, pack 고유 API와 공통 식별자가 충돌하지 않는지도 검증합니다.
 
-0.5.47에서 공통 식별자와 숫자 보존 규칙을 확립했고, **0.5.48은 FAISS·BM25S·Chroma·Haystack의 검색/RAG 메서드를 namespace-scoped 음역으로 확장한 두 번째 감사 단계**입니다. 나머지 팩의 메서드·키워드 인자·예제도 같은 기준으로 계속 점검합니다.
+0.5.47에서 공통 식별자와 숫자 보존 규칙을 확립했고, **0.5.48은 FAISS·BM25S·Chroma·Haystack의 검색/RAG 메서드를 namespace-scoped 음역으로 확장한 두 번째 감사 단계**입니다. 다음 감사에서는 공통 변수명, 키워드 인자, 나머지 팩 예제를 같은 기준으로 계속 점검합니다.
