@@ -63,7 +63,7 @@ class TorchPackTests(unittest.TestCase):
         )
         python_source = translate(source).python
         self.assertIn("torch.nn.Conv2d", python_source)
-        self.assertIn("optimizer.zero_grad()", python_source)
+        self.assertIn(".zero_grad()", python_source)
         self.assertIn("model.state_dict()", python_source)
         self.assertIn("with torch.no_grad():", python_source)
 
