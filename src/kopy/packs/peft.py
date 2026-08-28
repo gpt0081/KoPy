@@ -94,6 +94,12 @@ PEFT_PACK = LibraryPack(
         "팬_인_팬_아웃": "fan_in_fan_out",
         "유즈_알에스로라": "use_rslora",
         "이니트_로라_웨이츠": "init_lora_weights",
+        "익스클루드_모듈즈": "exclude_modules",
+        "레이어즈_투_트랜스폼": "layers_to_transform",
+        "레이어즈_패턴": "layers_pattern",
+        "랭크_패턴": "rank_pattern",
+        "알파_패턴": "alpha_pattern",
+        "유즈_도라": "use_dora",
     },
     member_descriptions={
         "LoraConfig": "LoRA rank, target module, dropout 등 어댑터 학습 설정을 정의합니다.",
@@ -106,8 +112,8 @@ PEFT_PACK = LibraryPack(
     },
     examples={
         "LoraConfig": (
-            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, 로라_알파=16, 타깃_모듈즈=[\"query\", \"value\"], 바이어스=\"none\", 인퍼런스_모드=펄스, 팬_인_팬_아웃=펄스, 유즈_알에스로라=펄스, 이니트_로라_웨이츠=트루)",
-            "from peft import LoraConfig\nresult = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"], bias=\"none\", inference_mode=False, fan_in_fan_out=False, use_rslora=False, init_lora_weights=True)",
+            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, 로라_알파=16, 타깃_모듈즈=[\"query\", \"value\"], 바이어스=\"none\", 인퍼런스_모드=펄스, 팬_인_팬_아웃=펄스, 유즈_알에스로라=펄스, 이니트_로라_웨이츠=트루, 익스클루드_모듈즈=[\"classifier\"], 레이어즈_투_트랜스폼=[0], 레이어즈_패턴=\"layers\", 랭크_패턴={}, 알파_패턴={}, 유즈_도라=펄스)",
+            "from peft import LoraConfig\nresult = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"], bias=\"none\", inference_mode=False, fan_in_fan_out=False, use_rslora=False, init_lora_weights=True, exclude_modules=[\"classifier\"], layers_to_transform=[0], layers_pattern=\"layers\", rank_pattern={}, alpha_pattern={}, use_dora=False)",
         ),
         "get_peft_model": (
             "프롬 페프트 임포트 겟_페프트_모델\n모델 = 겟_페프트_모델(모델, 리절트)",
