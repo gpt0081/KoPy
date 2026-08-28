@@ -1,0 +1,43 @@
+name: Pydantic AI Pack
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/kopy/packs/pydantic_ai.py"
+      - "src/kopy/packs/registry.py"
+      - "tests/test_pydantic_ai_*.py"
+      - ".github/workflows/pydantic-ai-pack.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/kopy/packs/pydantic_ai.py"
+      - "src/kopy/packs/registry.py"
+      - "tests/test_pydantic_ai_*.py"
+      - ".github/workflows/pydantic-ai-pack.yml"
+
+jobs:
+  pydantic-ai-pack:
+    name: Pydantic AI 2.35.1 / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.10"
+      - name: Install KoPy and Pydantic AI
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "pydantic-ai==2.35.1"
+      - name: Run Pydantic AI pack and real-library runtime tests
+        run: python -m unittest tests.test_pydantic_ai_pack tests.test_pydantic_ai_runtime -v
+      - name: Verify Pydantic AI pack details
+        run: kopy packs pydantic-ai
