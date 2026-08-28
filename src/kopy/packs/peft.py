@@ -40,6 +40,13 @@ PEFT_PACK = LibraryPack(
         "프롬_프리트레인드": "from_pretrained",
         "세이브_프리트레인드": "save_pretrained",
 
+        # LoRA/PEFT-specific keyword identifiers. These remain pack-scoped rather
+        # than joining KoPy's global vocabulary, avoiding collisions elsewhere.
+        "로라_알파": "lora_alpha",
+        "타깃_모듈즈": "target_modules",
+        "태스크_타입": "task_type",
+        "로라_드롭아웃": "lora_dropout",
+
         # Adapter lifecycle
         "애드어댑터": "add_adapter",
         "셋어댑터": "set_adapter",
@@ -94,7 +101,7 @@ PEFT_PACK = LibraryPack(
     },
     examples={
         "LoraConfig": (
-            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
+            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, 로라_알파=16, 타깃_모듈즈=[\"query\", \"value\"])",
             "from peft import LoraConfig\nresult = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
         ),
         "get_peft_model": (
