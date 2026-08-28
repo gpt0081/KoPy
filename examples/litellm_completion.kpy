@@ -1,0 +1,13 @@
+# LiteLLM은 provider/model 문자열을 데이터로 그대로 유지합니다.
+# 실행하려면 선택한 공급자의 API key가 환경 변수에 설정돼 있어야 합니다.
+
+프롬 라이트엘엘엠 임포트 컴플리션
+
+리스폰스 = 컴플리션(
+    모델="openai/gpt-5-mini",
+    messages=[
+        {"role": "user", "content": "KoPy를 한 문장으로 설명해줘."},
+    ],
+)
+
+프린트(리스폰스)
