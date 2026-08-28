@@ -1,0 +1,13 @@
+프롬 에이전츠 임포트 에이전트, 러너, 런컨피그
+
+도우미 = 에이전트(
+    name="Assistant",
+    instructions="KoPy 학습자를 위해 간결하게 답하세요",
+)
+
+설정 = 런컨피그()
+
+프린트("OpenAI Agents SDK 에이전트 준비 완료:", 도우미.name)
+프린트("실제 모델 호출에는 OPENAI_API_KEY가 필요합니다.")
+# 결과 = 러너.run_sync(도우미, "KoPy를 한 문장으로 설명해줘", run_config=설정)
+# 프린트(결과.final_output)
