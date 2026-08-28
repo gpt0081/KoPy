@@ -14,8 +14,8 @@ class OllamaPackTests(unittest.TestCase):
         source = (
             "프롬 올라마 임포트 클라이언트, 챗, 임베드\n"
             "에스디케이 = 클라이언트(host='http://localhost:11434', timeout=1.0)\n"
-            "리스폰스 = 챗(model='gemma3', messages=[{'role': 'user', 'content': '안녕'}], stream=펄스, keep_alive='5m')\n"
-            "벡터 = 임베드(model='embeddinggemma', input='KoPy')\n"
+            "리스폰스 = 챗(모델='gemma3', messages=[{'role': 'user', 'content': '안녕'}], stream=펄스, keep_alive='5m')\n"
+            "벡터 = 임베드(모델='embeddinggemma', input='KoPy')\n"
         )
         result = translate(source).python
         self.assertIn("from ollama import Client, chat, embed", result)
@@ -32,7 +32,7 @@ class OllamaPackTests(unittest.TestCase):
         result = to_kopy(source).kopy
         self.assertIn("프롬 올라마 임포트 어싱크클라이언트, 챗리스폰스, 리스폰스에러, 챗, 웹_서치", result)
         self.assertIn("어싱크클라이언트(host='http://localhost:11434', timeout=2.0)", result)
-        self.assertIn("챗(model='gemma3', messages=[], stream=트루, options={'temperature': 0.1})", result)
+        self.assertIn("챗(모델='gemma3', messages=[], stream=트루, options={'temperature': 0.1})", result)
 
     def test_ollama_names_are_namespace_scoped(self):
         result = translate(
@@ -48,7 +48,7 @@ class OllamaPackTests(unittest.TestCase):
             "def 재시도(타임아웃, 헤더즈=논):\n"
             "    리턴 타임아웃\n"
             "결과 = 재시도(타임아웃=1, 헤더즈={'x': 'y'})\n"
-            "리스폰스 = 챗(model='gemma3', messages=[])\n"
+            "리스폰스 = 챗(모델='gemma3', messages=[])\n"
         )
         result = translate(source).python
         self.assertIn("def 재시도(타임아웃, 헤더즈=None):", result)
