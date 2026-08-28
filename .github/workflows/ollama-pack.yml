@@ -1,0 +1,43 @@
+name: Ollama Pack
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/kopy/packs/ollama.py"
+      - "src/kopy/packs/registry.py"
+      - "tests/test_ollama_*.py"
+      - ".github/workflows/ollama-pack.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/kopy/packs/ollama.py"
+      - "src/kopy/packs/registry.py"
+      - "tests/test_ollama_*.py"
+      - ".github/workflows/ollama-pack.yml"
+
+jobs:
+  ollama-pack:
+    name: Ollama Python 0.6.2 / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.10"
+      - name: Install KoPy and official Ollama Python SDK
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "ollama==0.6.2"
+      - name: Run Ollama pack and real-library runtime tests
+        run: python -m unittest tests.test_ollama_pack tests.test_ollama_runtime -v
+      - name: Verify Ollama pack details
+        run: kopy packs ollama
