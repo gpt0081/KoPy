@@ -8,7 +8,7 @@ KoPy의 Ollama Pack은 공식 `ollama` Python SDK를 namespace-scoped 방식으�
 pip install ollama
 ```
 
-KoPy의 Python 호환 범위는 그대로 `>=3.12,<3.13`입니다. 현재 CI는 `ollama>=0.6.2,<0.7`을 실제 설치해 검증합니다.
+KoPy의 Python 호환 범위는 그대로 `>=3.12,<3.13`입니다. 현재 CI는 `ollama==0.6.2`를 실제 설치해 검증합니다.
 
 ## 기본 채팅
 
@@ -16,11 +16,11 @@ KoPy의 Python 호환 범위는 그대로 `>=3.12,<3.13`입니다. 현재 CI는 
 프롬 올라마 임포트 챗
 
 리스폰스 = 챗(
-    모델="gemma3",
-    메시지즈=[
+    model="gemma3",
+    messages=[
         {"role": "user", "content": "KoPy를 한 문장으로 설명해줘."},
     ],
-    스트림=펄스,
+    stream=펄스,
 )
 
 프린트(리스폰스.message.content)
@@ -56,45 +56,36 @@ response = chat(
 | `generate` | `제너레이트` |
 | `embed` | `임베드` |
 | `pull` | `풀` |
+| `push` | `푸시` |
 | `show` | `쇼` |
+| `create` | `크리에이트` |
+| `copy` | `카피` |
+| `delete` | `딜리트` |
 | `ps` | `피에스` |
 | `web_search` | `웹_서치` |
 | `web_fetch` | `웹_페치` |
 
-업스트림의 언더스코어 구조는 그대로 보존합니다. 예를 들어 `web_search → 웹_서치`, `keep_alive → 킵_얼라이브`입니다.
+업스트림의 언더스코어 구조는 그대로 보존합니다. 예를 들어 `web_search → 웹_서치`입니다.
 
-## 호출 키워드
+## 호출 키워드는 현재 Python 원문 유지
 
-다음 음역은 Ollama가 활성화된 코드의 **실제 함수 호출 키워드 위치에서만** 적용됩니다.
+`model=`, `messages=`, `prompt=`, `stream=`, `input=`, `format=`, `options=`, `keep_alive=`, `host=`, `headers=`, `timeout=` 같은 호출 키워드는 의도적으로 영어 원문을 유지합니다.
 
-| Python keyword | KoPy |
-| --- | --- |
-| `model=` | `모델=` |
-| `messages=` | `메시지즈=` |
-| `prompt=` | `프롬프트=` |
-| `stream=` | `스트림=` |
-| `input=` | `인풋=` |
-| `format=` | `포맷=` |
-| `options=` | `옵션즈=` |
-| `keep_alive=` | `킵_얼라이브=` |
-| `host=` | `호스트=` |
-| `headers=` | `헤더즈=` |
-| `timeout=` | `타임아웃=` |
+현재 Library Pack의 키워드 변환은 pack이 파일에서 활성화됐는지는 알 수 있지만, 모든 경우에 개별 호출 대상이 실제 Ollama API인지까지 안전하게 판별하지는 못합니다. 이 상태에서 `타임아웃=` 같은 일반적인 이름을 등록하면 Ollama import가 존재하는 같은 파일의 사용자 정의 함수 호출까지 `timeout=`으로 바뀔 수 있습니다. KoPy는 이런 모호한 전역·파일단위 변환보다 Python 호환성을 우선합니다.
 
-예를 들어 다음 일반 변수는 Ollama Pack 때문에 전역 변환되지 않습니다.
+따라서 다음 코드는 안전하게 그대로 유지됩니다.
 
 ```kopy
-메시지즈 = []
-킵_얼라이브 = "10m"
+프롬 올라마 임포트 챗
+
+def 재시도(타임아웃):
+    리턴 타임아웃
+
+재시도(타임아웃=1)
+리스폰스 = 챗(model="gemma3", messages=[])
 ```
 
-반면 Ollama 호출 안에서는:
-
-```kopy
-리스폰스 = 챗(메시지즈=메시지즈, 킵_얼라이브=킵_얼라이브)
-```
-
-표준 Python의 `chat(messages=messages, keep_alive=keep_alive)`로 변환됩니다.
+Ollama 전용 호출 대상까지 식별하는 call-target scoping이 구현되기 전에는 호출 키워드를 별도 음역하지 않습니다. 이 방식은 KoPy의 기본 목적대로 실제 Python API 이름도 함께 익히게 해 줍니다.
 
 ## 로컬 서버와 테스트 범위
 
