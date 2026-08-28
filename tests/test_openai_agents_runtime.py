@@ -1,8 +1,10 @@
+import importlib.util
 import unittest
 
 from kopy.translator import translate
 
 
+@unittest.skipUnless(importlib.util.find_spec("agents"), "openai-agents is not installed")
 class OpenAIAgentsRuntimeTests(unittest.TestCase):
     def test_real_library_exports_and_objects(self):
         from agents import Agent, RunConfig, RunContextWrapper, RunResult, RunState, Runner, function_tool
