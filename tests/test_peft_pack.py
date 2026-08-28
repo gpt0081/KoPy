@@ -7,14 +7,14 @@ class PeftPackTests(unittest.TestCase):
     def test_translate_canonical_lora_api(self):
         source = (
             "프롬 페프트 임포트 로라컨피그, 겟_페프트_모델\n"
-            "설정 = 로라컨피그(r=8, 로라_알파=16, 타깃_모듈즈=['query', 'value'], 로라_드롭아웃=0.05, 바이어스='none', 인퍼런스_모드=펄스, 모듈즈_투_세이브=['classifier'], 팬_인_팬_아웃=펄스, 유즈_알에스로라=트루, 이니트_로라_웨이츠=트루)\n"
+            "설정 = 로라컨피그(r=8, 로라_알파=16, 타깃_모듈즈=['query', 'value'], 로라_드롭아웃=0.05, 바이어스='none', 인퍼런스_모드=펄스, 모듈즈_투_세이브=['classifier'], 팬_인_팬_아웃=펄스, 유즈_알에스로라=트루, 이니트_로라_웨이츠=트루, 익스클루드_모듈즈=['classifier'], 레이어즈_투_트랜스폼=[0], 레이어즈_패턴='layers', 랭크_패턴={}, 알파_패턴={}, 유즈_도라=펄스)\n"
             "모델 = 겟_페프트_모델(모델, 설정)\n"
             "모델 = 모델.머지_앤드_언로드()\n"
         )
         result = translate(source).python
         self.assertIn("from peft import LoraConfig, get_peft_model", result)
         self.assertIn(
-            "설정 = LoraConfig(r=8, lora_alpha=16, target_modules=['query', 'value'], lora_dropout=0.05, bias='none', inference_mode=False, modules_to_save=['classifier'], fan_in_fan_out=False, use_rslora=True, init_lora_weights=True)",
+            "설정 = LoraConfig(r=8, lora_alpha=16, target_modules=['query', 'value'], lora_dropout=0.05, bias='none', inference_mode=False, modules_to_save=['classifier'], fan_in_fan_out=False, use_rslora=True, init_lora_weights=True, exclude_modules=['classifier'], layers_to_transform=[0], layers_pattern='layers', rank_pattern={}, alpha_pattern={}, use_dora=False)",
             result,
         )
         self.assertIn("model = get_peft_model(model, 설정)", result)
@@ -23,14 +23,14 @@ class PeftPackTests(unittest.TestCase):
     def test_reverse_translate_uses_canonical_peft_api(self):
         source = (
             "from peft import PeftModel, LoraConfig, IA3Config\n"
-            "config = LoraConfig(r=4, lora_alpha=8, target_modules=['query'], task_type='FEATURE_EXTRACTION', lora_dropout=0.1, bias='none', inference_mode=False, modules_to_save=['classifier'], fan_in_fan_out=False, use_rslora=True, init_lora_weights=True)\n"
+            "config = LoraConfig(r=4, lora_alpha=8, target_modules=['query'], task_type='FEATURE_EXTRACTION', lora_dropout=0.1, bias='none', inference_mode=False, modules_to_save=['classifier'], fan_in_fan_out=False, use_rslora=True, init_lora_weights=True, exclude_modules=['classifier'], layers_to_transform=[0], layers_pattern='layers', rank_pattern={}, alpha_pattern={}, use_dora=False)\n"
             "model = model.set_adapter('default')\n"
             "model = model.merge_and_unload()\n"
         )
         result = to_kopy(source).kopy
         self.assertIn("프롬 페프트 임포트 페프트모델, 로라컨피그, 아이에이3컨피그", result)
         self.assertIn(
-            "로라컨피그(r=4, 로라_알파=8, 타깃_모듈즈=['query'], 태스크_타입='FEATURE_EXTRACTION', 로라_드롭아웃=0.1, 바이어스='none', 인퍼런스_모드=펄스, 모듈즈_투_세이브=['classifier'], 팬_인_팬_아웃=펄스, 유즈_알에스로라=트루, 이니트_로라_웨이츠=트루)",
+            "로라컨피그(r=4, 로라_알파=8, 타깃_모듈즈=['query'], 태스크_타입='FEATURE_EXTRACTION', 로라_드롭아웃=0.1, 바이어스='none', 인퍼런스_모드=펄스, 모듈즈_투_세이브=['classifier'], 팬_인_팬_아웃=펄스, 유즈_알에스로라=트루, 이니트_로라_웨이츠=트루, 익스클루드_모듈즈=['classifier'], 레이어즈_투_트랜스폼=[0], 레이어즈_패턴='layers', 랭크_패턴={}, 알파_패턴={}, 유즈_도라=펄스)",
             result,
         )
         self.assertIn("모델 = 모델.셋_어댑터('default')", result)
@@ -50,7 +50,7 @@ class PeftPackTests(unittest.TestCase):
 
     def test_peft_member_spellings_are_namespace_scoped(self):
         result = translate(
-            "로라_알파 = 16\n타깃_모듈즈 = []\n바이어스 = 'none'\n인퍼런스_모드 = 펄스\n모듈즈_투_세이브 = []\n팬_인_팬_아웃 = 펄스\n유즈_알에스로라 = 펄스\n이니트_로라_웨이츠 = 트루\n모델 = 모델.머지_앤드_언로드()\n"
+            "로라_알파 = 16\n타깃_모듈즈 = []\n바이어스 = 'none'\n인퍼런스_모드 = 펄스\n모듈즈_투_세이브 = []\n팬_인_팬_아웃 = 펄스\n유즈_알에스로라 = 펄스\n이니트_로라_웨이츠 = 트루\n익스클루드_모듈즈 = []\n레이어즈_투_트랜스폼 = [0]\n레이어즈_패턴 = 'layers'\n랭크_패턴 = {}\n알파_패턴 = {}\n유즈_도라 = 펄스\n모델 = 모델.머지_앤드_언로드()\n"
         ).python
         self.assertIn("로라_알파 = 16", result)
         self.assertIn("타깃_모듈즈 = []", result)
@@ -60,6 +60,12 @@ class PeftPackTests(unittest.TestCase):
         self.assertIn("팬_인_팬_아웃 = False", result)
         self.assertIn("유즈_알에스로라 = False", result)
         self.assertIn("이니트_로라_웨이츠 = True", result)
+        self.assertIn("익스클루드_모듈즈 = []", result)
+        self.assertIn("레이어즈_투_트랜스폼 = [0]", result)
+        self.assertIn("레이어즈_패턴 = 'layers'", result)
+        self.assertIn("랭크_패턴 = {}", result)
+        self.assertIn("알파_패턴 = {}", result)
+        self.assertIn("유즈_도라 = False", result)
         self.assertIn("model = model.머지_앤드_언로드()", result)
 
     def test_peft_keyword_spellings_only_translate_at_call_keywords(self):
@@ -72,7 +78,13 @@ class PeftPackTests(unittest.TestCase):
             "팬_인_팬_아웃 = 트루\n"
             "유즈_알에스로라 = 펄스\n"
             "이니트_로라_웨이츠 = 펄스\n"
-            "설정 = 로라컨피그(로라_알파=8, 바이어스='none', 인퍼런스_모드=트루, 모듈즈_투_세이브=['classifier'], 팬_인_팬_아웃=펄스, 유즈_알에스로라=트루, 이니트_로라_웨이츠=트루)\n"
+            "익스클루드_모듈즈 = ['head']\n"
+            "레이어즈_투_트랜스폼 = [1]\n"
+            "레이어즈_패턴 = 'blocks'\n"
+            "랭크_패턴 = {'q': 4}\n"
+            "알파_패턴 = {'q': 8}\n"
+            "유즈_도라 = 트루\n"
+            "설정 = 로라컨피그(로라_알파=8, 바이어스='none', 인퍼런스_모드=트루, 모듈즈_투_세이브=['classifier'], 팬_인_팬_아웃=펄스, 유즈_알에스로라=트루, 이니트_로라_웨이츠=트루, 익스클루드_모듈즈=['classifier'], 레이어즈_투_트랜스폼=[0], 레이어즈_패턴='layers', 랭크_패턴={}, 알파_패턴={}, 유즈_도라=펄스)\n"
         )
         result = translate(source).python
         self.assertIn("로라_알파 = 99", result)
@@ -82,7 +94,13 @@ class PeftPackTests(unittest.TestCase):
         self.assertIn("팬_인_팬_아웃 = True", result)
         self.assertIn("유즈_알에스로라 = False", result)
         self.assertIn("이니트_로라_웨이츠 = False", result)
-        self.assertIn("LoraConfig(lora_alpha=8, bias='none', inference_mode=True, modules_to_save=['classifier'], fan_in_fan_out=False, use_rslora=True, init_lora_weights=True)", result)
+        self.assertIn("익스클루드_모듈즈 = ['head']", result)
+        self.assertIn("레이어즈_투_트랜스폼 = [1]", result)
+        self.assertIn("레이어즈_패턴 = 'blocks'", result)
+        self.assertIn("랭크_패턴 = {'q': 4}", result)
+        self.assertIn("알파_패턴 = {'q': 8}", result)
+        self.assertIn("유즈_도라 = True", result)
+        self.assertIn("LoraConfig(lora_alpha=8, bias='none', inference_mode=True, modules_to_save=['classifier'], fan_in_fan_out=False, use_rslora=True, init_lora_weights=True, exclude_modules=['classifier'], layers_to_transform=[0], layers_pattern='layers', rank_pattern={}, alpha_pattern={}, use_dora=False)", result)
 
         reverse = to_kopy(
             "from peft import LoraConfig\n"
@@ -93,7 +111,13 @@ class PeftPackTests(unittest.TestCase):
             "fan_in_fan_out = True\n"
             "use_rslora = False\n"
             "init_lora_weights = False\n"
-            "config = LoraConfig(lora_alpha=8, bias='none', inference_mode=True, modules_to_save=['classifier'], fan_in_fan_out=False, use_rslora=True, init_lora_weights=True)\n"
+            "exclude_modules = ['head']\n"
+            "layers_to_transform = [1]\n"
+            "layers_pattern = 'blocks'\n"
+            "rank_pattern = {'q': 4}\n"
+            "alpha_pattern = {'q': 8}\n"
+            "use_dora = True\n"
+            "config = LoraConfig(lora_alpha=8, bias='none', inference_mode=True, modules_to_save=['classifier'], fan_in_fan_out=False, use_rslora=True, init_lora_weights=True, exclude_modules=['classifier'], layers_to_transform=[0], layers_pattern='layers', rank_pattern={}, alpha_pattern={}, use_dora=False)\n"
         ).kopy
         self.assertIn("lora_alpha = 99", reverse)
         self.assertIn("bias = 'all'", reverse)
@@ -102,7 +126,13 @@ class PeftPackTests(unittest.TestCase):
         self.assertIn("fan_in_fan_out = 트루", reverse)
         self.assertIn("use_rslora = 펄스", reverse)
         self.assertIn("init_lora_weights = 펄스", reverse)
-        self.assertIn("로라컨피그(로라_알파=8, 바이어스='none', 인퍼런스_모드=트루, 모듈즈_투_세이브=['classifier'], 팬_인_팬_아웃=펄스, 유즈_알에스로라=트루, 이니트_로라_웨이츠=트루)", reverse)
+        self.assertIn("exclude_modules = ['head']", reverse)
+        self.assertIn("layers_to_transform = [1]", reverse)
+        self.assertIn("layers_pattern = 'blocks'", reverse)
+        self.assertIn("rank_pattern = {'q': 4}", reverse)
+        self.assertIn("alpha_pattern = {'q': 8}", reverse)
+        self.assertIn("use_dora = 트루", reverse)
+        self.assertIn("로라컨피그(로라_알파=8, 바이어스='none', 인퍼런스_모드=트루, 모듈즈_투_세이브=['classifier'], 팬_인_팬_아웃=펄스, 유즈_알에스로라=트루, 이니트_로라_웨이츠=트루, 익스클루드_모듈즈=['classifier'], 레이어즈_투_트랜스폼=[0], 레이어즈_패턴='layers', 랭크_패턴={}, 알파_패턴={}, 유즈_도라=펄스)", reverse)
 
     def test_rank_r_remains_untranslated_because_it_is_ambiguous(self):
         source = "프롬 페프트 임포트 로라컨피그\n설정 = 로라컨피그(r=8, 로라_알파=16)\n"
