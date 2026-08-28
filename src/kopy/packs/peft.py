@@ -88,6 +88,8 @@ PEFT_PACK = LibraryPack(
         "타깃_모듈즈": "target_modules",
         "태스크_타입": "task_type",
         "로라_드롭아웃": "lora_dropout",
+        "바이어스": "bias",
+        "인퍼런스_모드": "inference_mode",
     },
     member_descriptions={
         "LoraConfig": "LoRA rank, target module, dropout 등 어댑터 학습 설정을 정의합니다.",
@@ -100,8 +102,8 @@ PEFT_PACK = LibraryPack(
     },
     examples={
         "LoraConfig": (
-            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, 로라_알파=16, 타깃_모듈즈=[\"query\", \"value\"])",
-            "from peft import LoraConfig\nresult = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
+            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, 로라_알파=16, 타깃_모듈즈=[\"query\", \"value\"], 바이어스=\"none\", 인퍼런스_모드=펄스)",
+            "from peft import LoraConfig\nresult = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"], bias=\"none\", inference_mode=False)",
         ),
         "get_peft_model": (
             "프롬 페프트 임포트 겟_페프트_모델\n모델 = 겟_페프트_모델(모델, 리절트)",
