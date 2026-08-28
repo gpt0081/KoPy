@@ -9,7 +9,7 @@ class OllamaRuntimeTests(unittest.TestCase):
     def test_real_client_and_message_types_without_server(self):
         source = (
             "프롬 올라마 임포트 클라이언트, 메시지, 옵션즈\n"
-            "에스디케이 = 클라이언트(호스트='http://127.0.0.1:11434', 타임아웃=1.0)\n"
+            "에스디케이 = 클라이언트(host='http://127.0.0.1:11434', timeout=1.0)\n"
             "메시지객체 = 메시지(role='user', content='KoPy')\n"
             "옵션객체 = 옵션즈(temperature=0.2)\n"
         )
