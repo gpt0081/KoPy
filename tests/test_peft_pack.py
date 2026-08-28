@@ -56,6 +56,24 @@ class PeftPackTests(unittest.TestCase):
         self.assertIn("타깃_모듈즈 = []", result)
         self.assertIn("model = model.머지_앤드_언로드()", result)
 
+    def test_peft_keyword_spellings_only_translate_at_call_keywords(self):
+        source = (
+            "프롬 페프트 임포트 로라컨피그\n"
+            "로라_알파 = 99\n"
+            "설정 = 로라컨피그(로라_알파=8)\n"
+        )
+        result = translate(source).python
+        self.assertIn("로라_알파 = 99", result)
+        self.assertIn("LoraConfig(lora_alpha=8)", result)
+
+        reverse = to_kopy(
+            "from peft import LoraConfig\n"
+            "lora_alpha = 99\n"
+            "config = LoraConfig(lora_alpha=8)\n"
+        ).kopy
+        self.assertIn("lora_alpha = 99", reverse)
+        self.assertIn("로라컨피그(로라_알파=8)", reverse)
+
     def test_rank_r_remains_untranslated_because_it_is_ambiguous(self):
         source = "프롬 페프트 임포트 로라컨피그\n설정 = 로라컨피그(r=8, 로라_알파=16)\n"
         result = translate(source).python
