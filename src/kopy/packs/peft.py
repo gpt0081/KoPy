@@ -40,13 +40,6 @@ PEFT_PACK = LibraryPack(
         "프롬_프리트레인드": "from_pretrained",
         "세이브_프리트레인드": "save_pretrained",
 
-        # LoRA/PEFT-specific keyword identifiers. These remain pack-scoped rather
-        # than joining KoPy's global vocabulary, avoiding collisions elsewhere.
-        "로라_알파": "lora_alpha",
-        "타깃_모듈즈": "target_modules",
-        "태스크_타입": "task_type",
-        "로라_드롭아웃": "lora_dropout",
-
         # Adapter lifecycle
         "애드어댑터": "add_adapter",
         "셋어댑터": "set_adapter",
@@ -89,6 +82,12 @@ PEFT_PACK = LibraryPack(
         "페프트_컨피그": "peft_config",
         "베이스_모델": "base_model",
         "푸시_투_허브": "push_to_hub",
+    },
+    keyword_arguments={
+        "로라_알파": "lora_alpha",
+        "타깃_모듈즈": "target_modules",
+        "태스크_타입": "task_type",
+        "로라_드롭아웃": "lora_dropout",
     },
     member_descriptions={
         "LoraConfig": "LoRA rank, target module, dropout 등 어댑터 학습 설정을 정의합니다.",
