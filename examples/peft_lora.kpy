@@ -16,9 +16,9 @@
     베이스_모델,
     로라컨피그(
         r=4,
-        lora_alpha=8,
-        target_modules=["query", "value"],
-        lora_dropout=0.05,
+        로라_알파=8,
+        타깃_모듈즈=["query", "value"],
+        로라_드롭아웃=0.05,
     ),
 )
 모델.프린트_트레이너블_파라미터스()
