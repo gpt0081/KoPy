@@ -1,7 +1,7 @@
 """Official Ollama Python client pack for KoPy.
 
 Ollama is a practical bridge between Python applications and locally or
-remotely served open models.  This pack keeps the real ``ollama`` module and
+remotely served open models. This pack keeps the real ``ollama`` module and
 string/data values intact while transliterating only Ollama API names inside
 an activated Ollama namespace.
 """
@@ -39,19 +39,6 @@ OLLAMA_PACK = LibraryPack(
         "웹_서치": "web_search",
         "웹_페치": "web_fetch",
     },
-    keyword_arguments={
-        "모델": "model",
-        "메시지즈": "messages",
-        "프롬프트": "prompt",
-        "스트림": "stream",
-        "인풋": "input",
-        "포맷": "format",
-        "옵션즈": "options",
-        "킵_얼라이브": "keep_alive",
-        "호스트": "host",
-        "헤더즈": "headers",
-        "타임아웃": "timeout",
-    },
     member_descriptions={
         "Client": "Ollama 서버와 통신하는 동기 클라이언트를 생성합니다.",
         "AsyncClient": "asyncio에서 사용하는 비동기 Ollama 클라이언트를 생성합니다.",
@@ -76,15 +63,15 @@ OLLAMA_PACK = LibraryPack(
     },
     examples={
         "chat": (
-            "프롬 올라마 임포트 챗\n리스폰스 = 챗(모델='gemma3', 메시지즈=[{'role': 'user', 'content': '안녕'}])",
+            "프롬 올라마 임포트 챗\n리스폰스 = 챗(model='gemma3', messages=[{'role': 'user', 'content': '안녕'}])",
             "from ollama import chat\nresponse = chat(model='gemma3', messages=[{'role': 'user', 'content': '안녕'}])",
         ),
         "Client": (
-            "프롬 올라마 임포트 클라이언트\n클라이언트 = 클라이언트(호스트='http://localhost:11434')",
+            "프롬 올라마 임포트 클라이언트\n클라이언트객체 = 클라이언트(host='http://localhost:11434')",
             "from ollama import Client\nclient = Client(host='http://localhost:11434')",
         ),
         "embed": (
-            "프롬 올라마 임포트 임베드\n리스폰스 = 임베드(모델='embeddinggemma', 인풋='KoPy')",
+            "프롬 올라마 임포트 임베드\n리스폰스 = 임베드(model='embeddinggemma', input='KoPy')",
             "from ollama import embed\nresponse = embed(model='embeddinggemma', input='KoPy')",
         ),
     },
