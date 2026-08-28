@@ -19,8 +19,10 @@ class LibraryPack:
     """A namespace-scoped transliteration pack for a Python library.
 
     ``members`` maps KoPy spellings to Python attributes or imported names.
-    The mapping is intentionally namespace-scoped instead of being merged into
-    KoPy's global WORDS dictionary, preventing cross-library collisions.
+    ``keyword_arguments`` maps KoPy spellings to Python call-keyword names and
+    is only applied at actual function-call keyword positions. Both mappings
+    stay namespace-scoped instead of being merged into KoPy's global WORDS
+    dictionary, preventing cross-library collisions.
     """
 
     name: str
@@ -28,6 +30,7 @@ class LibraryPack:
     kopy_module: str
     description: str
     members: dict[str, str]
+    keyword_arguments: dict[str, str] = field(default_factory=dict)
     preferred_aliases: tuple[str, ...] = ()
     member_descriptions: dict[str, str] = field(default_factory=dict)
     examples: dict[str, tuple[str, str]] = field(default_factory=dict)
@@ -35,6 +38,10 @@ class LibraryPack:
     @property
     def python_to_kopy(self) -> dict[str, str]:
         return {python_name: kopy for kopy, python_name in self.members.items()}
+
+    @property
+    def python_keywords_to_kopy(self) -> dict[str, str]:
+        return {python_name: kopy for kopy, python_name in self.keyword_arguments.items()}
 
     @property
     def prefixes(self) -> frozenset[str]:
@@ -45,6 +52,12 @@ class LibraryPack:
 
     def kopy_for(self, python_name: str) -> str | None:
         return self.python_to_kopy.get(python_name)
+
+    def python_keyword_for(self, kopy_name: str) -> str | None:
+        return self.keyword_arguments.get(kopy_name)
+
+    def kopy_keyword_for(self, python_name: str) -> str | None:
+        return self.python_keywords_to_kopy.get(python_name)
 
     def member_info(self, word: str) -> PackMemberInfo | None:
         if word in self.members:

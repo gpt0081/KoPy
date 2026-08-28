@@ -83,6 +83,12 @@ PEFT_PACK = LibraryPack(
         "베이스_모델": "base_model",
         "푸시_투_허브": "push_to_hub",
     },
+    keyword_arguments={
+        "로라_알파": "lora_alpha",
+        "타깃_모듈즈": "target_modules",
+        "태스크_타입": "task_type",
+        "로라_드롭아웃": "lora_dropout",
+    },
     member_descriptions={
         "LoraConfig": "LoRA rank, target module, dropout 등 어댑터 학습 설정을 정의합니다.",
         "get_peft_model": "기본 모델에 PEFT 설정을 적용해 PeftModel을 만듭니다.",
@@ -94,7 +100,7 @@ PEFT_PACK = LibraryPack(
     },
     examples={
         "LoraConfig": (
-            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
+            "프롬 페프트 임포트 로라컨피그\n리절트 = 로라컨피그(r=8, 로라_알파=16, 타깃_모듈즈=[\"query\", \"value\"])",
             "from peft import LoraConfig\nresult = LoraConfig(r=8, lora_alpha=16, target_modules=[\"query\", \"value\"])",
         ),
         "get_peft_model": (
