@@ -2,7 +2,7 @@
 
 클라이언트객체 = 클라이언트(host="http://localhost:11434")
 리스폰스 = 클라이언트객체.챗(
-    model="gemma3",
+    모델="gemma3",
     messages=[
         {"role": "user", "content": "KoPy를 한 문장으로 설명해줘."},
     ],
