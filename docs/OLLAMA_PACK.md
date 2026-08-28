@@ -16,7 +16,7 @@ KoPy의 Python 호환 범위는 그대로 `>=3.12,<3.13`입니다. 현재 CI는 
 프롬 올라마 임포트 챗
 
 리스폰스 = 챗(
-    model="gemma3",
+    모델="gemma3",
     messages=[
         {"role": "user", "content": "KoPy를 한 문장으로 설명해줘."},
     ],
@@ -67,13 +67,13 @@ response = chat(
 
 업스트림의 언더스코어 구조는 그대로 보존합니다. 예를 들어 `web_search → 웹_서치`입니다.
 
-## 호출 키워드는 현재 Python 원문 유지
+## 호출 키워드와 충돌 회피
 
-`model=`, `messages=`, `prompt=`, `stream=`, `input=`, `format=`, `options=`, `keep_alive=`, `host=`, `headers=`, `timeout=` 같은 호출 키워드는 의도적으로 영어 원문을 유지합니다.
+Ollama Pack 자체의 `keyword_arguments`는 현재 비워 둡니다. `messages=`, `prompt=`, `stream=`, `input=`, `format=`, `options=`, `keep_alive=`, `host=`, `headers=`, `timeout=` 같은 이름을 팩 단위로 등록하면, Ollama import가 있는 같은 파일의 사용자 정의 함수 호출까지 잘못 바꿀 수 있기 때문입니다.
 
-현재 Library Pack의 키워드 변환은 pack이 파일에서 활성화됐는지는 알 수 있지만, 모든 경우에 개별 호출 대상이 실제 Ollama API인지까지 안전하게 판별하지는 못합니다. 이 상태에서 `타임아웃=` 같은 일반적인 이름을 등록하면 Ollama import가 존재하는 같은 파일의 사용자 정의 함수 호출까지 `timeout=`으로 바뀔 수 있습니다. KoPy는 이런 모호한 전역·파일단위 변환보다 Python 호환성을 우선합니다.
+단, `model → 모델`은 Ollama 전용 키워드가 아니라 KoPy가 이미 공통 식별자로 지원하는 canonical 음역입니다. 따라서 Python→KoPy 변환에서는 `model=`이 `모델=`로 표시되고, KoPy→Python에서는 `모델=`이 표준 `model=`로 복원됩니다. 이는 Ollama Pack 전용 전역 번역을 새로 추가한 것이 아닙니다.
 
-따라서 다음 코드는 안전하게 그대로 유지됩니다.
+따라서 다음 코드는 안전하게 처리됩니다.
 
 ```kopy
 프롬 올라마 임포트 챗
@@ -82,10 +82,10 @@ def 재시도(타임아웃):
     리턴 타임아웃
 
 재시도(타임아웃=1)
-리스폰스 = 챗(model="gemma3", messages=[])
+리스폰스 = 챗(모델="gemma3", messages=[])
 ```
 
-Ollama 전용 호출 대상까지 식별하는 call-target scoping이 구현되기 전에는 호출 키워드를 별도 음역하지 않습니다. 이 방식은 KoPy의 기본 목적대로 실제 Python API 이름도 함께 익히게 해 줍니다.
+`타임아웃=`은 사용자 함수 호출에서 그대로 유지되고, `모델=`은 기존 KoPy 공통 식별자 규칙에 따라 `model=`로 복원됩니다. Ollama 전용 호출 대상을 정확히 식별하는 call-target scoping이 구현되기 전에는 추가 호출 키워드를 팩 전용 음역으로 등록하지 않습니다.
 
 ## 로컬 서버와 테스트 범위
 
