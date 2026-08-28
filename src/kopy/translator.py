@@ -139,7 +139,7 @@ def _replace_common_names(
     tokens = list(tokenize.generate_tokens(reader))
     protected = _common_import_path_indices(tokens)
     output_tokens: list[tokenize.TokenInfo] = []
-    replacements: list[tuple[str, str, int, int], ...] = []
+    replacements: list[tuple[str, str, int, int]] = []
 
     for index, token in enumerate(tokens):
         if index not in protected and token.type == tokenize.NAME and token.string in mapping:
@@ -397,6 +397,32 @@ def _function_scopes(source: str) -> tuple[_FunctionScope, ...]:
     return tuple(scopes)
 
 
+def _call_keyword_positions(source: str) -> frozenset[tuple[int, int]]:
+    """Return tokenize-style positions for explicit ``name=value`` call keywords."""
+
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return frozenset()
+
+    lines = source.splitlines(keepends=True)
+    positions: set[tuple[int, int]] = set()
+
+    class Finder(ast.NodeVisitor):
+        def visit_Call(self, node: ast.Call) -> None:
+            for keyword in node.keywords:
+                if keyword.arg is None or not hasattr(keyword, "lineno"):
+                    continue
+                line = lines[keyword.lineno - 1]
+                prefix = line.encode("utf-8")[: keyword.col_offset]
+                char_column = len(prefix.decode("utf-8", errors="ignore"))
+                positions.add((keyword.lineno, char_column))
+            self.generic_visit(node)
+
+    Finder().visit(tree)
+    return frozenset(positions)
+
+
 def _is_function_shadowed(
     token: tokenize.TokenInfo,
     scopes: tuple[_FunctionScope, ...],
@@ -428,6 +454,27 @@ def _unique_active_mapping(name: str, active_packs: set[str], reverse: bool) -> 
         if pack.name not in active_packs:
             continue
         target = pack.kopy_for(name) if reverse else pack.python_for(name)
+        if target is not None:
+            targets.add(target)
+    if len(targets) == 1:
+        return next(iter(targets))
+    return None
+
+
+def _unique_active_keyword_mapping(
+    name: str,
+    active_packs: set[str],
+    reverse: bool,
+) -> str | None:
+    targets: set[str] = set()
+    for pack in all_packs():
+        if pack.name not in active_packs:
+            continue
+        target = (
+            pack.kopy_keyword_for(name)
+            if reverse
+            else pack.python_keyword_for(name)
+        )
         if target is not None:
             targets.add(target)
     if len(targets) == 1:
@@ -545,6 +592,7 @@ def _translate_library_packs(
     common_source_names = set(COMMON_PY_TO_KO if reverse else COMMON_IDENTIFIERS)
     rebinding_targets = _direct_name_rebindings(tokens, direct_names, common_source_names)
     function_scopes = _function_scopes(source)
+    call_keyword_positions = _call_keyword_positions(source)
     shadow_after: dict[str, int] = {}
     for target_index, statement_end in rebinding_targets.items():
         name = tokens[target_index].string
@@ -577,6 +625,11 @@ def _translate_library_packs(
                 and not is_function_shadow
             ):
                 replacements.setdefault(index, direct)
+
+        if token.start in call_keyword_positions:
+            keyword_target = _unique_active_keyword_mapping(token.string, active_packs, reverse)
+            if keyword_target is not None and token.string != keyword_target:
+                replacements.setdefault(index, keyword_target)
 
         if following is not None and following.string == "." and token.string in active_aliases:
             pack = active_aliases[token.string]
