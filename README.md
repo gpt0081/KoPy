@@ -113,7 +113,7 @@ gaussian_blur2d        가우시안_블러2디
 
 Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy 코드를 표준 Python으로 변환하고 실제 계산·학습·검색은 원래 라이브러리가 수행합니다.
 
-현재 공식 Library Pack은 **47개**입니다.
+현재 공식 Library Pack은 **48개**입니다.
 
 | 영역 | 팩 |
 | --- | --- |
@@ -121,7 +121,7 @@ Library Pack은 외부 라이브러리를 다시 구현하지 않습니다. KoPy
 | 전통 ML | scikit-learn, XGBoost, LightGBM, Optuna |
 | 딥러닝 | PyTorch, Lightning, TorchMetrics, einops, JAX |
 | 컴퓨터 비전 | TorchVision, OpenCV, timm, Kornia |
-| NLP·LLM | Transformers, Tokenizers, SentencePiece, Sentence Transformers |
+| NLP·LLM | Transformers, Tokenizers, SentencePiece, Sentence Transformers, Ollama |
 | Hugging Face 학습·배포 | Datasets, Accelerate, PEFT, Optimum, Safetensors |
 | 그래프 AI | PyTorch Geometric |
 | 추론·실험 | ONNX Runtime, MLflow, Matplotlib |
@@ -273,10 +273,11 @@ kopy version
 - [`docs/BM25S_PACK.md`](docs/BM25S_PACK.md)
 - [`docs/CHROMA_PACK.md`](docs/CHROMA_PACK.md)
 - [`docs/HAYSTACK_PACK.md`](docs/HAYSTACK_PACK.md)
+- [`docs/OLLAMA_PACK.md`](docs/OLLAMA_PACK.md)
 - 그 밖의 팩별 문서는 `docs/`에 있습니다.
 
 ## 테스트 원칙
 
 Python 호환성이 최우선입니다. Library Pack 변경은 실제 라이브러리를 설치한 Windows, Linux, macOS CI와 runtime smoke test로 확인합니다. 문자열·주석·숫자 리터럴이 변하지 않는지, pack 고유 API와 공통 식별자가 충돌하지 않는지도 검증합니다.
 
-0.5.47에서 공통 식별자와 숫자 보존 규칙을 확립했고, 0.5.48은 검색/RAG 메서드를 namespace-scoped 음역으로 확장했습니다. 0.5.49는 공통 RAG 변수명과 일부 키워드 인자의 양방향 음역을 확대한 세 번째 감사 단계였습니다. 0.5.50은 반복 사용되는 ML/RAG 시그니처 키워드 인자까지 공통 음역으로 확대한 네 번째 감사 단계였습니다. **0.5.51은 정보검색·fuzzy-search 식별자를 확장하면서 직접 import 클래스와 일반 변수의 이름 충돌을 Python 스코프 규칙에 맞게 처리하는 다섯 번째 감사 단계**입니다. 다음 감사에서는 나머지 47개 팩 예제를 같은 기준으로 계속 점검합니다.
+0.5.47에서 공통 식별자와 숫자 보존 규칙을 확립했고, 0.5.48은 검색/RAG 메서드를 namespace-scoped 음역으로 확장했습니다. 0.5.49는 공통 RAG 변수명과 일부 키워드 인자의 양방향 음역을 확대한 세 번째 감사 단계였습니다. 0.5.50은 반복 사용되는 ML/RAG 시그니처 키워드 인자까지 공통 음역으로 확대한 네 번째 감사 단계였습니다. **0.5.51은 정보검색·fuzzy-search 식별자를 확장하면서 직접 import 클래스와 일반 변수의 이름 충돌을 Python 스코프 규칙에 맞게 처리하는 다섯 번째 감사 단계**입니다. 다음 감사에서는 나머지 48개 팩 예제를 같은 기준으로 계속 점검합니다.
