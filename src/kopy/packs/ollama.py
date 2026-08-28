@@ -63,7 +63,7 @@ OLLAMA_PACK = LibraryPack(
     },
     examples={
         "chat": (
-            "프롬 올라마 임포트 챗\n리스폰스 = 챗(model='gemma3', messages=[{'role': 'user', 'content': '안녕'}])",
+            "프롬 올라마 임포트 챗\n리스폰스 = 챗(모델='gemma3', messages=[{'role': 'user', 'content': '안녕'}])",
             "from ollama import chat\nresponse = chat(model='gemma3', messages=[{'role': 'user', 'content': '안녕'}])",
         ),
         "Client": (
@@ -71,7 +71,7 @@ OLLAMA_PACK = LibraryPack(
             "from ollama import Client\nclient = Client(host='http://localhost:11434')",
         ),
         "embed": (
-            "프롬 올라마 임포트 임베드\n리스폰스 = 임베드(model='embeddinggemma', input='KoPy')",
+            "프롬 올라마 임포트 임베드\n리스폰스 = 임베드(모델='embeddinggemma', input='KoPy')",
             "from ollama import embed\nresponse = embed(model='embeddinggemma', input='KoPy')",
         ),
     },
