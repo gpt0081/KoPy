@@ -1,0 +1,43 @@
+name: OpenAI Agents Pack
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/kopy/packs/openai_agents.py"
+      - "src/kopy/packs/registry.py"
+      - "tests/test_openai_agents_*.py"
+      - ".github/workflows/openai-agents-pack.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/kopy/packs/openai_agents.py"
+      - "src/kopy/packs/registry.py"
+      - "tests/test_openai_agents_*.py"
+      - ".github/workflows/openai-agents-pack.yml"
+
+jobs:
+  openai-agents-pack:
+    name: OpenAI Agents 0.22.0 / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.10"
+      - name: Install KoPy and OpenAI Agents SDK
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . "openai-agents==0.22.0"
+      - name: Run OpenAI Agents pack and real-library runtime tests
+        run: python -m unittest tests.test_openai_agents_pack tests.test_openai_agents_runtime -v
+      - name: Verify OpenAI Agents pack details
+        run: kopy packs openai-agents
