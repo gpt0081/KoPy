@@ -1,0 +1,23 @@
+임포트 argparse
+임포트 json
+프롬 collections 임포트 Counter
+프롬 pathlib 임포트 Path
+
+
+데프 단어들(텍스트):
+    # TODO: casefold 후 공백으로 나누고 양끝의 .,!?:; 문자를 제거하세요.
+    리턴 []
+
+
+데프 분석(텍스트):
+    # TODO: total, unique, frequencies, top을 가진 딕셔너리를 반환하세요.
+    리턴 {}
+
+
+데프 메인(argv=논):
+    # TODO: 파일 경로 인자를 받고 UTF-8로 읽어 분석 결과를 JSON으로 출력하세요.
+    패스
+
+
+이프 __name__ == "__main__":
+    메인()

@@ -1,0 +1,12 @@
+클래스 제한_카운터:
+    데프 __init__(self, 최댓값):
+        self.최댓값 = 최댓값
+        self.값 = 0
+
+    데프 증가(self, 양=1):
+        # TODO: 새 값이 최댓값을 넘으면 ValueError를 발생시키세요.
+        리턴 self.값
+
+    데프 초기화(self):
+        # TODO
+        패스

@@ -1,0 +1,12 @@
+임포트 json
+
+
+데프 단어_빈도(텍스트):
+    빈도 = {}
+    포 단어 인 텍스트.casefold().split():
+        빈도[단어] = 빈도.get(단어, 0) + 1
+    리턴 빈도
+
+
+데프 JSON_문자열(데이터):
+    리턴 json.dumps(데이터, ensure_ascii=펄스, sort_keys=트루)

@@ -1,0 +1,21 @@
+{
+  "course_schema": 1,
+  "kopy_version": "0.5.51",
+  "python_baseline": "3.12.10",
+  "pack_count": 51,
+  "lesson_count": 16,
+  "covered_core_modules": [
+    "__init__",
+    "__main__",
+    "cli",
+    "config",
+    "editor",
+    "education",
+    "runtime",
+    "spelling",
+    "translator",
+    "words",
+    "packs.base",
+    "packs.registry"
+  ]
+}

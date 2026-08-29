@@ -1,0 +1,32 @@
+임포트 argparse
+임포트 json
+프롬 collections 임포트 Counter
+프롬 pathlib 임포트 Path
+
+
+데프 단어들(텍스트):
+    리턴 [단어.strip(".,!?:;") 포 단어 인 텍스트.casefold().split() 이프 단어.strip(".,!?:;")]
+
+
+데프 분석(텍스트):
+    목록 = 단어들(텍스트)
+    빈도 = Counter(목록)
+    정렬_빈도 = 소티드(빈도.items(), key=람다 항목: (-항목[1], 항목[0]))
+    리턴 {
+        "total": 렌(목록),
+        "unique": 렌(빈도),
+        "frequencies": 딕트(소티드(빈도.items())),
+        "top": [[단어, 횟수] 포 단어, 횟수 인 정렬_빈도[:10]],
+    }
+
+
+데프 메인(argv=논):
+    파서 = argparse.ArgumentParser(description="UTF-8 텍스트의 단어 빈도를 분석합니다.")
+    파서.add_argument("file")
+    인자 = 파서.parse_args(argv)
+    텍스트 = Path(인자.file).read_text(encoding="utf-8")
+    프린트(json.dumps(분석(텍스트), ensure_ascii=펄스, indent=2))
+
+
+이프 __name__ == "__main__":
+    메인()
