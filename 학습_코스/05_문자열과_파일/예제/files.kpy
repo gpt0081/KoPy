@@ -1,0 +1,13 @@
+임포트 json
+임포트 tempfile
+프롬 pathlib 임포트 Path
+
+데이터 = {"language": "KoPy", "purpose": "학습"}
+
+위드 tempfile.TemporaryDirectory() 애즈 임시_폴더:
+    경로 = Path(임시_폴더) / "data.json"
+    내용 = json.dumps(데이터, ensure_ascii=펄스, sort_keys=트루)
+    경로.write_text(내용, encoding="utf-8")
+    복원 = json.loads(경로.read_text(encoding="utf-8"))
+    프린트(복원["language"])
+    프린트(복원["purpose"])

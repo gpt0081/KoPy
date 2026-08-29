@@ -1,0 +1,11 @@
+임포트 json
+
+
+데프 단어_빈도(텍스트):
+    # TODO: 대소문자를 구분하지 않고 공백으로 단어를 나누세요.
+    리턴 {}
+
+
+데프 JSON_문자열(데이터):
+    # TODO: ensure_ascii=False, sort_keys=True로 직렬화하세요.
+    리턴 ""

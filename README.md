@@ -249,6 +249,14 @@ cd KoPy
 python -m pip install -e .
 ```
 
+## 공식 학습 코스
+
+Python 입문부터 KoPy 번역기·CLI·Library Pack·스코프 충돌 방지·테스트와 VS Code 연동까지 직접 실습하는 과정은 [`학습_코스/`](학습_코스/README.md)에 있습니다.
+
+```powershell
+python -m unittest "학습_코스.테스트.test_course" -v
+```
+
 실제 Library Pack 의존성은 일반 Python과 동일하게 필요한 것만 설치합니다.
 
 ## CLI
